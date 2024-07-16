@@ -1,21 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.4.3.final using JasperReports Library version 6.4.3  -->
+<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.4.3  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="LocalFulfillmentPickPackList" pageWidth="842" pageHeight="595" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Empty" uuid="be52f660-1499-4fdb-bac0-fa964fc1e938">
-    <property name="com.jaspersoft.studio.data.sql.tables">
-        <![CDATA[ZnVsZmlsbG1lbnQuc2hpcG1lbnRfZHJhZnRzICwxNSwxNSw3MWEyZDQzYi1mZGE2LTQwZjQtYmU0
-NC0xMzJjNjI2OWRkODc7]]>
-    </property>
     <property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
     <property name="net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.1" value="columnHeader"/>
     <property name="net.sf.jasperreports.export.xls.one.page.per.sheet" value="false"/>
     <property name="net.sf.jasperreports.export.csv.one.page.per.sheet" value="false"/>
     <property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
     <property name="net.sf.jasperreports.export.csv.remove.empty.space.between.rows" value="true"/>
-    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="core/local_core.xml"/>
-    <property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="337"/>
-    <property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="654"/>
-    <property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w1" value="685"/>
-    <property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="302"/>
     <import value="java.time.LocalDate"/>
     <import value="java.time.format.DateTimeFormatter"/>
     <import value="java.time.ZonedDateTime"/>
@@ -39,8 +30,6 @@ NC0xMzJjNjI2OWRkODc7]]>
         </box>
     </style>
     <subDataset name="OrderDataset" uuid="e483d003-bc92-44dd-ae47-a6036ec805c8">
-        <property name="com.jaspersoft.studio.data.defaultdataadapter" value="core/local_core.xml"/>
-        <property name="com.jaspersoft.studio.data.sql.tables" value=""/>
         <parameter name="dateFormat" class="java.lang.String" isForPrompting="false"/>
         <parameter name="shipmentDraftId" class="java.lang.String"/>
         <queryString language="plsql">
@@ -196,7 +185,6 @@ ORDER BY
         <groupExpression><![CDATA[$F{orderProductName}]]></groupExpression>
         <groupHeader>
             <band height="30">
-                <property name="com.jaspersoft.studio.unit.height" value="px"/>
                 <frame>
                     <reportElement mode="Opaque" x="0" y="0" width="802" height="30" backcolor="#DDDDDD" uuid="a084c0f9-9783-467c-9b59-5e7128f30dc0"/>
                     <box>
@@ -227,7 +215,6 @@ ORDER BY
         <groupExpression><![CDATA[$F{productName}]]></groupExpression>
         <groupHeader>
             <band height="30">
-                <property name="com.jaspersoft.studio.unit.height" value="px"/>
                 <printWhenExpression><![CDATA[$F{lotCode} != null]]></printWhenExpression>
                 <frame>
                     <reportElement x="0" y="0" width="802" height="30" uuid="aa26c1a3-89f8-4c52-951e-0295d062488c"/>
@@ -237,16 +224,12 @@ ORDER BY
                     <textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="ProductGroup" isBlankWhenNull="false">
                         <reportElement x="550" y="0" width="127" height="30" uuid="d5c3dd3e-eab9-417d-8bc3-ea9753d06ed1"/>
                         <textElement textAlignment="Center" verticalAlignment="Middle"/>
-                        <textFieldExpression>
-                            <![CDATA[$V{sumFilledQuantityDoses} == null ? 0 : $P{decimalFormat}.format($V{sumFilledQuantityDoses}).toString()]]>
-                        </textFieldExpression>
+                        <textFieldExpression><![CDATA[$V{sumFilledQuantityDoses} == null ? 0 : $P{decimalFormat}.format($V{sumFilledQuantityDoses}).toString()]]></textFieldExpression>
                     </textField>
                     <textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="ProductGroup" isBlankWhenNull="false">
                         <reportElement x="677" y="0" width="125" height="30" uuid="7941fdc6-1a22-41ef-b4bf-ee02d5d78136"/>
                         <textElement textAlignment="Center" verticalAlignment="Middle"/>
-                        <textFieldExpression>
-                            <![CDATA[$V{sumFilledQuantity} == null ? 0 : $P{decimalFormat}.format($V{sumFilledQuantity}).toString()]]>
-                        </textFieldExpression>
+                        <textFieldExpression><![CDATA[$V{sumFilledQuantity} == null ? 0 : $P{decimalFormat}.format($V{sumFilledQuantity}).toString()]]></textFieldExpression>
                     </textField>
                     <textField isStretchWithOverflow="true" isBlankWhenNull="true">
                         <reportElement x="130" y="0" width="150" height="30" uuid="45d213d8-f881-40c5-b90f-d29e1e9d1f55"/>
@@ -267,7 +250,6 @@ ORDER BY
     </background>
     <title>
         <band height="90" splitType="Stretch">
-            <property name="com.jaspersoft.studio.unit.height" value="px"/>
             <staticText>
                 <reportElement positionType="FixRelativeToBottom" x="0" y="0" width="200" height="30" uuid="bc3874ea-c0b6-4870-bb5d-b63fd3314fee"/>
                 <textElement>
@@ -276,12 +258,7 @@ ORDER BY
                 <text><![CDATA[Pick Pack List]]></text>
             </staticText>
             <componentElement>
-                <reportElement x="0" y="30" width="480" height="60" uuid="d367a730-0ee3-4190-bebd-9ea69213caba">
-                    <property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
-                    <property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
-                    <property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
-                    <property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
-                </reportElement>
+                <reportElement x="0" y="30" width="480" height="60" uuid="d367a730-0ee3-4190-bebd-9ea69213caba"/>
                 <jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
                     <datasetRun subDataset="OrderDataset" uuid="26940bc1-2e1e-424c-9a9b-e03754bb12bb">
                         <datasetParameter name="shipmentDraftId">
@@ -293,11 +270,10 @@ ORDER BY
                         <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
                     </datasetRun>
                     <jr:column width="480" uuid="23073e37-411c-4b58-856e-3dfd8d3c6234">
-                        <property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
                         <jr:detailCell style="Table_TD" height="60">
                             <textField>
                                 <reportElement x="0" y="0" width="480" height="15" uuid="03004ca1-4080-437a-a66d-097b681ed43f"/>
-                                    <textFieldExpression><![CDATA["Generated on: " + DateTimeFormatter.ofPattern($P{dateFormat}).format(LocalDate.now())]]></textFieldExpression>
+                                <textFieldExpression><![CDATA["Generated on: " + DateTimeFormatter.ofPattern($P{dateFormat}).format(LocalDate.now())]]></textFieldExpression>
                             </textField>
                             <textField>
                                 <reportElement x="0" y="15" width="480" height="15" uuid="cf02560e-c75a-4247-beb5-c6e45e390591"/>
@@ -319,11 +295,8 @@ ORDER BY
     </title>
     <columnHeader>
         <band height="30">
-            <property name="com.jaspersoft.studio.unit.height" value="px"/>
             <staticText>
-                <reportElement mode="Opaque" x="677" y="0" width="125" height="30" forecolor="#FFFFFF" backcolor="#3D3D3D" uuid="494ee087-80f1-48ab-94c5-b20eb68dacc3">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                </reportElement>
+                <reportElement mode="Opaque" x="677" y="0" width="125" height="30" forecolor="#FFFFFF" backcolor="#3D3D3D" uuid="494ee087-80f1-48ab-94c5-b20eb68dacc3"/>
                 <box leftPadding="4" rightPadding="5">
                     <pen lineWidth="1.0" lineColor="#DDDDDD"/>
                     <topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -337,9 +310,7 @@ ORDER BY
                 <text><![CDATA[Fill Quantity (vials)]]></text>
             </staticText>
             <staticText>
-                <reportElement mode="Opaque" x="380" y="0" width="80" height="30" forecolor="#FFFFFF" backcolor="#3D3D3D" uuid="1d0f90c8-155c-4c5a-a3b3-1757664bad2b">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                </reportElement>
+                <reportElement mode="Opaque" x="380" y="0" width="80" height="30" forecolor="#FFFFFF" backcolor="#3D3D3D" uuid="1d0f90c8-155c-4c5a-a3b3-1757664bad2b"/>
                 <box leftPadding="4">
                     <pen lineWidth="1.0" lineColor="#DDDDDD"/>
                     <topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -353,9 +324,7 @@ ORDER BY
                 <text><![CDATA[VVM Status]]></text>
             </staticText>
             <staticText>
-                <reportElement mode="Opaque" x="460" y="0" width="90" height="30" forecolor="#FFFFFF" backcolor="#3D3D3D" uuid="874da496-6ece-4412-869f-131d08ed08a5">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                </reportElement>
+                <reportElement mode="Opaque" x="460" y="0" width="90" height="30" forecolor="#FFFFFF" backcolor="#3D3D3D" uuid="874da496-6ece-4412-869f-131d08ed08a5"/>
                 <box leftPadding="4">
                     <pen lineWidth="1.0" lineColor="#DDDDDD"/>
                     <topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -369,9 +338,7 @@ ORDER BY
                 <text><![CDATA[Expiry Date]]></text>
             </staticText>
             <staticText>
-                <reportElement mode="Opaque" x="0" y="0" width="130" height="30" forecolor="#FFFFFF" backcolor="#3D3D3D" uuid="24a43dc9-a045-479a-8e5b-7cd5b615b534">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                </reportElement>
+                <reportElement mode="Opaque" x="0" y="0" width="130" height="30" forecolor="#FFFFFF" backcolor="#3D3D3D" uuid="24a43dc9-a045-479a-8e5b-7cd5b615b534"/>
                 <box leftPadding="4">
                     <pen lineWidth="1.0" lineColor="#DDDDDD"/>
                     <topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -385,9 +352,7 @@ ORDER BY
                 <text><![CDATA[Product Code]]></text>
             </staticText>
             <staticText>
-                <reportElement mode="Opaque" x="130" y="0" width="150" height="30" forecolor="#FFFFFF" backcolor="#3D3D3D" uuid="75c35809-06f2-4d1c-8e67-eaff6ef07168">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                </reportElement>
+                <reportElement mode="Opaque" x="130" y="0" width="150" height="30" forecolor="#FFFFFF" backcolor="#3D3D3D" uuid="75c35809-06f2-4d1c-8e67-eaff6ef07168"/>
                 <box leftPadding="4">
                     <pen lineWidth="1.0" lineColor="#DDDDDD"/>
                     <topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -401,9 +366,7 @@ ORDER BY
                 <text><![CDATA[Product]]></text>
             </staticText>
             <staticText>
-                <reportElement mode="Opaque" x="280" y="0" width="100" height="30" forecolor="#FFFFFF" backcolor="#3D3D3D" uuid="13cf66f1-9701-4387-9dbe-c96979344f27">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                </reportElement>
+                <reportElement mode="Opaque" x="280" y="0" width="100" height="30" forecolor="#FFFFFF" backcolor="#3D3D3D" uuid="13cf66f1-9701-4387-9dbe-c96979344f27"/>
                 <box leftPadding="4">
                     <pen lineWidth="1.0" lineColor="#DDDDDD"/>
                     <topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -417,9 +380,7 @@ ORDER BY
                 <text><![CDATA[Lot Code]]></text>
             </staticText>
             <staticText>
-                <reportElement mode="Opaque" x="550" y="0" width="127" height="30" forecolor="#FFFFFF" backcolor="#3D3D3D" uuid="a36a87dd-dbda-4f2e-a6e4-c5dc45b8aabd">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                </reportElement>
+                <reportElement mode="Opaque" x="550" y="0" width="127" height="30" forecolor="#FFFFFF" backcolor="#3D3D3D" uuid="a36a87dd-dbda-4f2e-a6e4-c5dc45b8aabd"/>
                 <box leftPadding="4">
                     <pen lineWidth="1.0" lineColor="#DDDDDD"/>
                     <topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -436,7 +397,6 @@ ORDER BY
     </columnHeader>
     <detail>
         <band height="30" splitType="Stretch">
-            <property name="com.jaspersoft.studio.unit.height" value="px"/>
             <frame>
                 <reportElement x="0" y="0" width="802" height="30" uuid="70f42c71-ab05-4e39-8677-838a32c5e8e3"/>
                 <box>
