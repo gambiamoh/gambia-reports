@@ -82,7 +82,7 @@
     <columnHeader>
         <band height="30">
             <staticText>
-                <reportElement mode="Opaque" x="0" y="0" width="40" height="30" backcolor="#3D9297" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad5"/>
+                <reportElement mode="Opaque" x="0" y="0" width="40" height="30" backcolor="#2ACCF7" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad5"/>
                 <box>
                     <topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
                     <leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -95,7 +95,7 @@
                 <text><![CDATA[#]]></text>
             </staticText>
             <staticText>
-                <reportElement mode="Opaque" x="39" y="0" width="171" height="30" backcolor="#3D9297" uuid="f1296dcd-3a59-4110-99af-f111c9e49196"/>
+                <reportElement mode="Opaque" x="39" y="0" width="171" height="30" backcolor="#2ACCF7" uuid="f1296dcd-3a59-4110-99af-f111c9e49196"/>
                 <box>
                     <topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
                     <leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -108,7 +108,7 @@
                 <text><![CDATA[Product code]]></text>
             </staticText>
             <staticText>
-                <reportElement mode="Opaque" x="210" y="0" width="350" height="30" backcolor="#3D9297" uuid="fcca10b0-2b26-46d1-b532-5386fbf3bbc4"/>
+                <reportElement mode="Opaque" x="210" y="0" width="350" height="30" backcolor="#2ACCF7" uuid="fcca10b0-2b26-46d1-b532-5386fbf3bbc4"/>
                 <box>
                     <topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
                     <leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -121,7 +121,7 @@
                 <text><![CDATA[Full Product Name]]></text>
             </staticText>
             <staticText>
-                <reportElement mode="Opaque" x="560" y="0" width="120" height="30" backcolor="#3D9297" uuid="646a24fe-b770-4291-8a0d-13db58237726"/>
+                <reportElement mode="Opaque" x="560" y="0" width="120" height="30" backcolor="#2ACCF7" uuid="646a24fe-b770-4291-8a0d-13db58237726"/>
                 <box>
                     <topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
                     <leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -140,10 +140,10 @@
             <textField>
                 <reportElement style="Row" mode="Opaque" x="0" y="0" width="40" height="25" uuid="28c1bf9c-6c13-4551-abf3-82481d555ab9"/>
                 <box bottomPadding="1">
-                    <pen lineColor="#3D9297"/>
-                    <topPen lineWidth="1.0" lineStyle="Solid" lineColor="#3D9297"/>
+                    <pen lineColor="#2ACCF7"/>
+                    <topPen lineWidth="1.0" lineStyle="Solid" lineColor="#2ACCF7"/>
                     <leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-                    <bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#3D9297"/>
+                    <bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#2ACCF7"/>
                     <rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
                 </box>
                 <textElement textAlignment="Left" verticalAlignment="Middle">
@@ -154,10 +154,10 @@
             <textField>
                 <reportElement style="Row" mode="Opaque" x="39" y="0" width="171" height="25" uuid="5c934beb-6a56-414f-b44b-039716390a2f"/>
                 <box bottomPadding="1">
-                    <pen lineColor="#3D9297"/>
-                    <topPen lineWidth="1.0" lineStyle="Solid" lineColor="#3D9297"/>
+                    <pen lineColor="#2ACCF7"/>
+                    <topPen lineWidth="1.0" lineStyle="Solid" lineColor="#2ACCF7"/>
                     <leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-                    <bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#3D9297"/>
+                    <bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#2ACCF7"/>
                     <rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
                 </box>
                 <textElement textAlignment="Left" verticalAlignment="Middle">
@@ -168,10 +168,10 @@
             <textField>
                 <reportElement style="Row" mode="Opaque" x="210" y="0" width="350" height="25" uuid="31100a38-97d8-400d-bf98-3b9039cd4d01"/>
                 <box bottomPadding="1">
-                    <pen lineColor="#3D9297"/>
-                    <topPen lineWidth="1.0" lineStyle="Solid" lineColor="#3D9297"/>
+                    <pen lineColor="#2ACCF7"/>
+                    <topPen lineWidth="1.0" lineStyle="Solid" lineColor="#2ACCF7"/>
                     <leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-                    <bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#3D9297"/>
+                    <bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#2ACCF7"/>
                     <rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
                 </box>
                 <textElement textAlignment="Left" verticalAlignment="Middle">
@@ -182,10 +182,10 @@
             <textField>
                 <reportElement style="Row" mode="Opaque" x="560" y="0" width="120" height="25" uuid="5e3e13b2-3de1-4613-927b-3d352faaed85"/>
                 <box bottomPadding="1">
-                    <pen lineColor="#3D9297"/>
-                    <topPen lineWidth="1.0" lineStyle="Solid" lineColor="#3D9297"/>
+                    <pen lineColor="#2ACCF7"/>
+                    <topPen lineWidth="1.0" lineStyle="Solid" lineColor="#2ACCF7"/>
                     <leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-                    <bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#3D9297"/>
+                    <bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#2ACCF7"/>
                     <rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
                 </box>
                 <textElement textAlignment="Right" verticalAlignment="Middle">
