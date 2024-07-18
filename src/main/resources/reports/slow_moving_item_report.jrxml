@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.4.3  -->
+<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="product_report" pageWidth="900" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Error" uuid="1b2b2459-7c9e-4ef5-af66-d4167759aa90">
-    <style name="Row" mode="Transparent">
-        <conditionalStyle>
-            <conditionExpression><![CDATA[$V{REPORT_COUNT} % 2 == 0]]></conditionExpression>
-            <style backcolor="#F3F3F3"/>
-        </conditionalStyle>
-    </style>
-    <parameter name="geographicZone" class="java.lang.String">
-        <property name="displayName" value="Geographic Zone"/>
-        <property name="selectExpression" value="/api/geographicZones"/>
-        <property name="selectProperty" value="id"/>
-        <property name="displayProperty" value="name"/>
-        <property name="required" value="false"/>
-    </parameter>
-    <parameter name="facility" class="java.lang.String">
-        <property name="displayName" value="Facility"/>
-        <property name="selectExpression" value="/api/facilities"/>
-        <property name="selectProperty" value="id"/>
-        <property name="displayProperty" value="name"/>
-        <property name="required" value="false"/>
-    </parameter>
-    <parameter name="facilityFilter" class="java.lang.String" isForPrompting="false">
-        <defaultValueExpression><![CDATA[($P{facility} ==null) ? (" f.id is not NULL") : (" f.id='"+$P{facility}+"'::uuid")]]></defaultValueExpression>
-    </parameter>
-    <parameter name="geographicFilter" class="java.lang.String" isForPrompting="false">
-        <defaultValueExpression><![CDATA[($P{geographicZone} ==null) ? (" gz.id is not NULL") : (" gz.id='"+$P{geographicZone}+"'::uuid")]]></defaultValueExpression>
-    </parameter>
-    <parameter name="period" class="java.lang.String">
-        <property name="displayName" value="Period "/>
-        <property name="options" value="18 Months,12 Months,6 Months,4 Months"/>
-        <property name="required" value="true"/>
-    </parameter>
-    <queryString language="SQL">
-        <![CDATA[SELECT ord.code as product_code,ord.fullProductName as product_name, count(li.id) order_count
+	<style name="Row" mode="Transparent">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT} % 2 == 0]]></conditionExpression>
+			<style backcolor="#F3F3F3"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="geographicZone" class="java.lang.String">
+		<property name="displayName" value="Geographic Zone"/>
+		<property name="selectExpression" value="/api/geographicZones"/>
+		<property name="selectProperty" value="id"/>
+		<property name="displayProperty" value="name"/>
+		<property name="required" value="false"/>
+	</parameter>
+	<parameter name="facility" class="java.lang.String">
+		<property name="displayName" value="Facility"/>
+		<property name="selectExpression" value="/api/facilities"/>
+		<property name="selectProperty" value="id"/>
+		<property name="displayProperty" value="name"/>
+		<property name="required" value="false"/>
+	</parameter>
+	<parameter name="facilityFilter" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[($P{facility} ==null) ? (" f.id is not NULL") : (" f.id='"+$P{facility}+"'::uuid")]]></defaultValueExpression>
+	</parameter>
+	<parameter name="geographicFilter" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[($P{geographicZone} ==null) ? (" gz.id is not NULL") : (" gz.id='"+$P{geographicZone}+"'::uuid")]]></defaultValueExpression>
+	</parameter>
+	<parameter name="period" class="java.lang.String">
+		<property name="displayName" value="Period "/>
+		<property name="options" value="18 Months,12 Months,6 Months,4 Months"/>
+		<property name="required" value="true"/>
+	</parameter>
+	<queryString language="SQL">
+		<![CDATA[SELECT ord.code as product_code,ord.fullProductName as product_name, count(li.id) order_count
     from requisition.requisitions r
     join referencedata.processing_periods pp on pp.id = r.processingperiodid and (pp.startdate >= (now() - ($P{period}::TEXT)::INTERVAL) or pp.enddate >= (now() - ($P{period}::TEXT)::INTERVAL))
     join requisition.requisition_line_items li on li.requisitionid = r.id
@@ -46,162 +46,162 @@
     WHERE li.skipped = false and li.approvedQuantity > 0 and status = 'APPROVED' and $P!{facilityFilter} and $P!{geographicFilter}
     GROUP BY li.orderableid,ord.code,ord.fullProductName
 	ORDER BY order_count,ord.fullProductName]]>
-    </queryString>
-    <field name="product_code" class="java.lang.String"/>
-    <field name="product_name" class="java.lang.String"/>
-    <field name="order_count" class="java.lang.Long"/>
-    <background>
-        <band height="30" splitType="Stretch"/>
-    </background>
-    <title>
-        <band height="70" splitType="Stretch">
-            <staticText>
-                <reportElement x="0" y="0" width="780" height="30" uuid="9425a6c9-4546-4c90-9119-7a7f300b6fb5"/>
-                <textElement textAlignment="Center">
-                    <font size="15" isBold="true"/>
-                    <paragraph lineSpacing="Double" lineSpacingSize="2.0"/>
-                </textElement>
-                <text><![CDATA[Slow Moving Item]]></text>
-            </staticText>
-            <textField>
-                <reportElement x="0" y="40" width="220" height="20" uuid="f2dee407-b67a-426b-8ae1-9ed9eeb333cc"/>
-                <textElement>
-                    <font size="12" isBold="true"/>
-                </textElement>
-                <textFieldExpression><![CDATA["Period: Within " + $P{period}]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="0" y="50" width="410" height="20" uuid="4a102e70-4d84-4abd-8efe-dccc6b4b1370"/>
-                <textElement>
-                    <font size="12" isBold="true"/>
-                </textElement>
-                <textFieldExpression><![CDATA["Date:  " + (new SimpleDateFormat("yyyy-MM-dd")).format(new Date())]]></textFieldExpression>
-            </textField>
-        </band>
-    </title>
-    <columnHeader>
-        <band height="30">
-            <staticText>
-                <reportElement mode="Opaque" x="0" y="0" width="40" height="30" backcolor="#2ACCF7" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad5"/>
-                <box>
-                    <topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-                    <leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-                    <bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-                    <rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-                </box>
-                <textElement textAlignment="Center" markup="none">
-                    <font size="12"/>
-                </textElement>
-                <text><![CDATA[#]]></text>
-            </staticText>
-            <staticText>
-                <reportElement mode="Opaque" x="39" y="0" width="171" height="30" backcolor="#2ACCF7" uuid="f1296dcd-3a59-4110-99af-f111c9e49196"/>
-                <box>
-                    <topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-                    <leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-                    <bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-                    <rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-                </box>
-                <textElement markup="none">
-                    <font size="12"/>
-                </textElement>
-                <text><![CDATA[Product code]]></text>
-            </staticText>
-            <staticText>
-                <reportElement mode="Opaque" x="210" y="0" width="350" height="30" backcolor="#2ACCF7" uuid="fcca10b0-2b26-46d1-b532-5386fbf3bbc4"/>
-                <box>
-                    <topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-                    <leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-                    <bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-                    <rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-                </box>
-                <textElement markup="none">
-                    <font size="12"/>
-                </textElement>
-                <text><![CDATA[Full Product Name]]></text>
-            </staticText>
-            <staticText>
-                <reportElement mode="Opaque" x="560" y="0" width="120" height="30" backcolor="#2ACCF7" uuid="646a24fe-b770-4291-8a0d-13db58237726"/>
-                <box>
-                    <topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-                    <leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-                    <bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-                    <rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-                </box>
-                <textElement>
-                    <font size="12"/>
-                </textElement>
-                <text><![CDATA[Order Count]]></text>
-            </staticText>
-        </band>
-    </columnHeader>
-    <detail>
-        <band height="25" splitType="Immediate">
-            <textField>
-                <reportElement style="Row" mode="Opaque" x="0" y="0" width="40" height="25" uuid="28c1bf9c-6c13-4551-abf3-82481d555ab9"/>
-                <box bottomPadding="1">
-                    <pen lineColor="#2ACCF7"/>
-                    <topPen lineWidth="1.0" lineStyle="Solid" lineColor="#2ACCF7"/>
-                    <leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-                    <bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#2ACCF7"/>
-                    <rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-                </box>
-                <textElement textAlignment="Left" verticalAlignment="Middle">
-                    <font size="12"/>
-                </textElement>
-                <textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement style="Row" mode="Opaque" x="39" y="0" width="171" height="25" uuid="5c934beb-6a56-414f-b44b-039716390a2f"/>
-                <box bottomPadding="1">
-                    <pen lineColor="#2ACCF7"/>
-                    <topPen lineWidth="1.0" lineStyle="Solid" lineColor="#2ACCF7"/>
-                    <leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-                    <bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#2ACCF7"/>
-                    <rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-                </box>
-                <textElement textAlignment="Left" verticalAlignment="Middle">
-                    <font size="12"/>
-                </textElement>
-                <textFieldExpression><![CDATA[$F{product_code}]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement style="Row" mode="Opaque" x="210" y="0" width="350" height="25" uuid="31100a38-97d8-400d-bf98-3b9039cd4d01"/>
-                <box bottomPadding="1">
-                    <pen lineColor="#2ACCF7"/>
-                    <topPen lineWidth="1.0" lineStyle="Solid" lineColor="#2ACCF7"/>
-                    <leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-                    <bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#2ACCF7"/>
-                    <rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-                </box>
-                <textElement textAlignment="Left" verticalAlignment="Middle">
-                    <font size="12"/>
-                </textElement>
-                <textFieldExpression><![CDATA[$F{product_name}]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement style="Row" mode="Opaque" x="560" y="0" width="120" height="25" uuid="5e3e13b2-3de1-4613-927b-3d352faaed85"/>
-                <box bottomPadding="1">
-                    <pen lineColor="#2ACCF7"/>
-                    <topPen lineWidth="1.0" lineStyle="Solid" lineColor="#2ACCF7"/>
-                    <leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-                    <bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#2ACCF7"/>
-                    <rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-                </box>
-                <textElement textAlignment="Right" verticalAlignment="Middle">
-                    <font size="12"/>
-                </textElement>
-                <textFieldExpression><![CDATA[$F{order_count}]]></textFieldExpression>
-            </textField>
-        </band>
-    </detail>
-    <pageFooter>
-        <band height="30">
-            <textField>
-                <reportElement x="580" y="17" width="100" height="13" uuid="6d7191af-705f-44e6-bfd0-53e40f9e237b"/>
-                <textElement textAlignment="Right"/>
-                <textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}]]></textFieldExpression>
-            </textField>
-        </band>
-    </pageFooter>
+	</queryString>
+	<field name="product_code" class="java.lang.String"/>
+	<field name="product_name" class="java.lang.String"/>
+	<field name="order_count" class="java.lang.Long"/>
+	<background>
+		<band height="30" splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="70" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="780" height="30" uuid="9425a6c9-4546-4c90-9119-7a7f300b6fb5"/>
+				<textElement textAlignment="Center">
+					<font size="15" isBold="true"/>
+					<paragraph lineSpacing="Double" lineSpacingSize="2.0"/>
+				</textElement>
+				<text><![CDATA[Slow Moving Item]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="40" width="220" height="20" uuid="f2dee407-b67a-426b-8ae1-9ed9eeb333cc"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Period: Within " + $P{period}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="50" width="410" height="20" uuid="4a102e70-4d84-4abd-8efe-dccc6b4b1370"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Date:  " + (new SimpleDateFormat("yyyy-MM-dd")).format(new Date())]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="30">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="40" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad5"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[#]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="39" y="0" width="171" height="30" backcolor="#A3EFD8" uuid="f1296dcd-3a59-4110-99af-f111c9e49196"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Product code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="210" y="0" width="350" height="30" backcolor="#A3EFD8" uuid="fcca10b0-2b26-46d1-b532-5386fbf3bbc4"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Full Product Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="560" y="0" width="120" height="30" backcolor="#A3EFD8" uuid="646a24fe-b770-4291-8a0d-13db58237726"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Order Count]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="25" splitType="Immediate">
+			<textField>
+				<reportElement style="Row" mode="Opaque" x="0" y="0" width="40" height="25" uuid="28c1bf9c-6c13-4551-abf3-82481d555ab9"/>
+				<box bottomPadding="1">
+					<pen lineColor="#A3EFD8"/>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="Row" mode="Opaque" x="39" y="0" width="171" height="25" uuid="5c934beb-6a56-414f-b44b-039716390a2f"/>
+				<box bottomPadding="1">
+					<pen lineColor="#A3EFD8"/>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{product_code}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="Row" mode="Opaque" x="210" y="0" width="350" height="25" uuid="31100a38-97d8-400d-bf98-3b9039cd4d01"/>
+				<box bottomPadding="1">
+					<pen lineColor="#A3EFD8"/>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{product_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="Row" mode="Opaque" x="560" y="0" width="120" height="25" uuid="5e3e13b2-3de1-4613-927b-3d352faaed85"/>
+				<box bottomPadding="1">
+					<pen lineColor="#A3EFD8"/>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{order_count}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="30">
+			<textField>
+				<reportElement x="580" y="17" width="100" height="13" uuid="6d7191af-705f-44e6-bfd0-53e40f9e237b"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
 </jasperReport>
