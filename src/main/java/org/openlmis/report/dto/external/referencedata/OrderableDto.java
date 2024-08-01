@@ -15,12 +15,13 @@
 
 package org.openlmis.report.dto.external.referencedata;
 
+import static java.lang.Boolean.parseBoolean;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.time.LocalDate;
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,34 +30,35 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
-public final class FacilityDto {
+public class OrderableDto {
   private UUID id;
-  private String code;
-  private String name;
-  private String description;
-  private Boolean active;
-  private LocalDate goLiveDate;
-  private LocalDate goDownDate;
-  private String comment;
-  private Boolean enabled;
-  private Boolean openLmisAccessible;
-  private List<SupportedProgramDto> supportedPrograms;
-  private GeographicZoneDto geographicZone;
-  private FacilityOperatorDto operator;
-  private FacilityTypeDto type;
+  private static final String USE_VVM = "useVVM";
+
+  private String productCode;
+  private String fullProductName;
+  private long netContent;
+  private long packRoundingThreshold;
+  private boolean roundToZero;
+  private Set<ProgramOrderableDto> programs;
+  private DispensableDto dispensable;
+  private Map<String, String> extraData;
+
+  public OrderableDto(String productCode, String fullProductName) {
+    this(null, productCode, fullProductName, 0L, 0L, false, null, null, null);
+  }
+
+  @JsonIgnore
+  public boolean useVvm() {
+    return null != extraData && parseBoolean(extraData.get(USE_VVM));
+  }
 
   /**
-   * Get zone with given level number by traversing up geographicZone hierachy if needed.
-   * @return zone of the facility with given level number.
+   * Get program orderable for given program id.
+   * @return program orderable.
    */
   @JsonIgnore
-  public GeographicZoneDto getZoneByLevelNumber(Integer levelNumber) {
-    GeographicZoneDto district = geographicZone;
-    while (null != district && null != district.getParent()
-        && district.getLevel().getLevelNumber() > levelNumber) {
-      district = district.getParent();
-    }
-    return district;
+  public ProgramOrderableDto findProgramOrderableDto(UUID programId) {
+    return programs.stream().filter(po -> po.getProgramId().equals(programId))
+        .findFirst().orElse(null);
   }
 }

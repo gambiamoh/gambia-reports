@@ -2,9 +2,11 @@
 <!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.4.3  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="order" pageWidth="595" pageHeight="842" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Error" uuid="6e843fe2-ce72-4257-a4c3-1df03728dc95">
     <property name="reportType" value="Timeliness Report"/>
-    <import value="org.openlmis.fulfillment.web.util.*"/>
+    <import value="org.openlmis.report.dto.external.referencedata.*"/>
+    <import value="org.openlmis.report.dto.external.fulfillment.*"/>
     <import value="java.time.ZonedDateTime"/>
     <import value="java.time.format.DateTimeFormatter"/>
+    <import value="org.openlmis.report.dto.external.requisition.*"/>
     <import value="java.text.DecimalFormat"/>
     <style name="Row" mode="Transparent">
         <conditionalStyle>
@@ -12,12 +14,10 @@
             <style backcolor="#F3F3F3"/>
         </conditionalStyle>
     </style>
-    <parameter name="order" class="org.openlmis.fulfillment.web.util.OrderReportDto" isForPrompting="false">
+    <parameter name="order" class="org.openlmis.report.dto.external.fulfillment.OrderDto">
         <property name="displayName" value="Order"/>
     </parameter>
-    <parameter name="loggedInUser" class="java.lang.String">
-        <property name="displayName" value="LoggedInUser"/>
-    </parameter>
+    <parameter name="user" class="java.lang.String" isForPrompting="false"/>
     <parameter name="decimalFormat" class="java.text.DecimalFormat" isForPrompting="false">
         <property name="displayName" value="DecimalFormat"/>
     </parameter>
@@ -33,7 +33,7 @@
     <field name="totalDispensingUnits" class="java.lang.Long">
         <fieldDescription><![CDATA[totalDispensingUnits]]></fieldDescription>
     </field>
-    <field name="orderable" class="org.openlmis.fulfillment.service.referencedata.OrderableDto">
+    <field name="orderable" class="org.openlmis.report.dto.external.referencedata.OrderableDto">
         <fieldDescription><![CDATA[orderable]]></fieldDescription>
     </field>
     <field name="id" class="java.util.UUID">
@@ -362,7 +362,7 @@ Tel: +2204466302/ 303]]></text>
                 <textElement verticalAlignment="Middle">
                     <font size="10"/>
                 </textElement>
-                <textFieldExpression><![CDATA[$P{loggedInUser}]]></textFieldExpression>
+                <textFieldExpression><![CDATA[$P{user}]]></textFieldExpression>
             </textField>
             <textField isBlankWhenNull="true">
                 <reportElement key="" x="290" y="140" width="80" height="20" uuid="1bf18c7f-35a2-4b7c-b8a5-5b9bacf1183d"/>
