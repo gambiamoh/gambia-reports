@@ -30,12 +30,12 @@
 		<property name="required" value="true"/>
 	</parameter>
 	<queryString language="SQL">
-		<![CDATA[select * from referencedata.fill_rate_3_fn($P{program_name}::uuid,$P{supplying_facility}::uuid,$P{from_date}::text,$P{to_date}::text);]]>
+		<![CDATA[select * from referencedata.fill_rate_2_fn($P{program_name}::uuid,$P{supplying_facility}::uuid,$P{from_date}::text,$P{to_date}::text);]]>
 	</queryString>
 	<field name="program_name" class="java.lang.String"/>
 	<field name="program_id" class="java.util.UUID"/>
 	<field name="supplying_facility" class="java.lang.String"/>
-	<field name="receiving_facility" class="java.lang.String"/>
+	<field name="receving_facility" class="java.lang.String"/>
 	<field name="processing_period" class="java.lang.String"/>
 	<field name="processing_period_id" class="java.util.UUID"/>
 	<field name="ordercode" class="java.lang.String"/>
@@ -257,7 +257,7 @@
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="12"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{receiving_facility}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{receving_facility}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement style="Row" mode="Opaque" x="580" y="-4" width="80" height="25" uuid="8003a51e-0d79-4794-af3a-ca82415ad66e"/>
