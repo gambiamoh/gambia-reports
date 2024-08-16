@@ -30,7 +30,7 @@
 		<property name="required" value="true"/>
 	</parameter>
 	<queryString language="SQL">
-		<![CDATA[select * from referencedata.fill_rate_2_fn($P{program_name}::uuid,$P{supplying_facility}::uuid,$P{from_date}::text,$P{to_date}::text);]]>
+		<![CDATA[select * from referencedata.fill_rate_3_fn($P{program_name}::uuid,$P{supplying_facility}::uuid,$P{from_date}::text,$P{to_date}::text);]]>
 	</queryString>
 	<field name="program_name" class="java.lang.String"/>
 	<field name="program_id" class="java.util.UUID"/>
