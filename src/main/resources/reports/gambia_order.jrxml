@@ -240,7 +240,7 @@ Tel: +2204466302/ 303]]></text>
             </textField>
             <textField isStretchWithOverflow="true">
                 <reportElement style="Row" stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="0" width="50" height="25" uuid="28c1bf9c-6c13-4551-abf3-82481d555ab9"/>
-                <box padding="3">
+                <box padding="5">
                     <pen lineColor="#A3EFD8"/>
                     <topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
                     <leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
