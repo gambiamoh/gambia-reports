@@ -190,7 +190,7 @@
 		<band height="26" splitType="Stretch">
 			<textField>
 				<reportElement style="Row" mode="Opaque" x="0" y="-4" width="30" height="25" uuid="f3194e81-ba89-45a6-bbb2-bf4ba8d8bb83"/>
-				<box bottomPadding="1">
+				<box bottomPadding="1" rightPadding="5">
 					<pen lineColor="#A3EFD8"/>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
