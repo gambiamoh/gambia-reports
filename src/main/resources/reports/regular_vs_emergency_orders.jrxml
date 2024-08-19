@@ -186,7 +186,7 @@ ORDER BY 2, 4, 5]]>
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
@@ -242,7 +242,7 @@ ORDER BY 2, 4, 5]]>
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{emergency_count}]]></textFieldExpression>
@@ -256,7 +256,7 @@ ORDER BY 2, 4, 5]]>
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{regular_count}]]></textFieldExpression>

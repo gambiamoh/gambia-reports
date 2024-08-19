@@ -248,7 +248,7 @@ ORDER BY prog.name,fac.name,ord.fullproductname]]>
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
+				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
