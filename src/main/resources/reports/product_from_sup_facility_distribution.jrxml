@@ -25,34 +25,41 @@
 	</parameter>
 	<queryString language="SQL">
 		<![CDATA[SELECT DISTINCT
-			o.orderCode as order_number,
-			fac.name as supplying_facility_name,
-			rec_fac.name as receiving_facility_name,
-			ord.code as product_code,
-			ord.fullProductName as product_name,
-			li.orderedQuantity as shipped_quantity,
-			CASE
-            	WHEN o.status = 'RECEIVED' THEN li.orderedQuantity
-            	ELSE NULL
-        	END as received_quantity,
-			period.name as processing_period,
-			o.createdDate as receive_date
-		FROM
-			fulfillment.orders o
-		JOIN
-			referencedata.facilities fac ON o.supplyingFacilityId = fac.id
-		JOIN
-			referencedata.facilities rec_fac ON o.receivingFacilityId = rec_fac.id
-		JOIN
-			fulfillment.order_line_items li ON o.id = li.orderId
-		JOIN
-			referencedata.orderables ord ON li.orderableId = ord.id
-		JOIN
-			referencedata.processing_periods period ON o.processingPeriodId = period.id
-		WHERE
-			fac.id = $P{supplying_facility}::uuid
-			AND period.startDate between TO_DATE($P{dateFrom},'DD-MM-YYYY') and   TO_DATE($P{dateTo},'DD-MM-YYYY')
-			AND period.endDate between TO_DATE($P{dateFrom},'DD-MM-YYYY') and   TO_DATE($P{dateTo},'DD-MM-YYYY')]]>
+					o.orderCode as order_number,
+					fac.name as supplying_facility_name,
+					rec_fac.name as receiving_facility_name,
+					ord.code as product_code,
+					ord.fullProductName as product_name,
+					li.orderedQuantity as shipped_quantity,
+					CASE
+						WHEN o.status = 'RECEIVED' THEN li.orderedQuantity
+						ELSE NULL
+					END as received_quantity,
+					-- Calculate the difference between received and shipped quantities
+					COALESCE(
+						CASE
+							WHEN o.status = 'RECEIVED' THEN li.orderedQuantity
+							ELSE NULL
+						END, 0
+					) - COALESCE(li.orderedQuantity, 0) AS quantity_difference,
+					period.name as processing_period,
+					o.createdDate as receive_date
+				FROM
+					fulfillment.orders o
+				JOIN
+					referencedata.facilities fac ON o.supplyingFacilityId = fac.id
+				JOIN
+					referencedata.facilities rec_fac ON o.receivingFacilityId = rec_fac.id
+				JOIN
+					fulfillment.order_line_items li ON o.id = li.orderId
+				JOIN
+					referencedata.orderables ord ON li.orderableId = ord.id
+				JOIN
+					referencedata.processing_periods period ON o.processingPeriodId = period.id
+				WHERE
+					fac.id = $P{supplying_facility}::uuid
+					AND period.startDate BETWEEN TO_DATE($P{dateFrom}, 'DD-MM-YYYY') AND TO_DATE($P{dateTo}, 'DD-MM-YYYY')
+					AND period.endDate BETWEEN TO_DATE($P{dateFrom}, 'DD-MM-YYYY') AND TO_DATE($P{dateTo}, 'DD-MM-YYYY')]]>
 	</queryString>
 	<field name="order_number" class="java.lang.String"/>
 	<field name="supplying_facility_name" class="java.lang.String"/>
@@ -61,6 +68,7 @@
 	<field name="product_name" class="java.lang.String"/>
 	<field name="shipped_quantity" class="java.lang.Integer"/>
 	<field name="received_quantity" class="java.lang.Integer"/>
+	<field name="quantity_difference" class="java.lang.Integer"/>
 	<field name="processing_period" class="java.lang.String"/>
 	<field name="receive_date" class="java.util.Date"/>
 	<background>
