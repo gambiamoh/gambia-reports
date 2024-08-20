@@ -9,6 +9,8 @@ services:
     volumes:
       - '.:/app'
       - 'gradlecache:/gradle'
+    env_file: .env
+
   db:
     ports:
       - "5432"

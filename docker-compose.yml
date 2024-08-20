@@ -2,7 +2,7 @@ version: "2"
 services:
 
   report:
-    image: openlmis/report
+    image: openlmisgambia/reports
     links:
       - db
       - log
