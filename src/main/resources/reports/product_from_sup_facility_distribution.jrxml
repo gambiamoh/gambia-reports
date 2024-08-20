@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="product_report" pageWidth="1200" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="1080" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Error" uuid="1b2b2459-7c9e-4ef5-af66-d4167759aa90">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="product_report" pageWidth="1200" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="1150" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Error" uuid="1b2b2459-7c9e-4ef5-af66-d4167759aa90">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Angola-REAL-UAT.jrdax"/>
 	<style name="Row" mode="Transparent">
 		<conditionalStyle>
@@ -25,34 +25,40 @@
 	</parameter>
 	<queryString language="SQL">
 		<![CDATA[SELECT DISTINCT
-			o.orderCode as order_number,
-			fac.name as supplying_facility_name,
-			rec_fac.name as receiving_facility_name,
-			ord.code as product_code,
-			ord.fullProductName as product_name,
-			li.orderedQuantity as shipped_quantity,
-			CASE
-            	WHEN o.status = 'RECEIVED' THEN li.orderedQuantity
-            	ELSE NULL
-        	END as received_quantity,
-			period.name as processing_period,
-			o.createdDate as receive_date
-		FROM
-			fulfillment.orders o
-		JOIN
-			referencedata.facilities fac ON o.supplyingFacilityId = fac.id
-		JOIN
-			referencedata.facilities rec_fac ON o.receivingFacilityId = rec_fac.id
-		JOIN
-			fulfillment.order_line_items li ON o.id = li.orderId
-		JOIN
-			referencedata.orderables ord ON li.orderableId = ord.id
-		JOIN
-			referencedata.processing_periods period ON o.processingPeriodId = period.id
-		WHERE
-			fac.id = $P{supplying_facility}::uuid
-			AND period.startDate between TO_DATE($P{dateFrom},'DD-MM-YYYY') and   TO_DATE($P{dateTo},'DD-MM-YYYY')
-			AND period.endDate between TO_DATE($P{dateFrom},'DD-MM-YYYY') and   TO_DATE($P{dateTo},'DD-MM-YYYY')]]>
+					o.orderCode as order_number,
+					fac.name as supplying_facility_name,
+					rec_fac.name as receiving_facility_name,
+					ord.code as product_code,
+					ord.fullProductName as product_name,
+					li.orderedQuantity as shipped_quantity,
+					CASE
+						WHEN o.status = 'RECEIVED' THEN li.orderedQuantity
+						ELSE NULL
+					END as received_quantity,
+					COALESCE(
+						CASE
+							WHEN o.status = 'RECEIVED' THEN li.orderedQuantity
+							ELSE NULL
+						END, 0
+					) - COALESCE(li.orderedQuantity, 0) AS quantity_difference,
+					period.name as processing_period,
+					o.createdDate as receive_date
+				FROM
+					fulfillment.orders o
+				JOIN
+					referencedata.facilities fac ON o.supplyingFacilityId = fac.id
+				JOIN
+					referencedata.facilities rec_fac ON o.receivingFacilityId = rec_fac.id
+				JOIN
+					fulfillment.order_line_items li ON o.id = li.orderId
+				JOIN
+					referencedata.orderables ord ON li.orderableId = ord.id
+				JOIN
+					referencedata.processing_periods period ON o.processingPeriodId = period.id
+				WHERE
+					fac.id = $P{supplying_facility}::uuid
+					AND period.startDate BETWEEN TO_DATE($P{dateFrom}, 'DD-MM-YYYY') AND TO_DATE($P{dateTo}, 'DD-MM-YYYY')
+					AND period.endDate BETWEEN TO_DATE($P{dateFrom}, 'DD-MM-YYYY') AND TO_DATE($P{dateTo}, 'DD-MM-YYYY')]]>
 	</queryString>
 	<field name="order_number" class="java.lang.String"/>
 	<field name="supplying_facility_name" class="java.lang.String"/>
@@ -61,6 +67,7 @@
 	<field name="product_name" class="java.lang.String"/>
 	<field name="shipped_quantity" class="java.lang.Integer"/>
 	<field name="received_quantity" class="java.lang.Integer"/>
+	<field name="quantity_difference" class="java.lang.Integer"/>
 	<field name="processing_period" class="java.lang.String"/>
 	<field name="receive_date" class="java.util.Date"/>
 	<background>
@@ -199,7 +206,20 @@
 				<text><![CDATA[Received quantity]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="910" y="0" width="80" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad6"/>
+				<reportElement mode="Opaque" x="910" y="0" width="70" height="30" backcolor="#A3EFD8" uuid="f1296dcd-3a59-4110-99af-f111c9e49197"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Quantity difference]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="980" y="0" width="80" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad6"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -212,7 +232,7 @@
 				<text><![CDATA[Processing period]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="990" y="0" width="90" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad7"/>
+				<reportElement mode="Opaque" x="1060" y="0" width="90" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad7"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -341,7 +361,21 @@
 				<textFieldExpression><![CDATA[$F{received_quantity}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="Row" mode="Opaque" x="910" y="0" width="80" height="50" uuid="5c934beb-6a56-414f-b44b-039716390a27"/>
+				<reportElement style="Row" mode="Opaque" x="910" y="0" width="70" height="50" uuid="5c934beb-6a56-414f-aaab-039716390a26"/>
+				<box bottomPadding="1" rightPadding="10">
+					<pen lineColor="#A3EFD8"/>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{quantity_difference}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="Row" mode="Opaque" x="980" y="0" width="80" height="50" uuid="5c934beb-6a56-414f-b44b-039716390a27"/>
 				<box bottomPadding="1">
 					<pen lineColor="#A3EFD8"/>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
@@ -355,7 +389,7 @@
 				<textFieldExpression><![CDATA[$F{processing_period}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="Row" mode="Opaque" x="990" y="0" width="90" height="50" uuid="5c934beb-6a56-414f-b44b-039716390a28"/>
+				<reportElement style="Row" mode="Opaque" x="1060" y="0" width="90" height="50" uuid="5c934beb-6a56-414f-b44b-039716390a28"/>
 				<box bottomPadding="1">
 					<pen lineColor="#A3EFD8"/>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
