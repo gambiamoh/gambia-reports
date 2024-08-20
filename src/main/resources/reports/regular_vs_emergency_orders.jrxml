@@ -179,7 +179,7 @@ ORDER BY 2, 4, 5]]>
 		<band height="25" splitType="Stretch">
 			<textField>
 				<reportElement style="Row" mode="Opaque" x="0" y="0" width="50" height="25" uuid="f3194e81-ba89-45a6-bbb2-bf4ba8d8bb83"/>
-				<box bottomPadding="1">
+				<box bottomPadding="1" rightPadding="5">
 					<pen lineColor="#A3EFD8"/>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -235,7 +235,7 @@ ORDER BY 2, 4, 5]]>
 			</textField>
 			<textField>
 				<reportElement style="Row" mode="Opaque" x="670" y="0" width="60" height="25" uuid="5b46543c-fbc4-4f14-8212-9f9b5dfbcb8c"/>
-				<box bottomPadding="1" rightPadding="5">
+				<box bottomPadding="1">
 					<pen lineColor="#A3EFD8"/>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
