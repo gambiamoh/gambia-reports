@@ -37,90 +37,141 @@ WHERE
 	<parameter name="decimalFormat" class="java.text.DecimalFormat" isForPrompting="false"/>
 	<parameter name="dateFormat" class="java.lang.String" isForPrompting="false"/>
 	<queryString language="plsql">
-		<![CDATA[SELECT DISTINCT
-  order_orderable.code as orderProductCode,
-  order_orderable.fullproductname as orderProductName,
-  orderable.code as productCode,
-  orderable.fullproductname as productName,
-  orderable.netContent as netContent,
-  shipment_li.quantityshipped as filledQuantity,
-  lot.lotcode as lotCode,
-  lot.expirationDate as expirationDate,
-  stock_card_li.extraData->>'vvmStatus' as vvmStatus
-FROM
-  fulfillment.shipment_drafts shipment
-  JOIN
-  fulfillment.orders ord
-    ON ord.id = shipment.orderid
-  JOIN
-  fulfillment.shipment_draft_line_items shipment_li
-    ON shipment_li.shipmentdraftid = shipment.id
-  JOIN
-  referencedata.orderables orderable
-    ON orderable.id = shipment_li.orderableid
-    AND orderable.versionnumber = shipment_li.orderableversionnumber
-  JOIN
-  referencedata.dispensables dispensable
-    ON dispensable.id = orderable.dispensableid
-  LEFT JOIN referencedata.orderable_identifiers shipment_orderable_identifier ON orderable.id = shipment_orderable_identifier.orderableid
-                                                       AND (shipment_orderable_identifier.key = 'tradeItem' OR shipment_orderable_identifier.key = 'commodityType')
-LEFT JOIN
-  fulfillment.order_line_items order_li
-    ON order_li.orderid = ord.id
-    AND (
-      shipment_li.orderableid = order_li.orderableid
-      AND shipment_li.orderableversionnumber = order_li.orderableversionnumber
-      OR order_li.orderableid IN (
-        SELECT o.id
-        FROM referencedata.orderables o
-        LEFT JOIN referencedata.orderable_identifiers order_orderable_identifier
-          ON o.id = order_orderable_identifier.orderableid
-        LEFT JOIN referencedata.trade_items trade_item
-          ON order_orderable_identifier.value::uuid = trade_item.id
-        LEFT JOIN referencedata.commodity_types commodity_type
-          ON order_orderable_identifier.value::uuid = commodity_type.id
-        WHERE NOT EXISTS (
-          SELECT 1
-          FROM referencedata.dispensable_attributes orderer_dispensable_attribute
-          JOIN referencedata.dispensable_attributes shipment_dispensable_attribute
-            ON shipment_dispensable_attribute.dispensableid = orderer_dispensable_attribute.dispensableid
-          WHERE orderer_dispensable_attribute.key = shipment_dispensable_attribute.key
-            AND orderer_dispensable_attribute.value <> shipment_dispensable_attribute.value
-        )
-        AND (
-          shipment_orderable_identifier.value::uuid = trade_item.id
-          OR shipment_orderable_identifier.value::uuid = commodity_type.id
-        )
-      )
-    )
-  LEFT JOIN
-  referencedata.lots lot
-    ON shipment_li.lotid = lot.id
-  LEFT JOIN
-  referencedata.orderables order_orderable
-    ON order_orderable.id = order_li.orderableid
-    AND order_orderable.versionnumber = order_li.orderableversionnumber
-  LEFT JOIN
-  stockmanagement.stock_cards stock_card
-    ON (stock_card.facilityId = ord.supplyingFacilityId AND stock_card.programId = ord.programId AND shipment_li.orderableId = stock_card.orderableId AND ((shipment_li.lotId IS NULL AND stock_card.lotId IS NULL) OR shipment_li.lotId = stock_card.lotId))
-  LEFT JOIN
-  stockmanagement.stock_card_line_items stock_card_li
-    ON stock_card_li.stockCardId = stock_card.id
-WHERE
-  shipment.id = $P{shipmentDraftId}::uuid
-  AND shipment_li.quantityshipped > 0
-  AND stock_card_li.id IN
-  (SELECT id
-   FROM stockmanagement.stock_card_line_items
-   WHERE stockCardId = stock_card.id
-   ORDER BY occurredDate DESC NULLS LAST, processedDate DESC NULLS LAST
-   LIMIT 1)
-ORDER BY
-  orderProductCode ASC,
-  productCode ASC,
-  expirationDate ASC NULLS FIRST,
-  vvmStatus DESC NULLS LAST,
-  lotCode desc]]>
+		<![CDATA[SELECT DISTINCT orderProductCode, orderProductName, productCode, productName, netContent, filledQuantity, lotCode, expirationDate, vvmStatus
+			FROM (
+			SELECT
+				order_orderable.code as orderProductCode,
+				order_orderable.fullproductname as orderProductName,
+				orderable.code as productCode,
+				orderable.fullproductname as productName,
+				orderable.netContent as netContent,
+				shipment_li.quantityshipped as filledQuantity,
+				lot.lotcode as lotCode,
+				lot.expirationDate as expirationDate,
+				stock_card_li.extraData->>'vvmStatus' as vvmStatus
+			FROM
+				fulfillment.shipment_drafts shipment
+				JOIN
+				fulfillment.orders ord
+					ON ord.id = shipment.orderid
+				JOIN
+				fulfillment.shipment_draft_line_items shipment_li
+					ON shipment_li.shipmentdraftid = shipment.id
+				JOIN
+				referencedata.orderables orderable
+					ON orderable.id = shipment_li.orderableid
+					AND orderable.versionnumber = shipment_li.orderableversionnumber
+				JOIN
+				referencedata.dispensables dispensable
+					ON dispensable.id = orderable.dispensableid
+				JOIN
+				fulfillment.order_line_items order_li
+					ON order_li.orderid = shipment.orderid AND order_li.orderableid = shipment_li.orderableid AND shipment_li.orderableversionnumber = order_li.orderableversionnumber
+				JOIN
+				referencedata.lots lot
+					ON shipment_li.lotid = lot.id
+				JOIN
+				referencedata.orderables order_orderable
+					ON order_orderable.id = order_li.orderableid
+					AND order_orderable.versionnumber = order_li.orderableversionnumber
+				JOIN
+				stockmanagement.stock_cards stock_card
+					ON (stock_card.facilityId = ord.supplyingFacilityId AND stock_card.programId = ord.programId AND shipment_li.orderableId = stock_card.orderableId AND ((shipment_li.lotId IS NULL AND stock_card.lotId IS NULL) OR shipment_li.lotId = stock_card.lotId))
+				JOIN
+				stockmanagement.stock_card_line_items stock_card_li
+					ON stock_card_li.stockCardId = stock_card.id
+				WHERE
+				shipment.id = '2624c51c-2e23-4928-95de-aa6cb4c79dc8'::uuid
+				AND shipment_li.quantityshipped > 0
+				AND stock_card_li.id IN
+				(SELECT id
+				FROM stockmanagement.stock_card_line_items
+				WHERE stockCardId = stock_card.id
+				ORDER BY occurredDate DESC NULLS LAST, processedDate DESC NULLS LAST
+				LIMIT 1)
+				UNION ALL
+				SELECT
+				order_orderable.code as orderProductCode,
+				order_orderable.fullproductname as orderProductName,
+				orderable.code as productCode,
+				orderable.fullproductname as productName,
+				orderable.netContent as netContent,
+				shipment_li.quantityshipped as filledQuantity,
+				lot.lotcode as lotCode,
+				lot.expirationDate as expirationDate,
+				stock_card_li.extraData->>'vvmStatus' as vvmStatus
+				FROM
+				fulfillment.shipment_drafts shipment
+				JOIN
+				fulfillment.orders ord
+					ON ord.id = shipment.orderid
+				JOIN
+				fulfillment.shipment_draft_line_items shipment_li
+					ON shipment_li.shipmentdraftid = shipment.id
+				JOIN
+				referencedata.orderables orderable
+					ON orderable.id = shipment_li.orderableid
+					AND orderable.versionnumber = shipment_li.orderableversionnumber
+				JOIN
+				referencedata.dispensables dispensable
+					ON dispensable.id = orderable.dispensableid
+				JOIN referencedata.orderable_identifiers shipment_orderable_identifier ON orderable.id = shipment_orderable_identifier.orderableid
+																	AND (shipment_orderable_identifier.key = 'tradeItem' OR shipment_orderable_identifier.key = 'commodityType')
+				JOIN
+				fulfillment.order_line_items order_li
+					ON order_li.orderid = shipment.orderid AND order_li.orderableid = shipment_li.orderableid
+					AND order_li.orderableid IN (
+						SELECT o.id
+						FROM referencedata.orderables o
+						LEFT JOIN referencedata.orderable_identifiers order_orderable_identifier
+						ON o.id = order_orderable_identifier.orderableid
+						LEFT JOIN referencedata.trade_items trade_item
+						ON order_orderable_identifier.value::uuid = trade_item.id
+						LEFT JOIN referencedata.commodity_types commodity_type
+						ON order_orderable_identifier.value::uuid = commodity_type.id
+						WHERE NOT EXISTS (
+						SELECT 1
+						FROM referencedata.dispensable_attributes orderer_dispensable_attribute
+						JOIN referencedata.dispensable_attributes shipment_dispensable_attribute
+							ON shipment_dispensable_attribute.dispensableid = orderer_dispensable_attribute.dispensableid
+						WHERE orderer_dispensable_attribute.key = shipment_dispensable_attribute.key
+							AND orderer_dispensable_attribute.value <> shipment_dispensable_attribute.value
+						)
+						AND (
+						shipment_orderable_identifier.value::uuid = trade_item.id
+						OR shipment_orderable_identifier.value::uuid = commodity_type.id
+						)
+					)
+				JOIN
+				referencedata.lots lot
+					ON shipment_li.lotid = lot.id
+				JOIN
+				referencedata.orderables order_orderable
+					ON order_orderable.id = order_li.orderableid
+					AND order_orderable.versionnumber = order_li.orderableversionnumber
+				JOIN
+				stockmanagement.stock_cards stock_card
+					ON (stock_card.facilityId = ord.supplyingFacilityId AND stock_card.programId = ord.programId AND shipment_li.orderableId = stock_card.orderableId AND ((shipment_li.lotId IS NULL AND stock_card.lotId IS NULL) OR shipment_li.lotId = stock_card.lotId))
+				JOIN
+				stockmanagement.stock_card_line_items stock_card_li
+					ON stock_card_li.stockCardId = stock_card.id
+			WHERE
+				shipment.id = '2624c51c-2e23-4928-95de-aa6cb4c79dc8'::uuid
+				AND shipment_li.quantityshipped > 0
+				AND stock_card_li.id IN
+				(SELECT id
+				FROM stockmanagement.stock_card_line_items
+				WHERE stockCardId = stock_card.id
+				ORDER BY occurredDate DESC NULLS LAST, processedDate DESC NULLS LAST
+				LIMIT 1)
+				) tmp
+			ORDER BY
+				orderProductCode ASC,
+				productCode ASC,
+				expirationDate ASC NULLS FIRST,
+				vvmStatus DESC NULLS LAST,
+				lotCode desc
+			]]>
 	</queryString>
 	<field name="productCode" class="java.lang.String"/>
 	<field name="productName" class="java.lang.String"/>
@@ -147,7 +198,7 @@ ORDER BY
 		<groupHeader>
 			<band height="30">
 				<frame>
-					<reportElement mode="Opaque" x="0" y="0" width="802" height="30" backcolor="#DDDDDD" uuid="a084c0f9-9783-467c-9b59-5e7128f30dc0"/>
+					<reportElement mode="Opaque" x="0" y="0" width="802" height="30" backcolor="#F3F3F3" uuid="a084c0f9-9783-467c-9b59-5e7128f30dc0"/>
 					<box>
 						<topPen lineWidth="0.5"/>
 						<bottomPen lineWidth="0.5"/>
@@ -157,7 +208,7 @@ ORDER BY
 						<box>
 							<topPen lineWidth="1.0"/>
 						</box>
-						<textElement textAlignment="Center" verticalAlignment="Middle"/>
+						<textElement textAlignment="Left" verticalAlignment="Middle"/>
 						<textFieldExpression><![CDATA[$F{orderProductName}]]></textFieldExpression>
 					</textField>
 					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
@@ -165,7 +216,7 @@ ORDER BY
 						<box>
 							<topPen lineWidth="1.0"/>
 						</box>
-						<textElement textAlignment="Center" verticalAlignment="Middle"/>
+						<textElement textAlignment="Left" verticalAlignment="Middle"/>
 						<textFieldExpression><![CDATA[$F{orderProductCode}]]></textFieldExpression>
 					</textField>
 				</frame>
@@ -184,22 +235,22 @@ ORDER BY
 					</box>
 					<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="ProductGroup" isBlankWhenNull="false">
 						<reportElement x="550" y="0" width="127" height="30" uuid="d5c3dd3e-eab9-417d-8bc3-ea9753d06ed1"/>
-						<textElement textAlignment="Center" verticalAlignment="Middle"/>
+						<textElement textAlignment="Right" verticalAlignment="Middle"/>
 						<textFieldExpression><![CDATA[$V{sumFilledQuantityDoses} == null ? 0 : $P{decimalFormat}.format($V{sumFilledQuantityDoses}).toString()]]></textFieldExpression>
 					</textField>
 					<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="ProductGroup" isBlankWhenNull="false">
 						<reportElement x="677" y="0" width="125" height="30" uuid="7941fdc6-1a22-41ef-b4bf-ee02d5d78136"/>
-						<textElement textAlignment="Center" verticalAlignment="Middle"/>
+						<textElement textAlignment="Right" verticalAlignment="Middle"/>
 						<textFieldExpression><![CDATA[$V{sumFilledQuantity} == null ? 0 : $P{decimalFormat}.format($V{sumFilledQuantity}).toString()]]></textFieldExpression>
 					</textField>
 					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 						<reportElement x="130" y="0" width="150" height="30" uuid="45d213d8-f881-40c5-b90f-d29e1e9d1f55"/>
-						<textElement textAlignment="Center" verticalAlignment="Middle"/>
+						<textElement textAlignment="Left" verticalAlignment="Middle"/>
 						<textFieldExpression><![CDATA[$F{productName}]]></textFieldExpression>
 					</textField>
 					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 						<reportElement x="0" y="0" width="130" height="30" uuid="c4953041-4676-4701-9830-4ad98d6ac9a2"/>
-						<textElement textAlignment="Center" verticalAlignment="Middle"/>
+						<textElement textAlignment="Left" verticalAlignment="Middle"/>
 						<textFieldExpression><![CDATA[$F{productCode}]]></textFieldExpression>
 					</textField>
 				</frame>
@@ -257,9 +308,9 @@ ORDER BY
 	<columnHeader>
 		<band height="30">
 			<staticText>
-				<reportElement mode="Opaque" x="677" y="0" width="125" height="30" forecolor="#FFFFFF" backcolor="#3D3D3D" uuid="494ee087-80f1-48ab-94c5-b20eb68dacc3"/>
+				<reportElement mode="Opaque" x="677" y="0" width="125" height="30" forecolor="#00000" backcolor="#A3EFD8" uuid="494ee087-80f1-48ab-94c5-b20eb68dacc3"/>
 				<box leftPadding="4" rightPadding="5">
-					<pen lineWidth="1.0" lineColor="#DDDDDD"/>
+					<pen lineWidth="1.0" lineColor="#A3EFD8"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -271,9 +322,9 @@ ORDER BY
 				<text><![CDATA[Fill Quantity (vials)]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="380" y="0" width="80" height="30" forecolor="#FFFFFF" backcolor="#3D3D3D" uuid="1d0f90c8-155c-4c5a-a3b3-1757664bad2b"/>
+				<reportElement mode="Opaque" x="380" y="0" width="80" height="30" forecolor="#00000" backcolor="#A3EFD8" uuid="1d0f90c8-155c-4c5a-a3b3-1757664bad2b"/>
 				<box leftPadding="4">
-					<pen lineWidth="1.0" lineColor="#DDDDDD"/>
+					<pen lineWidth="1.0" lineColor="#A3EFD8"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -285,9 +336,9 @@ ORDER BY
 				<text><![CDATA[VVM Status]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="460" y="0" width="90" height="30" forecolor="#FFFFFF" backcolor="#3D3D3D" uuid="874da496-6ece-4412-869f-131d08ed08a5"/>
+				<reportElement mode="Opaque" x="460" y="0" width="90" height="30" forecolor="#00000" backcolor="#A3EFD8" uuid="874da496-6ece-4412-869f-131d08ed08a5"/>
 				<box leftPadding="4">
-					<pen lineWidth="1.0" lineColor="#DDDDDD"/>
+					<pen lineWidth="1.0" lineColor="#A3EFD8"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -299,9 +350,9 @@ ORDER BY
 				<text><![CDATA[Expiry Date]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="0" y="0" width="130" height="30" forecolor="#FFFFFF" backcolor="#3D3D3D" uuid="24a43dc9-a045-479a-8e5b-7cd5b615b534"/>
+				<reportElement mode="Opaque" x="0" y="0" width="130" height="30" forecolor="#00000" backcolor="#A3EFD8" uuid="24a43dc9-a045-479a-8e5b-7cd5b615b534"/>
 				<box leftPadding="4">
-					<pen lineWidth="1.0" lineColor="#DDDDDD"/>
+					<pen lineWidth="1.0" lineColor="#A3EFD8"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -313,9 +364,9 @@ ORDER BY
 				<text><![CDATA[Product Code]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="130" y="0" width="150" height="30" forecolor="#FFFFFF" backcolor="#3D3D3D" uuid="75c35809-06f2-4d1c-8e67-eaff6ef07168"/>
+				<reportElement mode="Opaque" x="130" y="0" width="150" height="30" forecolor="#00000" backcolor="#A3EFD8" uuid="75c35809-06f2-4d1c-8e67-eaff6ef07168"/>
 				<box leftPadding="4">
-					<pen lineWidth="1.0" lineColor="#DDDDDD"/>
+					<pen lineWidth="1.0" lineColor="#A3EFD8"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -327,9 +378,9 @@ ORDER BY
 				<text><![CDATA[Product]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="280" y="0" width="100" height="30" forecolor="#FFFFFF" backcolor="#3D3D3D" uuid="13cf66f1-9701-4387-9dbe-c96979344f27"/>
+				<reportElement mode="Opaque" x="280" y="0" width="100" height="30" forecolor="#00000" backcolor="#A3EFD8" uuid="13cf66f1-9701-4387-9dbe-c96979344f27"/>
 				<box leftPadding="4">
-					<pen lineWidth="1.0" lineColor="#DDDDDD"/>
+					<pen lineWidth="1.0" lineColor="#A3EFD8"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -341,9 +392,9 @@ ORDER BY
 				<text><![CDATA[Lot Code]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="550" y="0" width="127" height="30" forecolor="#FFFFFF" backcolor="#3D3D3D" uuid="a36a87dd-dbda-4f2e-a6e4-c5dc45b8aabd"/>
+				<reportElement mode="Opaque" x="550" y="0" width="127" height="30" forecolor="#00000" backcolor="#A3EFD8" uuid="a36a87dd-dbda-4f2e-a6e4-c5dc45b8aabd"/>
 				<box leftPadding="4">
-					<pen lineWidth="1.0" lineColor="#DDDDDD"/>
+					<pen lineWidth="1.0" lineColor="#A3EFD8"/>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -365,41 +416,41 @@ ORDER BY
 				</box>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="677" y="0" width="125" height="30" isRemoveLineWhenBlank="true" uuid="0c1d0af5-6283-4b1c-85dc-2ad9b1c51f4d"/>
-					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
 					<textFieldExpression><![CDATA[$P{decimalFormat}.format($F{filledQuantity}).toString()]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="460" y="0" width="90" height="30" isRemoveLineWhenBlank="true" uuid="917b7f62-622f-4619-9c0b-680009d1681f"/>
-					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle"/>
 					<textFieldExpression><![CDATA[DateTimeFormatter.ofPattern($P{dateFormat}).format(LocalDate.parse($F{expirationDate}))]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="380" y="0" width="80" height="30" isRemoveLineWhenBlank="true" uuid="014431ee-6970-4028-8824-8a25ffff1945"/>
-					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle"/>
 					<textFieldExpression><![CDATA[$F{vvmStatus}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="550" y="0" width="127" height="30" isRemoveLineWhenBlank="true" uuid="df186412-f2f2-4679-9b34-35f91f391307"/>
-					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
 					<textFieldExpression><![CDATA[$P{decimalFormat}.format($V{filledQuantityDoses}).toString()]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="280" y="0" width="100" height="30" isRemoveLineWhenBlank="true" uuid="56b32764-1ae0-4254-9464-5ed16a874f0d"/>
-					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle"/>
 					<textFieldExpression><![CDATA[($F{lotCode} == null) ? "No Lot Defined" : $F{lotCode}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="130" y="0" width="150" height="30" isRemoveLineWhenBlank="true" uuid="77d9da27-b8cf-4dc7-b8a0-f98f383d347c">
 						<printWhenExpression><![CDATA[$F{lotCode} == null]]></printWhenExpression>
 					</reportElement>
-					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle"/>
 					<textFieldExpression><![CDATA[$F{productName}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="130" height="30" isRemoveLineWhenBlank="true" uuid="ee99fd26-a2f5-4ae5-8ed0-a9a17a83bbcf">
 						<printWhenExpression><![CDATA[$F{lotCode} == null]]></printWhenExpression>
 					</reportElement>
-					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle"/>
 					<textFieldExpression><![CDATA[$F{productCode}]]></textFieldExpression>
 				</textField>
 			</frame>
