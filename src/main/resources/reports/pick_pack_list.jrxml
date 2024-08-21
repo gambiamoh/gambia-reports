@@ -212,17 +212,18 @@ ORDER BY
 						<bottomPen lineWidth="0.5"/>
 					</box>
 					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-						<reportElement x="129" y="0" width="150" height="30" uuid="a123b79a-45c2-4dfa-b17a-1fb24e91bc5c"/>
-						<box>
-							<topPen lineWidth="1.0"/>
+						<reportElement x="130" y="0" width="150" height="30" uuid="a123b79a-45c2-4dfa-b17a-1fb24e91bc5c"/>
+						<box leftPadding="5" rightPadding="5">
+							<pen lineWidth="0.0"/>
+
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle"/>
 						<textFieldExpression><![CDATA[$F{orderProductName}]]></textFieldExpression>
 					</textField>
 					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-						<reportElement x="-1" y="0" width="130" height="30" uuid="c0448d36-ff6d-4d65-a4de-765540d681fa"/>
-						<box>
-							<topPen lineWidth="1.0"/>
+						<reportElement x="0" y="0" width="130" height="30" uuid="c0448d36-ff6d-4d65-a4de-765540d681fa"/>
+						<box leftPadding="5" rightPadding="5">
+							<pen lineWidth="0.0"/>
 						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle"/>
 						<textFieldExpression><![CDATA[$F{orderProductCode}]]></textFieldExpression>
@@ -243,21 +244,33 @@ ORDER BY
 					</box>
 					<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="ProductGroup" isBlankWhenNull="false">
 						<reportElement x="550" y="0" width="127" height="30" uuid="d5c3dd3e-eab9-417d-8bc3-ea9753d06ed1"/>
+						<box rightPadding="5">
+							<pen lineWidth="0.0"/>
+						</box>
 						<textElement textAlignment="Right" verticalAlignment="Middle"/>
 						<textFieldExpression><![CDATA[$V{sumFilledQuantityDoses} == null ? 0 : $P{decimalFormat}.format($V{sumFilledQuantityDoses}).toString()]]></textFieldExpression>
 					</textField>
 					<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="ProductGroup" isBlankWhenNull="false">
 						<reportElement x="677" y="0" width="125" height="30" uuid="7941fdc6-1a22-41ef-b4bf-ee02d5d78136"/>
+						<box rightPadding="5">
+							<pen lineWidth="0.0"/>
+						</box>
 						<textElement textAlignment="Right" verticalAlignment="Middle"/>
 						<textFieldExpression><![CDATA[$V{sumFilledQuantity} == null ? 0 : $P{decimalFormat}.format($V{sumFilledQuantity}).toString()]]></textFieldExpression>
 					</textField>
 					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 						<reportElement x="130" y="0" width="150" height="30" uuid="45d213d8-f881-40c5-b90f-d29e1e9d1f55"/>
+						<box leftPadding="5">
+							<pen lineWidth="0.0"/>
+						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle"/>
 						<textFieldExpression><![CDATA[$F{productName}]]></textFieldExpression>
 					</textField>
 					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 						<reportElement x="0" y="0" width="130" height="30" uuid="c4953041-4676-4701-9830-4ad98d6ac9a2"/>
+						<box leftPadding="5">
+							<pen lineWidth="0.0"/>
+						</box>
 						<textElement textAlignment="Left" verticalAlignment="Middle"/>
 						<textFieldExpression><![CDATA[$F{productCode}]]></textFieldExpression>
 					</textField>
@@ -424,26 +437,41 @@ ORDER BY
 				</box>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="677" y="0" width="125" height="30" isRemoveLineWhenBlank="true" uuid="0c1d0af5-6283-4b1c-85dc-2ad9b1c51f4d"/>
+					<box rightPadding="5">
+						<pen lineWidth="0.0"/>
+					</box>
 					<textElement textAlignment="Right" verticalAlignment="Middle"/>
 					<textFieldExpression><![CDATA[$P{decimalFormat}.format($F{filledQuantity}).toString()]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="460" y="0" width="90" height="30" isRemoveLineWhenBlank="true" uuid="917b7f62-622f-4619-9c0b-680009d1681f"/>
+					<box leftPadding="5">
+						<pen lineWidth="0.0"/>
+					</box>
 					<textElement textAlignment="Left" verticalAlignment="Middle"/>
 					<textFieldExpression><![CDATA[DateTimeFormatter.ofPattern($P{dateFormat}).format(LocalDate.parse($F{expirationDate}))]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="380" y="0" width="80" height="30" isRemoveLineWhenBlank="true" uuid="014431ee-6970-4028-8824-8a25ffff1945"/>
+					<box leftPadding="5">
+						<pen lineWidth="0.0"/>
+					</box>
 					<textElement textAlignment="Left" verticalAlignment="Middle"/>
 					<textFieldExpression><![CDATA[$F{vvmStatus}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="550" y="0" width="127" height="30" isRemoveLineWhenBlank="true" uuid="df186412-f2f2-4679-9b34-35f91f391307"/>
+					<box rightPadding="5">
+						<pen lineWidth="0.0"/>
+					</box>
 					<textElement textAlignment="Right" verticalAlignment="Middle"/>
 					<textFieldExpression><![CDATA[$P{decimalFormat}.format($V{filledQuantityDoses}).toString()]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 					<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="280" y="0" width="100" height="30" isRemoveLineWhenBlank="true" uuid="56b32764-1ae0-4254-9464-5ed16a874f0d"/>
+					<box leftPadding="5">
+						<pen lineWidth="0.0"/>
+					</box>
 					<textElement textAlignment="Left" verticalAlignment="Middle"/>
 					<textFieldExpression><![CDATA[($F{lotCode} == null) ? "No Lot Defined" : $F{lotCode}]]></textFieldExpression>
 				</textField>
@@ -451,6 +479,9 @@ ORDER BY
 					<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="130" y="0" width="150" height="30" isRemoveLineWhenBlank="true" uuid="77d9da27-b8cf-4dc7-b8a0-f98f383d347c">
 						<printWhenExpression><![CDATA[$F{lotCode} == null]]></printWhenExpression>
 					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.0"/>
+					</box>
 					<textElement textAlignment="Left" verticalAlignment="Middle"/>
 					<textFieldExpression><![CDATA[$F{productName}]]></textFieldExpression>
 				</textField>
@@ -458,6 +489,9 @@ ORDER BY
 					<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="0" y="0" width="130" height="30" isRemoveLineWhenBlank="true" uuid="ee99fd26-a2f5-4ae5-8ed0-a9a17a83bbcf">
 						<printWhenExpression><![CDATA[$F{lotCode} == null]]></printWhenExpression>
 					</reportElement>
+					<box leftPadding="5">
+						<pen lineWidth="0.0"/>
+					</box>
 					<textElement textAlignment="Left" verticalAlignment="Middle"/>
 					<textFieldExpression><![CDATA[$F{productCode}]]></textFieldExpression>
 				</textField>
