@@ -94,7 +94,7 @@ and prog.id=$P{program}::uuid  and fac.id=$P{facility}::uuid and $P!{orderableFi
 				<textElement>
 					<font size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Period: Expiring Within " + $P{period}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Period: Expired within " + $P{period}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="60" width="410" height="20" uuid="4a102e70-4d84-4abd-8efe-dccc6b4b1370"/>

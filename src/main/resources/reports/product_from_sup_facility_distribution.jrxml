@@ -15,6 +15,27 @@
 		<property name="displayProperty" value="name"/>
 		<property name="required" value="true"/>
 	</parameter>
+	<parameter name="receiving_facility" class="java.lang.String">
+		<property name="displayName" value="Receiving Facility"/>
+		<property name="selectExpression" value="/api/facilities"/>
+		<property name="selectProperty" value="id"/>
+		<property name="displayProperty" value="name"/>
+		<property name="required" value="false"/>
+	</parameter>
+	<parameter name="program" class="java.lang.String">
+		<property name="displayName" value="Program"/>
+		<property name="selectExpression" value="/api/programs"/>
+		<property name="selectProperty" value="id"/>
+		<property name="displayProperty" value="name"/>
+		<property name="required" value="true"/>
+	</parameter>
+	<parameter name="orderable" class="java.lang.String">
+		<property name="displayName" value="Product"/>
+		<property name="selectExpression" value="/api/orderables"/>
+		<property name="selectProperty" value="id"/>
+		<property name="displayProperty" value="name"/>
+		<property name="required" value="false"/>
+	</parameter>
 	<parameter name="dateFrom" class="java.lang.String">
 		<property name="displayName" value="Date From (DD-MM-YYYY) "/>
 		<property name="required" value="true"/>
@@ -22,6 +43,14 @@
 	<parameter name="dateTo" class="java.lang.String">
 		<property name="displayName" value="Date To (DD-MM-YYYY) "/>
 		<property name="required" value="true"/>
+	</parameter>
+
+	<!-- Filters -->
+	<parameter name="receivingFacilityFilter" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[($P{receiving_facility} ==null) ? (" rec_fac.id is not NULL") : (" rec_fac.id='"+$P{receiving_facility}+"'::uuid")]]></defaultValueExpression>
+	</parameter>
+	<parameter name="orderableFilter" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[($P{orderable} ==null) ? (" ord.id is not NULL") : (" ord.id='"+$P{orderable}+"'::uuid")]]></defaultValueExpression>
 	</parameter>
 	<queryString language="SQL">
 		<![CDATA[SELECT DISTINCT
@@ -33,7 +62,7 @@
 					li.orderedQuantity as shipped_quantity,
 					CASE
 						WHEN o.status = 'RECEIVED' THEN li.orderedQuantity
-						ELSE NULL
+						ELSE 0
 					END as received_quantity,
 					COALESCE(
 						CASE
@@ -57,6 +86,9 @@
 					referencedata.processing_periods period ON o.processingPeriodId = period.id
 				WHERE
 					fac.id = $P{supplying_facility}::uuid
+					AND o.programId = $P{program}::uuid
+					AND $P!{receivingFacilityFilter}
+					AND $P!{orderableFilter}
 					AND period.startDate BETWEEN TO_DATE($P{dateFrom}, 'DD-MM-YYYY') AND TO_DATE($P{dateTo}, 'DD-MM-YYYY')
 					AND period.endDate BETWEEN TO_DATE($P{dateFrom}, 'DD-MM-YYYY') AND TO_DATE($P{dateTo}, 'DD-MM-YYYY')]]>
 	</queryString>
