@@ -141,7 +141,7 @@
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[#]]></text>
@@ -154,7 +154,7 @@
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Order number]]></text>
@@ -167,7 +167,7 @@
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Supplying Facility name]]></text>
@@ -180,7 +180,7 @@
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Receiving facility name]]></text>
@@ -193,7 +193,7 @@
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Product code]]></text>
@@ -206,7 +206,7 @@
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Product name]]></text>
@@ -219,7 +219,7 @@
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Shipped quantity]]></text>
@@ -232,7 +232,7 @@
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Received quantity]]></text>
@@ -245,7 +245,7 @@
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Quantity difference]]></text>
@@ -258,7 +258,7 @@
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Processing period]]></text>
@@ -271,7 +271,7 @@
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Receive date]]></text>

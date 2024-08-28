@@ -90,7 +90,7 @@ ORDER BY 2, 4, 5]]>
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Center" markup="none">
+				<textElement textAlignment="Left" markup="none">
 					<font size="12"/>
 				</textElement>
 				<text><![CDATA[#]]></text>
@@ -142,7 +142,7 @@ ORDER BY 2, 4, 5]]>
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Center" markup="none">
+				<textElement textAlignment="Left" markup="none">
 					<font size="12"/>
 				</textElement>
 				<text><![CDATA[Emegerncy Orders]]></text>
@@ -155,7 +155,7 @@ ORDER BY 2, 4, 5]]>
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Center" markup="none">
+				<textElement textAlignment="Left" markup="none">
 					<font size="12"/>
 				</textElement>
 				<text><![CDATA[Regular Orders]]></text>

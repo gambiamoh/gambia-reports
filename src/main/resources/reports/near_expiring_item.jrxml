@@ -115,7 +115,7 @@ and prog.id=$P{program}::uuid  and fac.id=$P{facility}::uuid and $P!{orderableFi
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[#]]></text>
@@ -128,7 +128,7 @@ and prog.id=$P{program}::uuid  and fac.id=$P{facility}::uuid and $P!{orderableFi
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Program]]></text>
@@ -141,7 +141,7 @@ and prog.id=$P{program}::uuid  and fac.id=$P{facility}::uuid and $P!{orderableFi
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Facility]]></text>
@@ -154,7 +154,7 @@ and prog.id=$P{program}::uuid  and fac.id=$P{facility}::uuid and $P!{orderableFi
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Product code]]></text>
@@ -167,7 +167,7 @@ and prog.id=$P{program}::uuid  and fac.id=$P{facility}::uuid and $P!{orderableFi
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
 					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Full Product Name]]></text>
@@ -180,7 +180,7 @@ and prog.id=$P{program}::uuid  and fac.id=$P{facility}::uuid and $P!{orderableFi
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Batch]]></text>
@@ -193,7 +193,7 @@ and prog.id=$P{program}::uuid  and fac.id=$P{facility}::uuid and $P!{orderableFi
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Expiry]]></text>
@@ -206,7 +206,7 @@ and prog.id=$P{program}::uuid  and fac.id=$P{facility}::uuid and $P!{orderableFi
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Stock On Hand]]></text>
@@ -219,7 +219,7 @@ and prog.id=$P{program}::uuid  and fac.id=$P{facility}::uuid and $P!{orderableFi
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[ Days to Expire]]></text>

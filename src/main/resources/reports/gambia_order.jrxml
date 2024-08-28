@@ -174,35 +174,35 @@ Tel: +2204466302/ 303]]></text>
             <staticText>
                 <reportElement mode="Opaque" x="0" y="0" width="50" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad5"/>
                 <textElement textAlignment="Left" verticalAlignment="Middle">
-                    <font size="11"/>
+                    <font size="12" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Line #]]></text>
             </staticText>
             <staticText>
                 <reportElement mode="Opaque" x="50" y="0" width="90" height="30" backcolor="#A3EFD8" uuid="f1296dcd-3a59-4110-99af-f111c9e49196"/>
                 <textElement textAlignment="Left" verticalAlignment="Middle">
-                    <font size="11"/>
+                    <font size="12" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Product Code]]></text>
             </staticText>
             <staticText>
                 <reportElement mode="Opaque" x="140" y="0" width="260" height="30" backcolor="#A3EFD8" uuid="fcca10b0-2b26-46d1-b532-5386fbf3bbc4"/>
                 <textElement textAlignment="Left" verticalAlignment="Middle">
-                    <font size="11"/>
+                    <font size="12" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Description]]></text>
             </staticText>
             <staticText>
                 <reportElement mode="Opaque" x="400" y="0" width="75" height="30" backcolor="#A3EFD8" uuid="8e7db4f0-de17-4a0a-b56c-452be828d4db"/>
                 <textElement textAlignment="Left" verticalAlignment="Middle">
-                    <font size="10"/>
+                    <font size="12" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Ordered Quantity]]></text>
             </staticText>
             <staticText>
                 <reportElement mode="Opaque" x="475" y="0" width="80" height="30" backcolor="#A3EFD8" uuid="646a24fe-b770-4291-8a0d-13db58237726"/>
                 <textElement textAlignment="Left" verticalAlignment="Middle">
-                    <font size="10"/>
+                    <font size="12" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Dispensing Units]]></text>
             </staticText>
