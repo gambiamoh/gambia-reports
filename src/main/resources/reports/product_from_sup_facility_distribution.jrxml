@@ -33,7 +33,7 @@
 		<property name="displayName" value="Product"/>
 		<property name="selectExpression" value="/api/orderables"/>
 		<property name="selectProperty" value="id"/>
-		<property name="displayProperty" value="name"/>
+		<property name="displayProperty" value="fullProductName"/>
 		<property name="required" value="false"/>
 	</parameter>
 	<parameter name="dateFrom" class="java.lang.String">
