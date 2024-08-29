@@ -81,7 +81,15 @@
 				JOIN
 					fulfillment.order_line_items li ON o.id = li.orderId
 				JOIN
-					referencedata.orderables ord ON li.orderableId = ord.id
+					(
+						SELECT ord1.id, ord1.versionNumber, ord1.code, ord1.fullProductName
+						FROM referencedata.orderables ord1
+						INNER JOIN (
+							SELECT id, MAX(versionNumber) as maxVersion
+							FROM referencedata.orderables
+							GROUP BY id
+						) ord2 ON ord1.id = ord2.id AND ord1.versionNumber = ord2.maxVersion
+					) ord ON li.orderableId = ord.id
 				JOIN
 					referencedata.processing_periods period ON o.processingPeriodId = period.id
 				WHERE
