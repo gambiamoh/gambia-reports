@@ -53,25 +53,17 @@
 		<defaultValueExpression><![CDATA[($P{orderable} ==null) ? (" ord.id is not NULL") : (" ord.id='"+$P{orderable}+"'::uuid")]]></defaultValueExpression>
 	</parameter>
 	<queryString language="SQL">
-		<![CDATA[SELECT DISTINCT
-					o.orderCode as order_number,
-					fac.name as supplying_facility_name,
-					rec_fac.name as receiving_facility_name,
-					ord.code as product_code,
-					ord.fullProductName as product_name,
-					li.orderedQuantity as shipped_quantity,
-					CASE
-						WHEN o.status = 'RECEIVED' THEN li.orderedQuantity
-						ELSE 0
-					END as received_quantity,
-					COALESCE(
-						CASE
-							WHEN o.status = 'RECEIVED' THEN li.orderedQuantity
-							ELSE NULL
-						END, 0
-					) - COALESCE(li.orderedQuantity, 0) AS quantity_difference,
-					period.name as processing_period,
-					o.createdDate as receive_date
+		<![CDATA[SELECT DISTINCT ON (shipment_li.id)
+				o.orderCode AS order_number,
+				fac.name AS supplying_facility_name,
+				rec_fac.name AS receiving_facility_name,
+				ord.code AS product_code,
+				ord.fullProductName AS product_name,
+				COALESCE(shipment_li.quantityShipped, 0) AS shipped_quantity,
+				COALESCE(pod_li.quantityaccepted, 0) AS received_quantity,
+				COALESCE(pod_li.quantityaccepted, 0) - COALESCE(shipment_li.quantityShipped, 0) AS quantity_difference,
+				period.name AS processing_period,
+				pod.receivedDate AS receive_date
 				FROM
 					fulfillment.orders o
 				JOIN
@@ -79,21 +71,24 @@
 				JOIN
 					referencedata.facilities rec_fac ON o.receivingFacilityId = rec_fac.id
 				JOIN
-					fulfillment.order_line_items li ON o.id = li.orderId
+					fulfillment.order_line_items order_li ON o.id = order_li.orderId
 				JOIN
-					(
-						SELECT ord1.id, ord1.versionNumber, ord1.code, ord1.fullProductName
-						FROM referencedata.orderables ord1
-						INNER JOIN (
-							SELECT id, MAX(versionNumber) as maxVersion
-							FROM referencedata.orderables
-							GROUP BY id
-						) ord2 ON ord1.id = ord2.id AND ord1.versionNumber = ord2.maxVersion
-					) ord ON li.orderableId = ord.id
+					fulfillment.shipments shipment ON shipment.orderid = o.id
+				LEFT JOIN
+					fulfillment.shipment_line_items shipment_li ON shipment_li.shipmentid = shipment.id
+					AND order_li.orderableid = shipment_li.orderableid
+				LEFT JOIN
+					fulfillment.proofs_of_delivery pod ON shipment.id = pod.shipmentid
+				LEFT JOIN
+					fulfillment.proof_of_delivery_line_items pod_li ON pod_li.proofofdeliveryid = pod.id and pod_li.orderableid = shipment_li.orderableid
+				JOIN
+					referencedata.orderables ord ON order_li.orderableId = ord.id
+					AND ord.versionnumber = shipment_li.orderableversionnumber
 				JOIN
 					referencedata.processing_periods period ON o.processingPeriodId = period.id
 				WHERE
 					fac.id = $P{supplying_facility}::uuid
+					AND shipment_li.quantityshipped > 0
 					AND o.programId = $P{program}::uuid
 					AND $P!{receivingFacilityFilter}
 					AND $P!{orderableFilter}
