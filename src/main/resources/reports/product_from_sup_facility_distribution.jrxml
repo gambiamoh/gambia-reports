@@ -61,7 +61,7 @@
 				ord.fullProductName AS product_name,
 				COALESCE(shipment_li.quantityShipped, 0) AS shipped_quantity,
 				COALESCE(pod_li.quantityaccepted, 0) AS received_quantity,
-				COALESCE(pod_li.quantityaccepted, 0) - COALESCE(shipment_li.quantityShipped, 0) AS quantity_difference,
+				COALESCE(shipment_li.quantityShipped, 0) - COALESCE(pod_li.quantityaccepted, 0) AS quantity_difference,
 				period.name AS processing_period,
 				pod.receivedDate AS receive_date
 				FROM
