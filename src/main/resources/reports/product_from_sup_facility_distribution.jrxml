@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
+<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.2  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="product_report" pageWidth="1200" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="1150" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Error" uuid="1b2b2459-7c9e-4ef5-af66-d4167759aa90">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Angola-REAL-UAT.jrdax"/>
 	<style name="Row" mode="Transparent">
@@ -44,8 +44,6 @@
 		<property name="displayName" value="Date To (DD-MM-YYYY) "/>
 		<property name="required" value="true"/>
 	</parameter>
-
-	<!-- Filters -->
 	<parameter name="receivingFacilityFilter" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[($P{receiving_facility} ==null) ? (" rec_fac.id is not NULL") : (" rec_fac.id='"+$P{receiving_facility}+"'::uuid")]]></defaultValueExpression>
 	</parameter>
@@ -59,6 +57,7 @@
 				rec_fac.name AS receiving_facility_name,
 				ord.code AS product_code,
 				ord.fullProductName AS product_name,
+				l.lotcode as lot_code,
 				COALESCE(shipment_li.quantityShipped, 0) AS shipped_quantity,
 				COALESCE(pod_li.quantityaccepted, 0) AS received_quantity,
 				COALESCE(shipment_li.quantityShipped, 0) - COALESCE(pod_li.quantityaccepted, 0) AS quantity_difference,
@@ -84,6 +83,7 @@
 				JOIN
 					referencedata.orderables ord ON order_li.orderableId = ord.id
 					AND ord.versionnumber = shipment_li.orderableversionnumber
+				LEFT JOIN referencedata.lots l on l.id = shipment_li.lotid
 				JOIN
 					referencedata.processing_periods period ON o.processingPeriodId = period.id
 				WHERE
@@ -100,6 +100,7 @@
 	<field name="receiving_facility_name" class="java.lang.String"/>
 	<field name="product_code" class="java.lang.String"/>
 	<field name="product_name" class="java.lang.String"/>
+	<field name="lot_code" class="java.lang.String"/>
 	<field name="shipped_quantity" class="java.lang.Integer"/>
 	<field name="received_quantity" class="java.lang.Integer"/>
 	<field name="quantity_difference" class="java.lang.Integer"/>
@@ -137,7 +138,7 @@
 	<columnHeader>
 		<band height="30">
 			<staticText>
-				<reportElement mode="Opaque" x="0" y="0" width="40" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad0"/>
+				<reportElement mode="Opaque" x="0" y="0" width="20" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad0"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -150,7 +151,7 @@
 				<text><![CDATA[#]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="40" y="0" width="160" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad1"/>
+				<reportElement mode="Opaque" x="20" y="0" width="140" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad1"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -163,7 +164,7 @@
 				<text><![CDATA[Order number]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="200" y="0" width="150" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad2"/>
+				<reportElement mode="Opaque" x="160" y="0" width="150" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad2"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -176,7 +177,7 @@
 				<text><![CDATA[Supplying Facility name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="350" y="0" width="150" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad3"/>
+				<reportElement mode="Opaque" x="310" y="0" width="150" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad3"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -189,7 +190,7 @@
 				<text><![CDATA[Receiving facility name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="500" y="0" width="120" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad4"/>
+				<reportElement mode="Opaque" x="460" y="0" width="80" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad4"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -202,7 +203,7 @@
 				<text><![CDATA[Product code]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="620" y="0" width="150" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad5"/>
+				<reportElement mode="Opaque" x="540" y="0" width="150" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad5"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -213,6 +214,19 @@
 					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Product name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="690" y="0" width="80" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad5"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Lot code]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="770" y="0" width="70" height="30" backcolor="#A3EFD8" uuid="f1296dcd-3a59-4110-99af-f111c9e49196"/>
@@ -284,7 +298,7 @@
 	<detail>
 		<band height="50" splitType="Immediate">
 			<textField>
-				<reportElement style="Row" mode="Opaque" x="0" y="0" width="40" height="50" uuid="28c1bf9c-6c13-4551-abf3-82481d555ab9"/>
+				<reportElement style="Row" mode="Opaque" x="0" y="0" width="20" height="50" uuid="28c1bf9c-6c13-4551-abf3-82481d555ab9"/>
 				<box bottomPadding="1" rightPadding="5">
 					<pen lineColor="#A3EFD8"/>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
@@ -298,7 +312,7 @@
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="Row" mode="Opaque" x="40" y="0" width="160" height="50" uuid="5c934beb-6a56-414f-b44b-039716390a2f"/>
+				<reportElement style="Row" mode="Opaque" x="20" y="0" width="150" height="50" uuid="5c934beb-6a56-414f-b44b-039716390a2f"/>
 				<box bottomPadding="1">
 					<pen lineColor="#A3EFD8"/>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
@@ -312,7 +326,7 @@
 				<textFieldExpression><![CDATA[$F{order_number}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="Row" mode="Opaque" x="200" y="0" width="150" height="50" uuid="5c934beb-6a56-414f-b44b-039716390a21"/>
+				<reportElement style="Row" mode="Opaque" x="170" y="0" width="140" height="50" uuid="5c934beb-6a56-414f-b44b-039716390a21"/>
 				<box bottomPadding="1">
 					<pen lineColor="#A3EFD8"/>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
@@ -326,7 +340,7 @@
 				<textFieldExpression><![CDATA[$F{supplying_facility_name}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="Row" mode="Opaque" x="350" y="0" width="150" height="50" uuid="5c934beb-6a56-414f-b44b-039716390a22"/>
+				<reportElement style="Row" mode="Opaque" x="310" y="0" width="150" height="50" uuid="5c934beb-6a56-414f-b44b-039716390a22"/>
 				<box bottomPadding="1">
 					<pen lineColor="#A3EFD8"/>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
@@ -340,7 +354,7 @@
 				<textFieldExpression><![CDATA[$F{receiving_facility_name}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="Row" mode="Opaque" x="500" y="0" width="120" height="50" uuid="5c934beb-6a56-414f-b44b-039716390a23"/>
+				<reportElement style="Row" mode="Opaque" x="460" y="0" width="80" height="50" uuid="5c934beb-6a56-414f-b44b-039716390a23"/>
 				<box bottomPadding="1">
 					<pen lineColor="#A3EFD8"/>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
@@ -354,7 +368,7 @@
 				<textFieldExpression><![CDATA[$F{product_code}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="Row" mode="Opaque" x="620" y="0" width="150" height="50" uuid="5c934beb-6a56-414f-b44b-039716390a24"/>
+				<reportElement style="Row" mode="Opaque" x="540" y="0" width="150" height="50" uuid="5c934beb-6a56-414f-b44b-039716390a24"/>
 				<box bottomPadding="1">
 					<pen lineColor="#A3EFD8"/>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
@@ -366,6 +380,20 @@
 					<font size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{product_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="Row" mode="Opaque" x="690" y="0" width="80" height="50" uuid="5c934beb-6a56-414f-b44b-039716390a24"/>
+				<box bottomPadding="1">
+					<pen lineColor="#A3EFD8"/>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{lot_code}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement style="Row" mode="Opaque" x="770" y="0" width="70" height="50" uuid="5c934beb-6a56-414f-b44b-039716390a25"/>
