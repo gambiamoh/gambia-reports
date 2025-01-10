@@ -51,52 +51,43 @@
 		<defaultValueExpression><![CDATA[($P{orderable} ==null) ? (" ord.id is not NULL") : (" ord.id='"+$P{orderable}+"'::uuid")]]></defaultValueExpression>
 	</parameter>
 	<queryString language="SQL">
-		<![CDATA[SELECT * FROM (
-				SELECT DISTINCT ON (shipment_li.id)
-				o.orderCode AS order_number,
-				fac.name AS supplying_facility_name,
-				rec_fac.name AS receiving_facility_name,
-				ord.code AS product_code,
-				ord.fullProductName AS product_name,
-				l.lotcode as lot_code,
-				COALESCE(shipment_li.quantityShipped, 0) AS shipped_quantity,
-				COALESCE(pod_li.quantityaccepted, 0) AS received_quantity,
-				COALESCE(shipment_li.quantityShipped, 0) - COALESCE(pod_li.quantityaccepted, 0) AS quantity_difference,
-				period.name AS processing_period,
-				pod.receivedDate AS receive_date
-				FROM
-					fulfillment.orders o
-				JOIN
-					referencedata.facilities fac ON o.supplyingFacilityId = fac.id
-				JOIN
-					referencedata.facilities rec_fac ON o.receivingFacilityId = rec_fac.id
-				JOIN
-					fulfillment.order_line_items order_li ON o.id = order_li.orderId
-				JOIN
-					fulfillment.shipments shipment ON shipment.orderid = o.id
-				LEFT JOIN
-					fulfillment.shipment_line_items shipment_li ON shipment_li.shipmentid = shipment.id
-					AND order_li.orderableid = shipment_li.orderableid
-				LEFT JOIN
-					fulfillment.proofs_of_delivery pod ON shipment.id = pod.shipmentid
-				LEFT JOIN
-					fulfillment.proof_of_delivery_line_items pod_li ON pod_li.proofofdeliveryid = pod.id and pod_li.orderableid = shipment_li.orderableid
-				JOIN
-					referencedata.orderables ord ON order_li.orderableId = ord.id
-					AND ord.versionnumber = shipment_li.orderableversionnumber
-				LEFT JOIN referencedata.lots l on l.id = shipment_li.lotid
-				JOIN
-					referencedata.processing_periods period ON o.processingPeriodId = period.id
-				WHERE
-					fac.id = $P{supplying_facility}::uuid
-					AND shipment_li.quantityshipped > 0
-					AND o.programId = $P{program}::uuid
-					AND $P!{receivingFacilityFilter}
-					AND $P!{orderableFilter}
-					AND period.startDate BETWEEN TO_DATE($P{dateFrom}, 'DD-MM-YYYY') AND TO_DATE($P{dateTo}, 'DD-MM-YYYY')
-					AND period.endDate BETWEEN TO_DATE($P{dateFrom}, 'DD-MM-YYYY') AND TO_DATE($P{dateTo}, 'DD-MM-YYYY')
-				) t
-				ORDER BY order_number, product_name, lot_code]]>
+		<![CDATA[select * from (
+    select
+		o.ordercode as order_number,
+        sup_fac.name as supplying_facility_name,
+        rec_fac.name as receiving_facility_name,
+        ord.code as product_code,
+        l.lotcode as lot_code,
+        ord.fullproductname as product_name,
+        coalesce(shipment_li.quantityshipped, 0) as shipped_quantity,
+        coalesce(pod_li.quantityaccepted, 0) as received_quantity,
+        coalesce(shipment_li.quantityshipped, 0) - coalesce(pod_li.quantityaccepted, 0) as quantity_difference,
+        pp.name as processing_period,
+        pod.receiveddate as receive_date
+    from fulfillment.orders o
+    join referencedata.processing_periods pp on o.processingperiodid = pp.id
+    join referencedata.facilities sup_fac on o.supplyingfacilityid = sup_fac.id
+    join referencedata.facilities rec_fac on o.receivingfacilityid = rec_fac.id
+    join fulfillment.order_line_items order_li on o.id = order_li.orderid
+    join fulfillment.shipments shipment on shipment.orderid = o.id
+    left join fulfillment.shipment_line_items shipment_li on shipment_li.shipmentid = shipment.id
+        and order_li.orderableid = shipment_li.orderableid
+    join referencedata.lots l on l.id = shipment_li.lotid
+    join referencedata.orderables ord on order_li.orderableid = ord.id
+        and ord.versionnumber = shipment_li.orderableversionnumber
+    left join fulfillment.proofs_of_delivery pod on shipment.id = pod.shipmentid
+    left join fulfillment.proof_of_delivery_line_items pod_li on pod_li.proofofdeliveryid = pod.id
+        and pod_li.orderableid = shipment_li.orderableid and shipment_li.lotid = pod_li.lotid
+    where
+        sup_fac.id = $P{supplying_facility}::uuid
+        and shipment_li.quantityshipped > 0
+        and o.programid = $P{program}::uuid
+        and $P!{receivingFacilityFilter}
+        AND $P!{orderableFilter}
+        and pp.startdate between to_date($P{dateFrom}, 'dd-mm-yyyy') and to_date($P{dateTo}, 'dd-mm-yyyy')
+        and pp.enddate between to_date($P{dateFrom}, 'dd-mm-yyyy') and to_date($P{dateTo}, 'dd-mm-yyyy')
+	) t
+	order by order_number, product_name, lot_code]]>
 	</queryString>
 	<field name="order_number" class="java.lang.String"/>
 	<field name="supplying_facility_name" class="java.lang.String"/>
