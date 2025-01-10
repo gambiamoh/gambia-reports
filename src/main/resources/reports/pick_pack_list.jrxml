@@ -76,7 +76,7 @@ FROM
   JOIN
   fulfillment.order_line_items order_li
     ON order_li.orderid = shipment.orderid AND order_li.orderableid = shipment_li.orderableid AND shipment_li.orderableversionnumber = order_li.orderableversionnumber
-  JOIN
+  left JOIN
   referencedata.lots lot
     ON shipment_li.lotid = lot.id
   JOIN
@@ -151,7 +151,7 @@ FROM
           OR shipment_orderable_identifier.value::uuid = commodity_type.id
         )
       )
-  JOIN
+  left JOIN
   referencedata.lots lot
     ON shipment_li.lotid = lot.id
   JOIN
