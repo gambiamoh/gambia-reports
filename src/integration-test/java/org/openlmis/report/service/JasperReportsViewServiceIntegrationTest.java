@@ -70,6 +70,7 @@ public class JasperReportsViewServiceIntegrationTest {
     service.getJasperReportsView(template, getParamsWithFormat("pdf"));
     service.getJasperReportsView(template, getParamsWithFormat("csv"));
     service.getJasperReportsView(template, getParamsWithFormat("xls"));
+    service.getJasperReportsView(template, getParamsWithFormat("xlsx"));
     service.getJasperReportsView(template, getParamsWithFormat("html"));
   }
 

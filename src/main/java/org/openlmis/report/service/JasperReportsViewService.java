@@ -118,6 +118,8 @@ public class JasperReportsViewService {
         return new JasperCsvExporter(jasperPrint);
       case "xls":
         return new JasperXlsExporter(jasperPrint);
+      case "xlsx":
+        return new JasperXlsxExporter(jasperPrint);
       case "html":
         return new JasperHtmlExporter(jasperPrint);
       default:

@@ -12,6 +12,8 @@
     * `GET /{id}`, `GET`, `GET /availableReports`, `DELETE /{id}`, `POST`, `PUT /{id}`
   * `/api/reports/reportCategories`
     * `GET /{id}`, `GET`, `POST`, `PUT /{id}`, `DELETE`
+* Added support for XLSX report generation
+* Improved test coverage
 
 1.0.0 / 2025-01-13
 ==================
