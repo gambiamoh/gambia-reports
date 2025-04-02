@@ -84,7 +84,7 @@ VALUES
         'Product',
         'product',
         '/api/orderables',
-        'id',
+        'fullProductName',
         'fullProductName',
         false,
         '1fd4208c-6840-4925-a1f6-5770e8fb3e97',
