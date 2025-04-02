@@ -14,6 +14,7 @@
     * `GET /{id}`, `GET`, `POST`, `PUT /{id}`, `DELETE`
 * Added support for XLSX report generation
 * Improved test coverage
+* Added Point in time Stock on Hand summary report
 
 1.0.0 / 2025-01-13
 ==================
