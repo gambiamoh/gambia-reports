@@ -15,6 +15,7 @@
 * Added support for XLSX report generation
 * Improved test coverage
 * Added Point in time Stock on Hand summary report
+* User ID has been passed for report generation in order to restrict displayed data inside the report
 
 1.0.0 / 2025-01-13
 ==================

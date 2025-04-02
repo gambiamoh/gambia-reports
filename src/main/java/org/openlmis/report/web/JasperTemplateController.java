@@ -212,13 +212,14 @@ public class JasperTemplateController extends BaseController {
     decimalFormat.setGroupingSize(Integer.parseInt(groupingSize));
     map.put("decimalFormat", decimalFormat);
 
+    UserDto currentUser = authenticationHelper.getCurrentUser();
+    map.put("userId", currentUser.getId());
+
     if (template.getName().equals("Order")) {
-      UserDto currentUser = authenticationHelper.getCurrentUser();
       map.put("user", currentUser.printName());
-      // add order
+
       OrderDto order = orderService.findOne(UUID.fromString(map.get("order").toString()));
       map.put("order", order);
-      // add datasource
       map.put("datasource", order.getOrderLineItems());
     }
 
