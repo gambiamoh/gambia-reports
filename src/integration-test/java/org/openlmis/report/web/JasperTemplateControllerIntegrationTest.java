@@ -18,6 +18,7 @@ package org.openlmis.report.web;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -35,9 +36,11 @@ import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 import org.openlmis.report.domain.JasperTemplate;
+import org.openlmis.report.domain.ReportCategory;
 import org.openlmis.report.dto.JasperTemplateDto;
 import org.openlmis.report.exception.PermissionMessageException;
 import org.openlmis.report.repository.JasperTemplateRepository;
+import org.openlmis.report.repository.ReportCategoryRepository;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -50,13 +53,26 @@ public class JasperTemplateControllerIntegrationTest extends BaseWebIntegrationT
   private static final String FORMAT_PARAM = "format";
   private static final String REPORT_URL = ID_URL + "/{" + FORMAT_PARAM + "}";
   private static final String PDF_FORMAT = "pdf";
+  private static final String CATEGORY_NAME = "Default Category";
 
   @MockBean
   private JasperTemplateRepository jasperTemplateRepository;
+  @MockBean
+  private ReportCategoryRepository reportCategoryRepository;
+
+  private ReportCategory reportCategory;
 
   @Before
   public void setUp() {
     mockUserAuthenticated();
+
+    reportCategory = new ReportCategory();
+    reportCategory.setId(UUID.randomUUID());
+    reportCategory.setName(CATEGORY_NAME);
+
+    given(reportCategoryRepository.findByName(anyString())).willReturn(
+        Optional.ofNullable(reportCategory));
+    given(reportCategoryRepository.save(any(ReportCategory.class))).willReturn(reportCategory);
   }
 
   // GET /api/reports/templates
@@ -248,6 +264,7 @@ public class JasperTemplateControllerIntegrationTest extends BaseWebIntegrationT
     template.setId(id);
     template.setName("name");
     template.setRequiredRights(new ArrayList<>());
+    template.setCategory(reportCategory);
 
     given(jasperTemplateRepository.findById(id)).willReturn(Optional.of(template));
 
