@@ -16,6 +16,7 @@ dependencies {
     compile "org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:2.2.2.RELEASE"
     compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
     compile "com.fasterxml.jackson.datatype:jackson-datatype-hibernate4"
+    compile 'org.projectlombok:lombok:1.18.22'
 
     compile "org.openlmis:openlmis-service-util:3.0.0"
 
@@ -24,13 +25,13 @@ dependencies {
     compile "net.sf.jasperreports:jasperreports:6.5.1"
     compile "org.apache.commons:commons-lang3"
     compile "org.flywaydb:flyway-core"
-    compile "org.javers:javers-spring-boot-starter-sql:2.8.1"
+    compile "org.javers:javers-spring-boot-starter-sql:5.13.2"
     compile "org.postgresql:postgresql:42.0.0"
-    compile "org.projectlombok:lombok"
     compile 'org.webjars.npm:api-console:3.0.17'
 
     compile "org.apache.poi:poi:3.15"
     compile "org.apache.poi:poi-ooxml:3.15"
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
 
     testCompile "com.github.tomakehurst:wiremock:1.58"
     testCompile "com.jayway.restassured:rest-assured:2.7.0"
@@ -45,4 +46,5 @@ dependencies {
     testCompile "org.powermock:powermock-module-junit4:2.0.4"
     testCompile "org.springframework.boot:spring-boot-starter-test"
     testCompile "nl.jqno.equalsverifier:equalsverifier:2.4"
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
 }
