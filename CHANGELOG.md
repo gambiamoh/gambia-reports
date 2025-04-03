@@ -1,4 +1,4 @@
-Upcoming Version / WIP
+1.1.0 / WIP
 ==================
 
 * Updated dev, rsyslog and service-base image versions
