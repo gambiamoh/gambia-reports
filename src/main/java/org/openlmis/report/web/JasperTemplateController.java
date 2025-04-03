@@ -108,7 +108,7 @@ public class JasperTemplateController extends BaseController {
   @ResponseStatus(HttpStatus.OK)
   public void createJasperReportTemplate(
       @RequestPart("file") MultipartFile file, String name, String description,
-      String[] requiredRights) throws ReportingException {
+      String[] requiredRights, String category) throws ReportingException {
     permissionService.canEditReportTemplates();
 
     LOGGER.debug("Saving template with name: " + name);
@@ -117,7 +117,7 @@ public class JasperTemplateController extends BaseController {
         ? Collections.emptyList() : Arrays.asList(requiredRights);
 
     JasperTemplate template = jasperTemplateService
-        .saveTemplate(file, name, description, rightList);
+        .saveTemplate(file, name, description, rightList, category);
 
     LOGGER.debug("Saved template with id: " + template.getId());
   }
@@ -195,8 +195,7 @@ public class JasperTemplateController extends BaseController {
     }
 
     List<String> requiredRights = template.getRequiredRights();
-    permissionService.validatePermissions(
-        requiredRights.toArray(new String[requiredRights.size()]));
+    permissionService.validatePermissions(requiredRights.toArray(new String[0]));
 
     Map<String, Object> map = jasperTemplateService.mapRequestParametersToTemplate(
         request, template
@@ -213,13 +212,14 @@ public class JasperTemplateController extends BaseController {
     decimalFormat.setGroupingSize(Integer.parseInt(groupingSize));
     map.put("decimalFormat", decimalFormat);
 
+    UserDto currentUser = authenticationHelper.getCurrentUser();
+    map.put("userId", currentUser.getId());
+
     if (template.getName().equals("Order")) {
-      UserDto currentUser = authenticationHelper.getCurrentUser();
       map.put("user", currentUser.printName());
-      // add order
+
       OrderDto order = orderService.findOne(UUID.fromString(map.get("order").toString()));
       map.put("order", order);
-      // add datasource
       map.put("datasource", order.getOrderLineItems());
     }
 
@@ -228,8 +228,9 @@ public class JasperTemplateController extends BaseController {
     MediaType mediaType;
     if ("csv".equals(format)) {
       mediaType = new MediaType("text", "csv", StandardCharsets.UTF_8);
-    } else if ("xls".equals(format)) {
-      mediaType = new MediaType("application", "vnd.ms-excel", StandardCharsets.UTF_8);
+    } else if ("xls".equals(format) || "xlsx".equals(format)) {
+      mediaType = new MediaType("application",
+          "vnd.openxmlformats-officedocument.spreadsheetml.sheet", StandardCharsets.UTF_8);
     } else if ("html".equals(format)) {
       mediaType = MediaType.TEXT_HTML;
     } else {

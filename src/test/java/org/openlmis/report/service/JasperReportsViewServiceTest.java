@@ -59,6 +59,9 @@ public class JasperReportsViewServiceTest {
   private JasperXlsExporter jasperXlsExporter;
 
   @Mock
+  private JasperXlsxExporter jasperXlsxExporter;
+
+  @Mock
   private JasperHtmlExporter jasperHtmlExporter;
 
   @Mock
@@ -106,6 +109,12 @@ public class JasperReportsViewServiceTest {
   }
 
   @Test
+  public void shouldSelectXlsxExporterForXlsxFormat() throws Exception {
+    viewService.getJasperReportsView(jasperTemplate, getParamsWithFormat("xlsx"));
+    verify(jasperXlsxExporter, times(1)).exportReport();
+  }
+
+  @Test
   public void shouldSelectHtmlExporterForHtmlFormat() throws Exception {
     viewService.getJasperReportsView(jasperTemplate, getParamsWithFormat("html"));
     verify(jasperHtmlExporter, times(1)).exportReport();
@@ -126,6 +135,7 @@ public class JasperReportsViewServiceTest {
   private void initializeExporterMocks() throws Exception {
     whenNew(JasperCsvExporter.class).withAnyArguments().thenReturn(jasperCsvExporter);
     whenNew(JasperXlsExporter.class).withAnyArguments().thenReturn(jasperXlsExporter);
+    whenNew(JasperXlsxExporter.class).withAnyArguments().thenReturn(jasperXlsxExporter);
     whenNew(JasperHtmlExporter.class).withAnyArguments().thenReturn(jasperHtmlExporter);
     whenNew(JasperPdfExporter.class).withAnyArguments().thenReturn(jasperPdfExporter);
   }

@@ -31,10 +31,14 @@ import org.openlmis.report.exception.JasperReportViewException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @DirtiesContext
+@Transactional
+@ActiveProfiles("test")
 @RunWith(SpringRunner.class)
 public class JasperReportsViewServiceIntegrationTest {
 
@@ -66,6 +70,7 @@ public class JasperReportsViewServiceIntegrationTest {
     service.getJasperReportsView(template, getParamsWithFormat("pdf"));
     service.getJasperReportsView(template, getParamsWithFormat("csv"));
     service.getJasperReportsView(template, getParamsWithFormat("xls"));
+    service.getJasperReportsView(template, getParamsWithFormat("xlsx"));
     service.getJasperReportsView(template, getParamsWithFormat("html"));
   }
 
