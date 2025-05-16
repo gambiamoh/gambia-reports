@@ -1,4 +1,4 @@
-1.1.0 / WIP
+1.1.0 / 2025-05-16
 ==================
 
 * Updated dev, rsyslog and service-base image versions
