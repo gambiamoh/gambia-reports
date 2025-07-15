@@ -21,12 +21,22 @@
 		<property name="displayProperty" value="displayName"/>
 		<property name="required" value="false"/>
 	</parameter>
+	<parameter name="geographicZone" class="java.lang.String">
+		<property name="displayName" value="Geographic Zone"/>
+		<property name="selectExpression" value="/api/geographicZones"/>
+		<property name="selectProperty" value="id"/>
+		<property name="displayProperty" value="name"/>
+		<property name="required" value="true"/>
+	</parameter>
 	<parameter name="facility" class="java.lang.String">
 		<property name="displayName" value="Facility"/>
 		<property name="selectExpression" value="/api/facilities"/>
 		<property name="selectProperty" value="id"/>
 		<property name="displayProperty" value="name"/>
-		<property name="required" value="true"/>
+		<property name="required" value="false"/>
+	</parameter>
+	<parameter name="facilityFilter" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[($P{facility} ==null) ? (" fac.id is not NULL") : (" fac.id='"+$P{facility}+"'::uuid")]]></defaultValueExpression>
 	</parameter>
 	<parameter name="orderable" class="java.lang.String">
 		<property name="displayName" value="Product"/>
@@ -50,6 +60,7 @@
 		<![CDATA[SELECT
 prog.name as program,
 fac.name as facility,
+gz.name as geographicZone,
 ord.code as product_code,
 ord.fullProductName as product_name,
 lots.lotcode as batch,
@@ -59,17 +70,20 @@ DATE_PART('day', lots.expirationdate-now())::integer as days_left
 from stockmanagement.stock_cards sc
 INNER JOIN(SELECT DISTINCT ON(stockcardid) stockcardid,stockonhand from stockmanagement.calculated_stocks_on_hand ORDER BY stockcardid, occurreddate DESC) soh ON sc.id = soh.stockcardid
 JOIN referencedata.facilities FAC on fac.id = sc.facilityid
+JOIN referencedata.geographic_zones gz on gz.id = fac.geographiczoneid
 JOIN referencedata.programs prog ON sc.programid = prog.id
 INNER JOIN referencedata.lots Lots ON sc.lotid = lots.id
 INNER JOIN (SELECT DISTINCT ON (id) id, code, fullproductname, versionnumber FROM referencedata.orderables ORDER BY id, versionnumber DESC) ord ON ord.id
 = sc.orderableid
 JOIN referencedata.program_orderables po on po.programid=prog.id and ord.id=po.orderableid and ord.versionnumber=po.orderableversionnumber
 WHERE lots.expirationdate between  now() - ($P{period}::TEXT)::INTERVAL and now()  and  soh.stockonhand > 0
-and prog.id=$P{program}::uuid  and fac.id=$P{facility}::uuid and $P!{orderableFilter} and $P!{categoryFilter}
+and gz.id=$P{geographicZone}::uuid
+and prog.id=$P{program}::uuid  and $P!{facilityFilter} and $P!{orderableFilter} and $P!{categoryFilter}
  ORDER BY lots.expirationdate,prog.name,fac.name,ord.code]]>
 	</queryString>
 	<field name="program" class="java.lang.String"/>
 	<field name="facility" class="java.lang.String"/>
+	<field name="geographicZone" class="java.lang.String"/>
 	<field name="product_code" class="java.lang.String"/>
 	<field name="product_name" class="java.lang.String"/>
 	<field name="batch" class="java.lang.String"/>
@@ -102,6 +116,20 @@ and prog.id=$P{program}::uuid  and fac.id=$P{facility}::uuid and $P!{orderableFi
 					<font size="12" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Date:  " + (new SimpleDateFormat("yyyy-MM-dd")).format(new Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="300" y="40" width="410" height="20" uuid="f2dee407-b67a-426b-8ae1-9ed9eeb333cc"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Geographic Zone: " + $F{geographicZone}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="300" y="60" width="410" height="20" uuid="4a102e70-4d84-4abd-8efe-dccc6b4b1370"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Program:  " + $F{program}]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>
