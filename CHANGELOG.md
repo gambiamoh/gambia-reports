@@ -1,5 +1,7 @@
 Upcoming Version / WIP
 ==================
+- [OPSD-52](https://openlmis.atlassian.net/browse/OPSD-52)
+  - Added additional filter Geographic Zone for Expired item and Near Expiring item Reports
 
 1.1.0 / 2025-05-16
 ==================
