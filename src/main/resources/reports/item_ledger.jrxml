@@ -66,7 +66,7 @@ sum(soh.stockonhand) as stock_on_hand,
 sum(COALESCE(issued.quantity,0)) as issued,
 sum(COALESCE(received.quantity,0)) as received
 from stockmanagement.stock_cards sc
-INNER JOIN (SELECT DISTINCT ON(stockcardid) stockcardid,stockonhand from stockmanagement.calculated_stocks_on_hand ORDER BY stockcardid, occurreddate DESC) soh ON sc.id = soh.stockcardid
+INNER JOIN (SELECT DISTINCT ON(stockcardid) stockcardid,stockonhand from stockmanagement.calculated_stocks_on_hand WHERE processeddate <= TO_DATE($P{dateTo},'DD-MM-YYYY') ORDER BY stockcardid, occurreddate DESC) soh ON sc.id = soh.stockcardid
 LEFT JOIN (SELECT stockcardid,SUM(quantity) as quantity from stockmanagement.stock_card_line_items where destinationid is not NULL and  processeddate between TO_DATE($P{dateFrom},'DD-MM-YYYY') and   TO_DATE($P{dateTo},'DD-MM-YYYY') GROUP BY stockcardid) issued ON issued.stockcardid=sc.id
 LEFT JOIN (SELECT stockcardid,SUM(quantity) as quantity from stockmanagement.stock_card_line_items where sourceid is not NULL and  processeddate between TO_DATE($P{dateFrom},'DD-MM-YYYY') and   TO_DATE($P{dateTo},'DD-MM-YYYY') GROUP BY stockcardid) received ON received.stockcardid=sc.id
 GROUP BY sc.programid,sc.facilityid,sc.orderableid) r
