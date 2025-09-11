@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
+<!-- Created with Jaspersoft Studio version 6.20.5.20250704-1505 using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="product_report" pageWidth="1200" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Error" uuid="1b2b2459-7c9e-4ef5-af66-d4167759aa90">
 	<style name="Row" mode="Transparent">
 		<conditionalStyle>
@@ -24,7 +24,7 @@
 	<parameter name="geographicZone" class="java.lang.String">
 		<property name="displayName" value="Geographic Zone"/>
 		<property name="selectExpression" value="/api/geographicZones"/>
-		<property name="selectProperty" value="id"/>
+		<property name="selectProperty" value="name"/>
 		<property name="displayProperty" value="name"/>
 		<property name="required" value="true"/>
 	</parameter>
@@ -57,33 +57,69 @@
 		<property name="required" value="true"/>
 	</parameter>
 	<queryString language="SQL">
-		<![CDATA[SELECT
-prog.name as program,
-fac.name as facility,
-gz.name as geographicZone,
-ord.code as product_code,
-ord.fullProductName as product_name,
-lots.lotcode as batch,
-to_char(lots.expirationdate, 'YYYY-MM-DD') as expiry,
-soh.stockonhand as stock_on_hand,
-DATE_PART('day', lots.expirationdate-now())::integer as days_left
-from stockmanagement.stock_cards sc
-INNER JOIN(SELECT DISTINCT ON(stockcardid) stockcardid,stockonhand from stockmanagement.calculated_stocks_on_hand ORDER BY stockcardid, occurreddate DESC) soh ON sc.id = soh.stockcardid
-JOIN referencedata.facilities FAC on fac.id = sc.facilityid
-JOIN referencedata.geographic_zones gz on gz.id = fac.geographiczoneid
-JOIN referencedata.programs prog ON sc.programid = prog.id
-INNER JOIN referencedata.lots Lots ON sc.lotid = lots.id
-INNER JOIN (SELECT DISTINCT ON (id) id, code, fullproductname, versionnumber FROM referencedata.orderables ORDER BY id, versionnumber DESC) ord ON ord.id
-= sc.orderableid
-JOIN referencedata.program_orderables po on po.programid=prog.id and ord.id=po.orderableid and ord.versionnumber=po.orderableversionnumber
-WHERE lots.expirationdate between now() and   now() + ($P{period}::TEXT)::INTERVAL  and  soh.stockonhand > 0
-and gz.id=$P{geographicZone}::uuid
-and prog.id=$P{program}::uuid  and $P!{facilityFilter} and $P!{orderableFilter} and $P!{categoryFilter}
- ORDER BY lots.expirationdate,prog.name,fac.name,ord.code]]>
+		<![CDATA[WITH RECURSIVE geo_hierarchy AS (
+    SELECT id, parentid, name
+    FROM referencedata.geographic_zones
+    WHERE name = $P{geographicZone}::varchar
+    UNION ALL
+    SELECT gz.id, gz.parentid, gz.name
+    FROM referencedata.geographic_zones gz
+    INNER JOIN geo_hierarchy gh ON gz.parentid = gh.id
+)
+SELECT
+    prog.name AS program,
+    fac.name AS facility,
+    gh.name AS geographic_zone,
+    ord.code AS product_code,
+    ord.fullproductname AS product_name,
+    lots.lotcode AS batch,
+    TO_CHAR(lots.expirationdate, 'YYYY-MM-DD') AS expiry,
+    soh.stockonhand AS stock_on_hand,
+    DATE_PART('day', lots.expirationdate - NOW())::integer AS days_left
+FROM stockmanagement.stock_cards sc
+INNER JOIN (
+    SELECT DISTINCT ON (stockcardid)
+        stockcardid,
+        stockonhand
+    FROM stockmanagement.calculated_stocks_on_hand
+    ORDER BY stockcardid, occurreddate DESC
+) soh ON sc.id = soh.stockcardid
+JOIN referencedata.facilities fac
+    ON fac.id = sc.facilityid
+JOIN geo_hierarchy gh
+    ON gh.id = fac.geographiczoneid
+JOIN referencedata.programs prog
+    ON sc.programid = prog.id
+INNER JOIN referencedata.lots lots
+    ON sc.lotid = lots.id
+INNER JOIN (
+    SELECT DISTINCT ON (id)
+        id,
+        code,
+        fullproductname,
+        versionnumber
+    FROM referencedata.orderables
+    ORDER BY id, versionnumber DESC
+) ord ON ord.id = sc.orderableid
+JOIN referencedata.program_orderables po
+    ON po.programid = prog.id
+   AND ord.id = po.orderableid
+   AND ord.versionnumber = po.orderableversionnumber
+WHERE lots.expirationdate BETWEEN NOW() AND NOW() + ($P{period}::TEXT)::INTERVAL
+  AND soh.stockonhand > 0
+  AND prog.id = $P{program}::uuid
+  AND $P!{facilityFilter}
+  AND $P!{orderableFilter}
+  AND $P!{categoryFilter}
+ORDER BY
+    lots.expirationdate,
+    prog.name,
+    fac.name,
+    ord.code;]]>
 	</queryString>
 	<field name="program" class="java.lang.String"/>
 	<field name="facility" class="java.lang.String"/>
-	<field name="geographicZone" class="java.lang.String"/>
+	<field name="geographic_zone" class="java.lang.String"/>
 	<field name="product_code" class="java.lang.String"/>
 	<field name="product_name" class="java.lang.String"/>
 	<field name="batch" class="java.lang.String"/>
@@ -122,8 +158,8 @@ and prog.id=$P{program}::uuid  and $P!{facilityFilter} and $P!{orderableFilter} 
 				<textElement>
 					<font size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Geographic Zone: " + $F{geographicZone}]]></textFieldExpression>
-			</textField>
+                <textFieldExpression><![CDATA["Geographic Zone: " + $P{geographicZone}]]></textFieldExpression>
+            </textField>
 			<textField>
 				<reportElement x="300" y="60" width="410" height="20" uuid="4a102e70-4d84-4abd-8efe-dccc6b4b1370"/>
 				<textElement>
