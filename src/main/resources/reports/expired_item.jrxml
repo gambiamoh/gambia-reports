@@ -24,7 +24,7 @@
 	<parameter name="geographicZone" class="java.lang.String">
 		<property name="displayName" value="Geographic Zone"/>
 		<property name="selectExpression" value="/api/geographicZones"/>
-		<property name="selectProperty" value="id"/>
+		<property name="selectProperty" value="name"/>
 		<property name="displayProperty" value="name"/>
 		<property name="required" value="true"/>
 	</parameter>
@@ -60,7 +60,7 @@
 		<![CDATA[WITH RECURSIVE geo_hierarchy AS (
     SELECT id, parentid, name
     FROM referencedata.geographic_zones
-    WHERE id = $P{geographicZone}::uuid
+    WHERE name = $P{geographicZone}::varchar
     UNION ALL
     SELECT gz.id, gz.parentid, gz.name
     FROM referencedata.geographic_zones gz
@@ -158,7 +158,7 @@ ORDER BY
 				<textElement>
 					<font size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Geographic Zone: " + $F{geographic_zone}]]></textFieldExpression>
+                <textFieldExpression><![CDATA["Geographic Zone: " + $P{geographicZone}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="300" y="60" width="410" height="20" uuid="4a102e70-4d84-4abd-8efe-dccc6b4b1370"/>
