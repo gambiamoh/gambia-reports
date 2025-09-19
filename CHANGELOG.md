@@ -1,9 +1,10 @@
-Upcoming Version / WIP
+1.1.1 / 2025-09-19
 ==================
+
 - [OPSD-52](https://openlmis.atlassian.net/browse/OPSD-52)
-  - Added additional filter Geographic Zone for Expired item and Near Expiring item Reports
+  - Expired & Near-Expiring Item Reports: Added a new filter for Geographic Zone
 - [OPSD-54](https://openlmis.atlassian.net/browse/OPSD-54)
-  - Added restriction to stock on hand to be retrieved by selected date in item ledger report
+  - Item Ledger Report: Stock on hand is now retrieved based on the selected date
 
 1.1.0 / 2025-05-16
 ==================
