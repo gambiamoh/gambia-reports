@@ -1,5 +1,12 @@
-Upcoming Version / WIP
+1.1.2 / 2025-09-23
 ==================
+
+- [OPSD-65](https://openlmis.atlassian.net/browse/OPSD-65)
+    - Item Ledger Report
+      - Fixed typos
+      - Changed naming of some columns for better alignment
+      - Added possibility to filter by parent zone
+      - Added data pickers in place of text data fields
 
 1.1.1 / 2025-09-19
 ==================
