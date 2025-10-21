@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
+<!-- Created with Jaspersoft Studio version 6.21.5.final using JasperReports Library version 6.21.5-74d586df47b25dbd05bd0957999819196e59934a  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PeriodicStockOnHandSummary" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isFloatColumnFooter="true" uuid="caa0ba4c-33e9-4f02-bd4b-5440eeadf3a9">
     <property name="com.jaspersoft.studio.data.defaultdataadapter" value="OpenLMIS Core UAT"/>
     <property name="net.sf.jasperreports.export.xlsx.exclude.origin.band.1" value="pageHeader"/>
@@ -237,7 +237,7 @@
         OR ($P{startDate} IS NULL AND $P{endDate} IS NULL)
       )
   	)
-	SELECT
+	SELECT DISTINCT
 	  facilityName,
 	  productName,
 	  productCode,
