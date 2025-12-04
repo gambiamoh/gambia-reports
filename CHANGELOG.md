@@ -1,5 +1,6 @@
-Upcoming Version / WIP
+1.1.3 / 2025-12-04
 ==================
+- [OPSD-63](https://openlmis.atlassian.net/browse/OPSD-63) Periodic Stock On Hand Summary pulling correct data but duplicating records
 
 1.1.2 / 2025-09-23
 ==================
