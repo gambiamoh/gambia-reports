@@ -72,18 +72,18 @@ FROM fulfillment.orders o
         AND order_li.orderableid = shipment_li.orderableid
     JOIN referencedata.orderables ord ON order_li.orderableid = ord.id
         AND ord.versionnumber = shipment_li.orderableversionnumber
-    LEFT JOIN referencedata.processing_periods pp ON o.processingperiodid = pp.id
-    LEFT JOIN referencedata.lots l ON l.id = shipment_li.lotid
-    LEFT JOIN fulfillment.proofs_of_delivery pod ON shipment.id = pod.shipmentid
-    LEFT JOIN fulfillment.proof_of_delivery_line_items pod_li ON pod_li.proofofdeliveryid = pod.id
+    JOIN fulfillment.proofs_of_delivery pod ON shipment.id = pod.shipmentid
+    JOIN fulfillment.proof_of_delivery_line_items pod_li ON pod_li.proofofdeliveryid = pod.id
         AND pod_li.orderableid = shipment_li.orderableid
         AND shipment_li.lotid = pod_li.lotid
+    LEFT JOIN referencedata.processing_periods pp ON o.processingperiodid = pp.id
+    LEFT JOIN referencedata.lots l ON l.id = shipment_li.lotid
 WHERE
     sup_fac.id = $P{supplying_facility}::uuid
     AND o.programid = $P{program}::uuid
     AND shipment_li.quantityshipped > 0
-    AND shipment.shippeddate::date >= $P{date_from}::date
-    AND shipment.shippeddate::date <= $P{date_to}::date
+    AND pod.receiveddate::date >= $P{date_from}::date
+    AND pod.receiveddate::date <= $P{date_to}::date
     AND $P!{receivingFacilityFilter}
     AND $P!{orderableFilter}
 ORDER BY
