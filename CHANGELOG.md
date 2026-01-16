@@ -1,9 +1,13 @@
 Upcoming Version / WIP
 ==================
+- [OPSD-76](https://openlmis.atlassian.net/browse/OPSD-76) 
+  - Fixed issue with Distribution Summary Report not picking data from the requisition-less orders
+  - Added date pickers in the report instead of text inputs
 
 1.1.3 / 2025-12-04
 ==================
-- [OPSD-63](https://openlmis.atlassian.net/browse/OPSD-63) Periodic Stock On Hand Summary pulling correct data but duplicating records
+- [OPSD-63](https://openlmis.atlassian.net/browse/OPSD-63) 
+  - Periodic Stock On Hand Summary pulling correct data but duplicating records
 
 1.1.2 / 2025-09-23
 ==================
