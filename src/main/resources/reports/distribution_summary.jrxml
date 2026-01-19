@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.5.20250704-1505 using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="product_report" pageWidth="1200" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="1160" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Error" uuid="1b2b2459-7c9e-4ef5-af66-d4167759aa90">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.jrdax"/>
+	<style name="Row" mode="Transparent">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT} % 2 == 0]]></conditionExpression>
+			<style backcolor="#F3F3F3"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="supplying_facility" class="java.lang.String">
+		<property name="displayName" value="Supplying Facility"/>
+		<property name="selectExpression" value="/api/facilities"/>
+		<property name="selectProperty" value="id"/>
+		<property name="displayProperty" value="name"/>
+		<property name="required" value="true"/>
+	</parameter>
+	<parameter name="receiving_facility" class="java.lang.String">
+		<property name="displayName" value="Receiving Facility"/>
+		<property name="selectExpression" value="/api/facilities"/>
+		<property name="selectProperty" value="id"/>
+		<property name="displayProperty" value="name"/>
+		<property name="required" value="false"/>
+	</parameter>
+	<parameter name="program" class="java.lang.String">
+		<property name="displayName" value="Program"/>
+		<property name="selectExpression" value="/api/programs"/>
+		<property name="selectProperty" value="id"/>
+		<property name="displayProperty" value="name"/>
+		<property name="required" value="true"/>
+	</parameter>
+	<parameter name="orderable" class="java.lang.String">
+		<property name="displayName" value="Product"/>
+		<property name="selectExpression" value="/api/orderables"/>
+		<property name="selectProperty" value="id"/>
+		<property name="displayProperty" value="fullProductName"/>
+		<property name="required" value="false"/>
+	</parameter>
+	<parameter name="date_from" class="java.lang.String">
+		<property name="displayName" value="Date From"/>
+		<property name="required" value="true"/>
+	</parameter>
+	<parameter name="date_to" class="java.lang.String">
+		<property name="displayName" value="Date To"/>
+		<property name="required" value="true"/>
+	</parameter>
+	<parameter name="receivingFacilityFilter" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[($P{receiving_facility} == null) ? "1=1" : "rec_fac.id='" + $P{receiving_facility} + "'::uuid"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="orderableFilter" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[($P{orderable} == null) ? "1=1" : "ord.id='" + $P{orderable} + "'::uuid"]]></defaultValueExpression>
+	</parameter>
+	<queryString language="SQL">
+		<![CDATA[SELECT
+    o.ordercode                                     AS order_number,
+    sup_fac.name                                    AS supplying_facility_name,
+    rec_fac.name                                    AS receiving_facility_name,
+    ord.code                                        AS product_code,
+    l.lotcode                                       AS lot_code,
+    ord.fullproductname                             AS product_name,
+    COALESCE(shipment_li.quantityshipped, 0)        AS shipped_quantity,
+    COALESCE(pod_li.quantityaccepted, 0)            AS received_quantity,
+    COALESCE(shipment_li.quantityshipped, 0) - COALESCE(pod_li.quantityaccepted, 0) AS quantity_difference,
+    pp.name                                         AS processing_period,
+    pod.receiveddate                                AS receive_date
+FROM fulfillment.orders o
+    JOIN referencedata.facilities sup_fac ON o.supplyingfacilityid = sup_fac.id
+    JOIN referencedata.facilities rec_fac ON o.receivingfacilityid = rec_fac.id
+    JOIN fulfillment.order_line_items order_li ON o.id = order_li.orderid
+    JOIN fulfillment.shipments shipment ON shipment.orderid = o.id
+    JOIN fulfillment.shipment_line_items shipment_li ON shipment_li.shipmentid = shipment.id
+        AND order_li.orderableid = shipment_li.orderableid
+    JOIN referencedata.orderables ord ON order_li.orderableid = ord.id
+        AND ord.versionnumber = shipment_li.orderableversionnumber
+    JOIN fulfillment.proofs_of_delivery pod ON shipment.id = pod.shipmentid
+    JOIN fulfillment.proof_of_delivery_line_items pod_li ON pod_li.proofofdeliveryid = pod.id
+        AND pod_li.orderableid = shipment_li.orderableid
+        AND shipment_li.lotid = pod_li.lotid
+    LEFT JOIN referencedata.processing_periods pp ON o.processingperiodid = pp.id
+    LEFT JOIN referencedata.lots l ON l.id = shipment_li.lotid
+WHERE
+    sup_fac.id = $P{supplying_facility}::uuid
+    AND o.programid = $P{program}::uuid
+    AND shipment_li.quantityshipped > 0
+    AND pod.receiveddate::date >= $P{date_from}::date
+    AND pod.receiveddate::date <= $P{date_to}::date
+    AND $P!{receivingFacilityFilter}
+    AND $P!{orderableFilter}
+ORDER BY
+    order_number,
+    product_name,
+    lot_code;]]>
+	</queryString>
+	<field name="order_number" class="java.lang.String"/>
+	<field name="supplying_facility_name" class="java.lang.String"/>
+	<field name="receiving_facility_name" class="java.lang.String"/>
+	<field name="product_code" class="java.lang.String"/>
+	<field name="product_name" class="java.lang.String"/>
+	<field name="lot_code" class="java.lang.String"/>
+	<field name="shipped_quantity" class="java.lang.Integer"/>
+	<field name="received_quantity" class="java.lang.Integer"/>
+	<field name="quantity_difference" class="java.lang.Integer"/>
+	<field name="processing_period" class="java.lang.String"/>
+	<field name="receive_date" class="java.util.Date"/>
+	<background>
+		<band height="30" splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="80" splitType="Stretch">
+			<staticText>
+				<reportElement x="400" y="0" width="380" height="30" uuid="9425a6c9-4546-4c90-9119-7a7f300b6fb5"/>
+				<textElement textAlignment="Left">
+					<font size="15" isBold="true"/>
+					<paragraph lineSpacing="Double" lineSpacingSize="2.0"/>
+				</textElement>
+				<text><![CDATA[Distribution Summary Report]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="40" width="380" height="20" uuid="f2dee407-b67a-426b-8ae1-9ed9eeb333cc"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Period: From " + $P{date_from} + " To "+ $P{date_to}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="60" width="410" height="20" uuid="4a102e70-4d84-4abd-8efe-dccc6b4b1370"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Date:  " + (new SimpleDateFormat("dd-MM-yyyy")).format(new Date())]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="30">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="20" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad0"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[#]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="20" y="0" width="110" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad1"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Order number]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="130" y="0" width="165" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad2"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Supplying Facility name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="295" y="0" width="155" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad3"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Receiving facility name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="450" y="0" width="90" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad4"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Product code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="540" y="0" width="175" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad5"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Product name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="715" y="0" width="85" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad6"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Lot code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="800" y="0" width="70" height="30" backcolor="#A3EFD8" uuid="f1296dcd-3a59-4110-99af-f111c9e49196"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Shipped quantity]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="870" y="0" width="70" height="30" backcolor="#A3EFD8" uuid="f1296dcd-3a59-4110-99af-f111c9e49197"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Received quantity]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="940" y="0" width="70" height="30" backcolor="#A3EFD8" uuid="f1296dcd-3a59-4110-99af-f111c9e49198"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Quantity difference]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1010" y="0" width="80" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad9"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Processing period]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1090" y="0" width="70" height="30" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914aa0"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Receive date]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="50" splitType="Immediate">
+			<textField>
+				<reportElement style="Row" mode="Opaque" x="0" y="0" width="30" height="50" uuid="28c1bf9c-6c13-4551-abf3-82481d555ab9"/>
+				<box bottomPadding="1" rightPadding="5">
+					<pen lineColor="#A3EFD8"/>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="Row" mode="Opaque" x="30" y="0" width="140" height="50" uuid="5c934beb-6a56-414f-b44b-039716390a2f"/>
+				<box bottomPadding="1">
+					<pen lineColor="#A3EFD8"/>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{order_number}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="Row" mode="Opaque" x="170" y="0" width="140" height="50" uuid="5c934beb-6a56-414f-b44b-039716390a21"/>
+				<box bottomPadding="1">
+					<pen lineColor="#A3EFD8"/>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{supplying_facility_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="Row" mode="Opaque" x="310" y="0" width="140" height="50" uuid="5c934beb-6a56-414f-b44b-039716390a22"/>
+				<box bottomPadding="1">
+					<pen lineColor="#A3EFD8"/>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{receiving_facility_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="Row" mode="Opaque" x="450" y="0" width="90" height="50" uuid="5c934beb-6a56-414f-b44b-039716390a23"/>
+				<box bottomPadding="1">
+					<pen lineColor="#A3EFD8"/>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{product_code}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="Row" mode="Opaque" x="540" y="0" width="175" height="50" uuid="5c934beb-6a56-414f-b44b-039716390a24"/>
+				<box bottomPadding="1" rightPadding="5">
+					<pen lineColor="#A3EFD8"/>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{product_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="Row" mode="Opaque" x="715" y="0" width="85" height="50" uuid="5c934beb-6a56-414f-b44b-039716390a30"/>
+				<box leftPadding="3" bottomPadding="1">
+					<pen lineColor="#A3EFD8"/>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{lot_code}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="Row" mode="Opaque" x="800" y="0" width="70" height="50" uuid="5c934beb-6a56-414f-b44b-039716390a25"/>
+				<box bottomPadding="1" rightPadding="20">
+					<pen lineColor="#A3EFD8"/>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{shipped_quantity}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="Row" mode="Opaque" x="870" y="0" width="70" height="50" uuid="5c934beb-6a56-414f-b44b-039716390a26"/>
+				<box bottomPadding="1" rightPadding="20">
+					<pen lineColor="#A3EFD8"/>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{received_quantity}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="Row" mode="Opaque" x="940" y="0" width="70" height="50" uuid="5c934beb-6a56-414f-aaab-039716390a26"/>
+				<box bottomPadding="1" rightPadding="20">
+					<pen lineColor="#A3EFD8"/>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{quantity_difference}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="Row" mode="Opaque" x="1010" y="0" width="80" height="50" uuid="5c934beb-6a56-414f-b44b-039716390a27"/>
+				<box bottomPadding="1">
+					<pen lineColor="#A3EFD8"/>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{processing_period}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="Row" mode="Opaque" x="1090" y="0" width="70" height="50" uuid="5c934beb-6a56-414f-b44b-039716390a28"/>
+				<box bottomPadding="1">
+					<pen lineColor="#A3EFD8"/>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{receive_date} == null) ? "" : new java.text.SimpleDateFormat("dd-MM-yyyy").format($F{receive_date})]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="30">
+			<textField>
+				<reportElement x="1050" y="9" width="100" height="13" uuid="6d7191af-705f-44e6-bfd0-53e40f9e237b"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>
