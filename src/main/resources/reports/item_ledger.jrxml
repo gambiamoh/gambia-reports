@@ -120,10 +120,19 @@ INNER JOIN (
     FROM referencedata.orderables
     ORDER BY id, versionnumber DESC
 ) ord ON ord.id = r.orderableid
+INNER JOIN (
+    SELECT DISTINCT ON (po.programid, po.orderableid)
+           po.programid,
+           po.orderableid,
+           po.active
+    FROM referencedata.program_orderables po
+    ORDER BY po.programid, po.orderableid, po.orderableversionnumber DESC
+) latest_po ON latest_po.programid = r.programid AND latest_po.orderableid = r.orderableid
 WHERE prog.id = $P{program}::uuid
   AND fac.geographiczoneid IN (SELECT id FROM geo_hierarchy)
   AND $P!{facilityFilter}
   AND $P!{orderableFilter}
+  AND latest_po.active = TRUE
 ORDER BY prog.name, fac.name, ord.fullproductname;]]>
 	</queryString>
 	<field name="region_name" class="java.lang.String"/>
