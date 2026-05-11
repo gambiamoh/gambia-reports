@@ -1,4 +1,4 @@
-1.1.5 / WIP
+1.1.5 / 2026-05-11
 ==================
 - [OPSD-90](https://openlmis.atlassian.net/browse/OPSD-90)
   - Item Ledger report now filters out products that are inactive in the program
