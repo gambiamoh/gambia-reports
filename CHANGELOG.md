@@ -1,3 +1,6 @@
+1.1.6 / WIP
+==================
+
 1.1.5 / 2026-05-11
 ==================
 - [OPSD-90](https://openlmis.atlassian.net/browse/OPSD-90)
