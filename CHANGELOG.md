@@ -1,5 +1,8 @@
 1.1.6 / WIP
 ==================
+- [OPSD-105](https://openlmis.atlassian.net/browse/OPSD-105)
+  - Added new Stock Receive Report listing stock received from valid sources
+    (product code, product name, received from, batch, expiry, quantity received)
 
 1.1.5 / 2026-05-11
 ==================
