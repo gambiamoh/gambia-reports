@@ -30,7 +30,8 @@ public enum OrderStatusDto {
   RECEIVED,
   TRANSFER_FAILED,
   IN_ROUTE,
-  READY_TO_PACK;
+  READY_TO_PACK,
+  CANCELLED;
 
   private static final Map<OrderStatusDto, String> TRANSLATIONS =
       Collections.unmodifiableMap(new HashMap<OrderStatusDto, String>() {{
