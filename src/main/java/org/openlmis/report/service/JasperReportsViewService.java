@@ -17,21 +17,19 @@ package org.openlmis.report.service;
 
 import static org.openlmis.report.i18n.JasperMessageKeys.ERROR_JASPER_REPORT_FORMAT_UNKNOWN;
 import static org.openlmis.report.i18n.JasperMessageKeys.ERROR_JASPER_REPORT_GENERATION;
-import static org.openlmis.report.i18n.ReportingMessageKeys.ERROR_REPORTING_CLASS_NOT_FOUND;
-import static org.openlmis.report.i18n.ReportingMessageKeys.ERROR_REPORTING_IO;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.sql.Connection;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import javax.sql.DataSource;
+import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import org.apache.commons.io.serialization.ValidatingObjectInputStream;
 import org.openlmis.report.domain.JasperTemplate;
 import org.openlmis.report.exception.JasperReportViewException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,70 +37,83 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class JasperReportsViewService {
-
-  static final String PARAM_DATASOURCE = "datasource";
+  private static final String PARAM_DATASOURCE = "datasource";
 
   @Autowired
   private DataSource replicationDataSource;
 
   /**
-   * Create Jasper Report View.
-   * Create Jasper Report (".jasper" file) from bytes from Template entity.
-   * Set 'Jasper' exporter parameters, JDBC data source, web application context, url to file.
+   * Create Jasper Report View. Create Jasper Report (".jasper" file) from bytes from Template
+   * entity. Set 'Jasper' exporter parameters, JDBC data source, web application context, url to
+   * file.
    *
-   * @param jasperTemplate template that will be used to create a view
-   * @param params  map of parameters
+   * @param template template that will be used to create a view (byte[])
+   * @param params map of parameters
    * @return created jasper view.
    * @throws JasperReportViewException if there will be any problem with creating the view.
    */
-  public byte[] getJasperReportsView(JasperTemplate jasperTemplate,
-      Map<String, Object> params) throws JasperReportViewException {
+  public byte[] getJasperReportsView(byte[] template, Map<String, Object> params)
+      throws JasperReportViewException {
 
     try {
-      JasperReport jasperReport = getReportFromTemplateData(jasperTemplate);
-      JasperPrint jasperPrint;
-      if (params.containsKey(PARAM_DATASOURCE)) {
-        jasperPrint = JasperFillManager.fillReport(jasperReport, params,
-            new JRBeanCollectionDataSource((List) params.get(PARAM_DATASOURCE)));
-      } else {
-        try (Connection connection = replicationDataSource.getConnection()) {
-          ObjectInputStream inputStream = new ObjectInputStream(
-              new ByteArrayInputStream(jasperTemplate.getData()));
-
-          jasperPrint = JasperFillManager
-              .fillReport((JasperReport) inputStream.readObject(), params, connection);
-
-        }
+      JasperReport jasperReport;
+      try (ByteArrayInputStream byteInputStream = new ByteArrayInputStream(template);
+           ValidatingObjectInputStream vois = new ValidatingObjectInputStream(byteInputStream)) {
+        vois.accept(
+            "net.sf.jasperreports.*",
+            "java.awt.*",
+            "java.util.*",
+            "java.lang.*",
+            "java.math.*",
+            "[Lnet.sf.jasperreports.*",
+            "[Ljava.awt.*",
+            "[Ljava.util.*",
+            "[Ljava.lang.*",
+            "[Ljava.math.*",
+            "[B"
+        );
+        jasperReport = (JasperReport) vois.readObject();
       }
 
+      JasperPrint jasperPrint;
+      if (params.containsKey(PARAM_DATASOURCE) && params.get(PARAM_DATASOURCE) != null) {
+        Object dataSourceParam = params.get(PARAM_DATASOURCE);
+        JRDataSource jrDataSource;
+        if (dataSourceParam instanceof JRDataSource) {
+          jrDataSource = (JRDataSource) dataSourceParam;
+        } else if (dataSourceParam instanceof Collection) {
+          jrDataSource = new JRBeanCollectionDataSource((Collection<?>) dataSourceParam);
+        } else {
+          throw new JasperReportViewException(ERROR_JASPER_REPORT_GENERATION);
+        }
+        jasperPrint = JasperFillManager.fillReport(jasperReport, params, jrDataSource);
+      } else {
+        try (Connection connection = replicationDataSource.getConnection()) {
+          jasperPrint = JasperFillManager.fillReport(jasperReport, params, connection);
+        }
+      }
       return prepareReport(jasperPrint, params);
     } catch (IllegalArgumentException iae) {
-      throw new JasperReportViewException(iae,
-          ERROR_JASPER_REPORT_FORMAT_UNKNOWN, iae.getMessage());
+      throw new JasperReportViewException(iae, ERROR_JASPER_REPORT_FORMAT_UNKNOWN,
+          iae.getMessage());
     } catch (Exception e) {
       throw new JasperReportViewException(e, ERROR_JASPER_REPORT_GENERATION);
     }
   }
 
   /**
-   * Get (compiled) Jasper report from Jasper template.
+   * Create Jasper Report View. Create Jasper Report (".jasper" file) from bytes from Template
+   * entity. Set 'Jasper' exporter parameters, JDBC data source, web application context, url to
+   * file.
    *
-   * @param jasperTemplate template
-   * @return Jasper report
+   * @param jasperTemplate template that will be used to create a view
+   * @param params         map of parameters
+   * @return created jasper view.
+   * @throws JasperReportViewException if there will be any problem with creating the view.
    */
-  private JasperReport getReportFromTemplateData(JasperTemplate jasperTemplate)
-      throws JasperReportViewException {
-
-    try (ObjectInputStream inputStream =
-             new ObjectInputStream(new ByteArrayInputStream(jasperTemplate.getData()))) {
-
-      return (JasperReport) inputStream.readObject();
-    } catch (IOException ex) {
-      throw new JasperReportViewException(ex, ERROR_REPORTING_IO, ex.getMessage());
-    } catch (ClassNotFoundException ex) {
-      throw new JasperReportViewException(ex, ERROR_REPORTING_CLASS_NOT_FOUND,
-          JasperReport.class.getName());
-    }
+  public byte[] getJasperReportsView(JasperTemplate jasperTemplate,
+                                     Map<String, Object> params) throws JasperReportViewException {
+    return getJasperReportsView(jasperTemplate.getData(), params);
   }
 
   private byte[] prepareReport(JasperPrint jasperPrint, Map<String, Object> params)
