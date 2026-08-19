@@ -1,5 +1,24 @@
 1.1.6 / WIP
 ==================
+- [ODRC-24](https://openlmis.atlassian.net/browse/ODRC-24)
+  - Added POST /api/reports/generate, which renders a report from another service
+  - Reports can be filled from a data source supplied by the caller instead of the replication
+    database connection
+  - A template declaring a headerTemplate parameter gets a global header compiled from
+    /config/reports/GlobalHeaderPortrait.jrxml or GlobalHeaderLandscape.jrxml, with values taken
+    from /config/reports/header_config.properties
+- [OLMIS-8224](https://openlmis.atlassian.net/browse/OLMIS-8224)
+  - Report translations are pulled from the shared openlmis-report.report-translations Transifex
+    resource and bound to JasperReports
+  - Single labels can be overridden per deployment with a bundle mounted under
+    /config/reports/resourceBundles
+- [OLMIS-8223](https://openlmis.atlassian.net/browse/OLMIS-8223)
+  - Fixed messages losing an apostrophe together with any placeholder following it
+- [OLMIS-8231](https://openlmis.atlassian.net/browse/OLMIS-8231)
+  - Report parameters keep the order in which they are declared in the .jrxml file
+- [OLMIS-8235](https://openlmis.atlassian.net/browse/OLMIS-8235)
+  - Replacing an existing report template requires override=true, and an override no longer wipes
+    parameter metadata or fails with HTTP 500 for templates with parameter dependencies
 
 1.1.5 / 2026-05-11
 ==================
