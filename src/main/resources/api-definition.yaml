@@ -260,6 +260,13 @@ resourceTypes:
       post:
         is: [ secured ]
         description: Create or update report template.
+        queryParameters:
+          override:
+            displayName: override
+            description: Replace an existing template with the same name.
+            type: boolean
+            required: false
+            repeat: false
         body:
           multipart/form-data:
             formParameters:
