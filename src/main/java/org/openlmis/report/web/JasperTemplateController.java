@@ -18,6 +18,7 @@ package org.openlmis.report.web;
 import static org.apache.commons.lang3.BooleanUtils.isNotFalse;
 import static org.openlmis.report.i18n.JasperMessageKeys.ERROR_JASPER_TEMPLATE_NOT_FOUND;
 
+import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -53,6 +54,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -182,7 +184,8 @@ public class JasperTemplateController extends BaseController {
   @ResponseBody
   public ResponseEntity<byte[]> generateReport(
       HttpServletRequest request, @PathVariable("id") UUID templateId,
-      @PathVariable("format") String format) throws JasperReportViewException {
+      @PathVariable("format") String format, @RequestParam(defaultValue = "en") String lang)
+      throws JasperReportViewException {
     JasperTemplate template = jasperTemplateRepository.findById(templateId)
         .orElseThrow(() -> new NotFoundMessageException(
             new Message(ERROR_JASPER_TEMPLATE_NOT_FOUND, templateId)));
@@ -201,6 +204,12 @@ public class JasperTemplateController extends BaseController {
         request, template
     );
     map.putAll(jasperTemplateService.mapReportImagesToTemplate(template));
+
+    try {
+      map.putAll(jasperTemplateService.getLocaleBundleParameters(lang));
+    } catch (MalformedURLException e) {
+      LOGGER.debug("Cannot load translation bundle for {}", template.getName());
+    }
 
     map.put("format", format);
     map.put("dateTimeFormat", dateTimeFormat);

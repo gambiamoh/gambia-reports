@@ -31,13 +31,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
@@ -46,6 +50,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.util.JRLoader;
 import org.openlmis.report.domain.JasperTemplate;
 import org.openlmis.report.domain.JasperTemplateParameter;
 import org.openlmis.report.domain.JasperTemplateParameterDependency;
@@ -56,6 +61,7 @@ import org.openlmis.report.exception.ReportingException;
 import org.openlmis.report.exception.ValidationMessageException;
 import org.openlmis.report.i18n.ReportCategoryMessageKeys;
 import org.openlmis.report.i18n.ReportImageMessageKeys;
+import org.openlmis.report.i18n.ReportTranslationBundleProvider;
 import org.openlmis.report.repository.JasperTemplateRepository;
 import org.openlmis.report.repository.ReportCategoryRepository;
 import org.openlmis.report.repository.ReportImageRepository;
@@ -72,6 +78,9 @@ public class JasperTemplateService {
   static final String REPORT_TYPE_PROPERTY = "reportType";
   private static final String DEFAULT_REPORT_TYPE = "Consistency Report";
   private static final String[] ALLOWED_FILETYPES = {"jrxml"};
+
+  @Autowired
+  private ReportTranslationBundleProvider translationBundleProvider;
 
   @Autowired
   private JasperTemplateRepository jasperTemplateRepository;
@@ -189,6 +198,71 @@ public class JasperTemplateService {
       }
     }
     return map;
+  }
+
+  /**
+   * Gets locale for translation resource bundle parameters.
+   *
+   * @param userLocaleString the user locale string
+   * @return the locale bundle parameters
+   * @throws MalformedURLException the malformed url exception
+   */
+  public Map<String, Object> getLocaleBundleParameters(String userLocaleString)
+      throws MalformedURLException {
+    if (userLocaleString == null) {
+      return Collections.emptyMap();
+    }
+
+    Locale userLocale;
+    try {
+      userLocale = new Locale.Builder().setLanguageTag(userLocaleString).build();
+    } catch (Exception e) {
+      userLocale = Locale.ENGLISH;
+    }
+
+    Map<String, Object> parameters = new HashMap<>();
+    ResourceBundle bundle = translationBundleProvider.getBundle(userLocale);
+
+    if (bundle != null) {
+      parameters.put(JRParameter.REPORT_RESOURCE_BUNDLE, bundle);
+      parameters.put(JRParameter.REPORT_LOCALE, userLocale);
+    }
+
+    return parameters;
+  }
+
+  /**
+   * Load report jasper report.
+   *
+   * @param jasperTemplate the jasper template
+   * @return the jasper report
+   * @throws ReportingException the reporting exception
+   */
+  public JasperReport loadReport(JasperTemplate jasperTemplate) throws ReportingException {
+    if (jasperTemplate != null) {
+      return loadReport(jasperTemplate.getData());
+    }
+    return null;
+  }
+
+  /**
+   * Load report jasper report.
+   *
+   * @param template the template
+   * @return the jasper report
+   * @throws ReportingException the reporting exception
+   */
+  public JasperReport loadReport(byte[] template) throws ReportingException {
+    if (template.length == 0) {
+      return null;
+    }
+    try (InputStream is = new ByteArrayInputStream(template)) {
+      return (JasperReport) JRLoader.loadObject(is);
+    } catch (JRException ex) {
+      throw new ReportingException(ex, ERROR_REPORTING_FILE_INVALID);
+    } catch (IOException ex) {
+      throw new ReportingException(ex, ERROR_REPORTING_IO, ex.getMessage());
+    }
   }
 
   /**
