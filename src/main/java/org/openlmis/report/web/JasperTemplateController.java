@@ -18,6 +18,7 @@ package org.openlmis.report.web;
 import static org.apache.commons.lang3.BooleanUtils.isNotFalse;
 import static org.openlmis.report.i18n.JasperMessageKeys.ERROR_JASPER_TEMPLATE_NOT_FOUND;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
@@ -28,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperReport;
 import org.openlmis.report.domain.JasperTemplate;
 import org.openlmis.report.dto.JasperTemplateDto;
 import org.openlmis.report.dto.external.fulfillment.OrderDto;
@@ -206,9 +209,15 @@ public class JasperTemplateController extends BaseController {
     map.putAll(jasperTemplateService.mapReportImagesToTemplate(template));
 
     try {
+      JasperReport templateReport = jasperTemplateService.loadReport(template);
       map.putAll(jasperTemplateService.getLocaleBundleParameters(lang));
+      map.putAll(jasperTemplateService.getMapSubreportGlobalHeaderParameters(templateReport));
+    } catch (ReportingException e) {
+      LOGGER.debug("Cannot compile template {}", template.getName());
     } catch (MalformedURLException e) {
       LOGGER.debug("Cannot load translation bundle for {}", template.getName());
+    } catch (JRException | IOException ex) {
+      LOGGER.debug("Cannot load GlobalHeaderTemplate for {}", template.getName());
     }
 
     map.put("format", format);
