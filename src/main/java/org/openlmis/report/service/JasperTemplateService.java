@@ -424,12 +424,14 @@ public class JasperTemplateService {
       throws ReportingException {
     ArrayList<JasperTemplateParameter> parameters = new ArrayList<>();
     Set<ReportImage> images = new HashSet<>();
+    int order = 0;
 
     for (JRParameter jrParameter : jrParameters) {
       if (!jrParameter.isSystemDefined()) {
         if (jrParameter.isForPrompting()) {
           JasperTemplateParameter jasperTemplateParameter = createParameter(jrParameter);
           jasperTemplateParameter.setTemplate(jasperTemplate);
+          jasperTemplateParameter.setDisplayOrder(order++);
           parameters.add(jasperTemplateParameter);
         } else if (Image.class.getName().equals(jrParameter.getValueClassName())) {
           String name = jrParameter.getName();
