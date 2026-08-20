@@ -20,17 +20,20 @@ add_resource() {
     --resource="$1" --file-filter="$2" "$3"
 }
 
-rm -rf .tx
-tx init
-add_resource messages \
-  'src/main/resources/messages_<lang>.properties' \
-  src/main/resources/messages_en.properties
-add_resource report-translations \
-  'src/main/resources/resourceBundles/report_translations_<lang>.properties' \
-  src/main/resources/resourceBundles/report_translations.properties
+if [ -n "$TX_TOKEN" ]; then
+  rm -rf .tx
+  tx init
+  add_resource messages \
+    'src/main/resources/messages_<lang>.properties' \
+    src/main/resources/messages_en.properties
+  add_resource report-translations \
+    'src/main/resources/resourceBundles/report_translations_<lang>.properties' \
+    src/main/resources/resourceBundles/report_translations.properties
 
-[ "$TX_PUSH" = true ] && tx push -s
-[ "$TX_PULL" = true ] && tx pull -a -f
-
+  [ "$TX_PUSH" = true ] && { tx push -s || exit 1; }
+  [ "$TX_PULL" = true ] && { tx pull -a -f || exit 1; }
+else
+  echo "TX_TOKEN not set - skipping Transifex sync, using the bundle committed in the repo" >&2
+fi
 # Run Gradle build
 gradle clean build
