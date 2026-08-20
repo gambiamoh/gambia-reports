@@ -19,6 +19,9 @@
 - [OLMIS-8235](https://openlmis.atlassian.net/browse/OLMIS-8235)
   - Replacing an existing report template requires override=true, and an override no longer wipes
     parameter metadata or fails with HTTP 500 for templates with parameter dependencies
+- [OPSD-105](https://openlmis.atlassian.net/browse/OPSD-105)
+  - Added new Stock Receive Report listing stock received from valid sources
+    (product code, product name, received from, batch, expiry, quantity received)
 
 1.1.5 / 2026-05-11
 ==================

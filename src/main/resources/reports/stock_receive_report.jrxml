@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.5.20250704-1505 using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="StockReceiveReport" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isFloatColumnFooter="true" uuid="8ac38d5d-fbdb-4c82-a41d-3a466fbe4b7c">
+	<property name="net.sf.jasperreports.export.xlsx.exclude.origin.band.1" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.xlsx.exclude.origin.band.2" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.xlsx.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.xlsx.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.xlsx.exclude.key.PaginationText"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.1" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.2" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.key.PaginationText"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.1" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.2" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.key.PaginationText"/>
+	<parameter name="program" class="java.lang.String">
+		<property name="displayName" value="Program"/>
+		<property name="selectExpression" value="/api/programs"/>
+		<property name="selectProperty" value="id"/>
+		<property name="displayProperty" value="name"/>
+		<property name="required" value="true"/>
+	</parameter>
+	<parameter name="facility" class="java.lang.String">
+		<property name="displayName" value="Facility"/>
+		<property name="selectExpression" value="/api/facilities"/>
+		<property name="selectProperty" value="id"/>
+		<property name="displayProperty" value="name"/>
+		<property name="required" value="true"/>
+	</parameter>
+	<parameter name="orderable" class="java.lang.String">
+		<property name="displayName" value="Product"/>
+		<property name="selectExpression" value="/api/orderables"/>
+		<property name="selectProperty" value="id"/>
+		<property name="displayProperty" value="fullProductName"/>
+		<property name="required" value="false"/>
+	</parameter>
+	<parameter name="dateFrom" class="java.lang.String">
+		<property name="displayName" value="Start Date"/>
+		<property name="required" value="true"/>
+		<parameterDescription><![CDATA[datepickers]]></parameterDescription>
+	</parameter>
+	<parameter name="dateTo" class="java.lang.String">
+		<property name="displayName" value="End Date"/>
+		<property name="required" value="true"/>
+		<parameterDescription><![CDATA[datepickers]]></parameterDescription>
+	</parameter>
+	<parameter name="dateFromValue" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{dateFrom} == null ? null : ($P{dateFrom}.matches("\\d{4}-\\d{2}-\\d{2}.*") ? $P{dateFrom}.substring(0, 10) : new SimpleDateFormat("yyyy-MM-dd").format(new SimpleDateFormat("EEE MMM dd yyyy", java.util.Locale.ENGLISH).parse($P{dateFrom})))]]></defaultValueExpression>
+	</parameter>
+	<parameter name="dateToValue" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{dateTo} == null ? null : ($P{dateTo}.matches("\\d{4}-\\d{2}-\\d{2}.*") ? $P{dateTo}.substring(0, 10) : new SimpleDateFormat("yyyy-MM-dd").format(new SimpleDateFormat("EEE MMM dd yyyy", java.util.Locale.ENGLISH).parse($P{dateTo})))]]></defaultValueExpression>
+	</parameter>
+	<parameter name="orderableFilter" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[($P{orderable} == null) ? (" ord.id is not NULL") : (" ord.id='"+$P{orderable}+"'::uuid")]]></defaultValueExpression>
+	</parameter>
+	<queryString language="SQL">
+		<![CDATA[WITH receipts AS (
+    SELECT
+        ord.code                             AS product_code,
+        ord.fullproductname                  AS product_name,
+        COALESCE(src_fac.name, src_org.name) AS received_from,
+        lots.lotcode                         AS batch,
+        lots.expirationdate                  AS expiration_date,
+        SUM(sli.quantity)                    AS quantity_received
+    FROM stockmanagement.stock_card_line_items sli
+    INNER JOIN stockmanagement.stock_cards sc
+        ON sc.id = sli.stockcardid
+    INNER JOIN stockmanagement.nodes src
+        ON src.id = sli.sourceid
+    LEFT JOIN referencedata.facilities src_fac
+        ON src.isrefdatafacility IS TRUE
+       AND src_fac.id = src.referenceid
+    LEFT JOIN stockmanagement.organizations src_org
+        ON src.isrefdatafacility IS FALSE
+       AND src_org.id = src.referenceid
+    INNER JOIN (
+        SELECT DISTINCT ON (id)
+            id,
+            code,
+            fullproductname
+        FROM referencedata.orderables
+        ORDER BY id, versionnumber DESC
+    ) ord ON ord.id = sc.orderableid
+    INNER JOIN (
+        SELECT DISTINCT ON (po.programid, po.orderableid)
+            po.programid,
+            po.orderableid,
+            po.active
+        FROM referencedata.program_orderables po
+        ORDER BY po.programid, po.orderableid, po.orderableversionnumber DESC
+    ) latest_po
+        ON latest_po.programid = sc.programid
+       AND latest_po.orderableid = sc.orderableid
+    LEFT JOIN referencedata.lots lots
+        ON lots.id = sc.lotid
+    WHERE sc.facilityid = $P{facility}::uuid
+      AND sc.programid = $P{program}::uuid
+      AND sli.occurreddate BETWEEN $P{dateFromValue}::date AND $P{dateToValue}::date
+      AND latest_po.active = TRUE
+      AND $P!{orderableFilter}
+    GROUP BY
+        ord.code,
+        ord.fullproductname,
+        COALESCE(src_fac.name, src_org.name),
+        lots.lotcode,
+        lots.expirationdate
+)
+SELECT
+    fac.name  AS facility,
+    prog.name AS program,
+    COALESCE(
+        (SELECT o.fullproductname
+         FROM referencedata.orderables o
+         WHERE o.id = $P{orderable}::uuid
+         ORDER BY o.versionnumber DESC
+         LIMIT 1),
+        'All'
+    ) AS product_filter,
+    r.product_code,
+    r.product_name,
+    r.received_from,
+    r.batch,
+    TO_CHAR(r.expiration_date, 'YYYY-MM-DD') AS expiry,
+    r.quantity_received
+FROM referencedata.facilities fac
+CROSS JOIN referencedata.programs prog
+LEFT JOIN receipts r ON TRUE
+WHERE fac.id = $P{facility}::uuid
+  AND prog.id = $P{program}::uuid
+ORDER BY
+    r.product_code,
+    r.received_from,
+    r.expiration_date,
+    r.batch;]]>
+	</queryString>
+	<field name="program" class="java.lang.String"/>
+	<field name="facility" class="java.lang.String"/>
+	<field name="product_filter" class="java.lang.String"/>
+	<field name="product_code" class="java.lang.String"/>
+	<field name="product_name" class="java.lang.String"/>
+	<field name="received_from" class="java.lang.String"/>
+	<field name="batch" class="java.lang.String"/>
+	<field name="expiry" class="java.lang.String"/>
+	<field name="quantity_received" class="java.lang.Long"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="2" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="135" splitType="Stretch">
+			<printWhenExpression><![CDATA[new Boolean($V{PAGE_NUMBER}.intValue()==1)]]></printWhenExpression>
+			<rectangle>
+				<reportElement x="0" y="53" width="802" height="27" backcolor="#C0C0C0" uuid="1d9034c0-77df-4000-920e-06594b2ebeb6">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="0" y="53" width="802" height="28" forecolor="#FFFFFF" uuid="105ff9af-17db-4b74-a575-9ce26c6cc21f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="24" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Stock Receive Report]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="88" width="215" height="20" uuid="6ecc1d6d-cc23-445f-9457-719e77823966"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Facility]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="108" width="215" height="20" uuid="584cb078-fcd5-4821-bb88-88355bfb6d4c"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{facility}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="215" y="88" width="185" height="20" uuid="2ffae816-abc7-469b-8537-690848de685f"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Program]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="215" y="108" width="185" height="20" uuid="3e62de47-f04a-4551-bee8-5eda632525ed"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{program}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="597" y="88" width="135" height="20" uuid="1a13f4a3-4007-448e-a14f-38875c9a1be6"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Period]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="597" y="108" width="135" height="20" uuid="3ee6c501-717d-46ca-a4fd-4446bfa40396"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{dateFromValue} + " to " + $P{dateToValue}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="732" y="88" width="70" height="20" uuid="b07589e4-2afa-4e8d-8b4f-5c38d08a0306"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Report Date]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="732" y="108" width="70" height="20" uuid="a9125f45-d567-43af-b196-b81cad46eb2c"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="400" y="88" width="197" height="20" uuid="c4e21943-bc60-439c-88f8-3306bed7b8f7"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Product]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="400" y="108" width="197" height="20" uuid="dd7fca0d-9167-4698-aa34-a9ae6ea85924"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{product_filter}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="30" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="0" width="802" height="30" backcolor="#C0C0C0" uuid="5ef622da-a8e3-4110-ba9e-b2b9f14d8eaa">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="0" y="0" width="145" height="30" uuid="830672fa-4486-468b-a3a3-f7845cc695d6"/>
+				<box leftPadding="2" bottomPadding="1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Product code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="145" y="0" width="205" height="30" uuid="7021236d-0819-4213-952b-c7ca8fd81381"/>
+				<box leftPadding="2" bottomPadding="1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Product name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="350" y="0" width="180" height="30" uuid="b146f8da-dff7-40f2-8b54-29b6bf96996d"/>
+				<box leftPadding="2" bottomPadding="1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Received from (valid source)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="530" y="0" width="95" height="30" uuid="af827619-ee17-496e-8cea-dc659c5e8cf2"/>
+				<box leftPadding="2" bottomPadding="1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Batch]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="625" y="0" width="67" height="30" uuid="fba3b2ec-105b-4382-9790-15a3dd48f896"/>
+				<box leftPadding="2" bottomPadding="1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Expiry]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="692" y="0" width="110" height="30" uuid="f578b0f1-b4e7-4f84-8ac1-9ea575798e71"/>
+				<box leftPadding="2" bottomPadding="1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Quantity received]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="31" splitType="Prevent">
+			<printWhenExpression><![CDATA[$F{product_code} != null]]></printWhenExpression>
+			<rectangle>
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="802" height="30" backcolor="#F0F0F0" uuid="2de367b0-e3ff-42e2-b474-e9accdcd1c69"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="145" height="30" uuid="1badcf53-00f2-4cd9-a791-4cf48fe3a6ba"/>
+				<box>
+					<pen lineWidth="0.25" lineColor="#D2D2D2"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{product_code}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="145" y="0" width="205" height="30" uuid="7dcb4e4d-78f0-42d3-ab0b-a89793ea2a67"/>
+				<box>
+					<pen lineWidth="0.25" lineColor="#D2D2D2"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{product_name}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="350" y="0" width="180" height="30" uuid="635fc6b3-8ee0-4ac0-bf2f-23dcdee9e4e2"/>
+				<box>
+					<pen lineWidth="0.25" lineColor="#D2D2D2"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{received_from}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="530" y="0" width="95" height="30" uuid="769d9826-0706-4ac4-8c32-c74ef2eb19b9"/>
+				<box>
+					<pen lineWidth="0.25" lineColor="#D2D2D2"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{batch}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="625" y="0" width="67" height="30" uuid="22c747ca-ce9b-42ff-883b-ba6d9bcce6c2"/>
+				<box>
+					<pen lineWidth="0.25" lineColor="#D2D2D2"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{expiry}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="692" y="0" width="110" height="30" uuid="18e7a1cd-a945-4fb7-803f-97fccd8c2256"/>
+				<box>
+					<pen lineWidth="0.25" lineColor="#D2D2D2"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{quantity_received}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="40">
+			<textField evaluationTime="Master">
+				<reportElement x="702" y="3" width="100" height="30" uuid="f1db7f67-876a-48ce-a6d2-2fdf4b475085"/>
+				<textElement textAlignment="Right" verticalAlignment="Top"/>
+				<textFieldExpression><![CDATA["Page " + $V{MASTER_CURRENT_PAGE} + " of " + $V{MASTER_TOTAL_PAGES}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="52">
+			<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()==0) || (new Boolean($V{REPORT_COUNT}.intValue()==1) && $F{product_code} == null)]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="0" width="802" height="51" uuid="d5ac5426-34dd-41c4-acde-4510f82e3add"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[There is no data for the indicated parameters.]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>
