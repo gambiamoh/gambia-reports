@@ -1,5 +1,7 @@
 1.1.6 / WIP
 ==================
+- [OPSD-103](https://openlmis.atlassian.net/browse/OPSD-103)
+  - Item Ledger report now includes movements from the first and last day of the selected range
 - [ODRC-24](https://openlmis.atlassian.net/browse/ODRC-24)
   - Added POST /api/reports/generate, which renders a report from another service
   - Reports can be filled from a data source supplied by the caller instead of the replication

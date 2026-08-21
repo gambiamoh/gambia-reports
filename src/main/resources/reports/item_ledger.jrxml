@@ -83,7 +83,7 @@ FROM (
             stockcardid,
             stockonhand
         FROM stockmanagement.calculated_stocks_on_hand
-        WHERE processeddate <= $P{dateTo}::date
+        WHERE occurreddate <= $P{dateTo}::date
         ORDER BY stockcardid, occurreddate DESC
     ) soh ON sc.id = soh.stockcardid
     LEFT JOIN (
@@ -92,8 +92,8 @@ FROM (
             SUM(quantity) AS quantity
         FROM stockmanagement.stock_card_line_items
         WHERE destinationid IS NOT NULL
-          AND processeddate BETWEEN $P{dateFrom}::date
-                                AND $P{dateTo}::date
+          AND occurreddate BETWEEN $P{dateFrom}::date
+                               AND $P{dateTo}::date
         GROUP BY stockcardid
     ) issued ON issued.stockcardid = sc.id
     LEFT JOIN (
@@ -102,8 +102,8 @@ FROM (
             SUM(quantity) AS quantity
         FROM stockmanagement.stock_card_line_items
         WHERE sourceid IS NOT NULL
-          AND processeddate BETWEEN $P{dateFrom}::date
-                                AND $P{dateTo}::date
+          AND occurreddate BETWEEN $P{dateFrom}::date
+                               AND $P{dateTo}::date
         GROUP BY stockcardid
     ) received ON received.stockcardid = sc.id
     GROUP BY sc.programid, sc.facilityid, sc.orderableid
