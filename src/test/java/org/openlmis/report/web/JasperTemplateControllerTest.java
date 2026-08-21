@@ -117,13 +117,20 @@ public class JasperTemplateControllerTest {
         .thenReturn(new HashMap<>());
     when(jasperTemplateRepository.findById(jasperTemplate.getId()))
         .thenReturn(Optional.of(jasperTemplate));
-    when(jasperReportsViewService.getJasperReportsView(any(), any()))
+    when(jasperReportsViewService.getJasperReportsView(any(JasperTemplate.class), any()))
         .thenReturn(new byte[] {0, 1, 2, 3, 4});
     when(authenticationHelper.getCurrentUser()).thenReturn(currentUser);
 
     MockHttpServletRequest request = new MockHttpServletRequest();
     ResponseEntity<byte[]> response = jasperTemplateController.generateReport(request,
-        jasperTemplate.getId(), "xlsx");
+        jasperTemplate.getId(), "xlsx", "en");
+    assertTrue(response.getHeaders().toString().contains("name.xlsx"));
+    assertTrue(response.getHeaders().toString().contains("Content-Type:\"application/"
+        + "vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8\""));
+
+    request = new MockHttpServletRequest();
+    response = jasperTemplateController.generateReport(request,
+        jasperTemplate.getId(), "xlsx", null);
     assertTrue(response.getHeaders().toString().contains("name.xlsx"));
     assertTrue(response.getHeaders().toString().contains("Content-Type:\"application/"
         + "vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8\""));

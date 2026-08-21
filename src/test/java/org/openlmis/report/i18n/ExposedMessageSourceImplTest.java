@@ -13,14 +13,27 @@
  * http://www.gnu.org/licenses.  For additional information contact info@OpenLMIS.org.
  */
 
-package org.openlmis.report.exception;
+package org.openlmis.report.i18n;
 
-public class JasperReportViewException extends BaseLocalizedException {
-  public JasperReportViewException(String messageKey, String... params) {
-    super(messageKey, params);
-  }
+import static org.junit.Assert.assertEquals;
 
-  public JasperReportViewException(Throwable cause, String messageKey, String... params) {
-    super(cause, messageKey, params);
+import java.util.Locale;
+import java.util.Properties;
+import org.junit.Test;
+
+public class ExposedMessageSourceImplTest {
+
+  @Test
+  public void apostropheWithPlaceholderIsRenderedCorrectly() {
+    ExposedMessageSourceImpl source = new ExposedMessageSourceImpl();
+    source.setDefaultEncoding("UTF-8");
+    Properties messages = new Properties();
+    messages.setProperty("test.apostrophe", "L'établissement {0}");
+    source.setCommonMessages(messages);
+
+    String result = source.getMessage("test.apostrophe",
+        new Object[] {"abc"}, Locale.FRENCH);
+
+    assertEquals("L'établissement abc", result);
   }
 }
