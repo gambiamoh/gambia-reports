@@ -21,7 +21,8 @@
     parameter metadata or fails with HTTP 500 for templates with parameter dependencies
 - [OPSD-105](https://openlmis.atlassian.net/browse/OPSD-105)
   - Added new Stock Receive Report listing stock received from valid sources
-    (product code, product name, received from, batch, expiry, quantity received)
+    (product code, product name, received from, batch, expiry, quantity received,
+    date received)
 
 1.1.5 / 2026-05-11
 ==================

@@ -63,6 +63,7 @@
         COALESCE(src_fac.name, src_org.name) AS received_from,
         lots.lotcode                         AS batch,
         lots.expirationdate                  AS expiration_date,
+        sli.occurreddate                     AS received_date,
         SUM(sli.quantity)                    AS quantity_received
     FROM stockmanagement.stock_card_line_items sli
     INNER JOIN stockmanagement.stock_cards sc
@@ -105,7 +106,8 @@
         ord.fullproductname,
         COALESCE(src_fac.name, src_org.name),
         lots.lotcode,
-        lots.expirationdate
+        lots.expirationdate,
+        sli.occurreddate
 )
 SELECT
     fac.name  AS facility,
@@ -118,6 +120,7 @@ SELECT
          LIMIT 1),
         'All'
     ) AS product_filter,
+    TO_CHAR(r.received_date, 'YYYY-MM-DD')   AS received_date,
     r.product_code,
     r.product_name,
     r.received_from,
@@ -130,6 +133,7 @@ LEFT JOIN receipts r ON TRUE
 WHERE fac.id = $P{facility}::uuid
   AND prog.id = $P{program}::uuid
 ORDER BY
+    r.received_date,
     r.product_code,
     r.received_from,
     r.expiration_date,
@@ -138,6 +142,7 @@ ORDER BY
 	<field name="program" class="java.lang.String"/>
 	<field name="facility" class="java.lang.String"/>
 	<field name="product_filter" class="java.lang.String"/>
+	<field name="received_date" class="java.lang.String"/>
 	<field name="product_code" class="java.lang.String"/>
 	<field name="product_name" class="java.lang.String"/>
 	<field name="received_from" class="java.lang.String"/>
@@ -241,7 +246,15 @@ ORDER BY
 				</graphicElement>
 			</rectangle>
 			<staticText>
-				<reportElement x="0" y="0" width="145" height="30" uuid="830672fa-4486-468b-a3a3-f7845cc695d6"/>
+				<reportElement x="717" y="0" width="85" height="30" uuid="bde4947a-1079-47f8-8a80-ee771a2ab579"/>
+				<box leftPadding="2" bottomPadding="1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date received]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="0" width="142" height="30" uuid="830672fa-4486-468b-a3a3-f7845cc695d6"/>
 				<box leftPadding="2" bottomPadding="1"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true"/>
@@ -249,7 +262,7 @@ ORDER BY
 				<text><![CDATA[Product code]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="145" y="0" width="205" height="30" uuid="7021236d-0819-4213-952b-c7ca8fd81381"/>
+				<reportElement x="142" y="0" width="165" height="30" uuid="7021236d-0819-4213-952b-c7ca8fd81381"/>
 				<box leftPadding="2" bottomPadding="1"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true"/>
@@ -257,7 +270,7 @@ ORDER BY
 				<text><![CDATA[Product name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="350" y="0" width="180" height="30" uuid="b146f8da-dff7-40f2-8b54-29b6bf96996d"/>
+				<reportElement x="307" y="0" width="172" height="30" uuid="b146f8da-dff7-40f2-8b54-29b6bf96996d"/>
 				<box leftPadding="2" bottomPadding="1"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true"/>
@@ -265,7 +278,7 @@ ORDER BY
 				<text><![CDATA[Received from (valid source)]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="530" y="0" width="95" height="30" uuid="af827619-ee17-496e-8cea-dc659c5e8cf2"/>
+				<reportElement x="479" y="0" width="72" height="30" uuid="af827619-ee17-496e-8cea-dc659c5e8cf2"/>
 				<box leftPadding="2" bottomPadding="1"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true"/>
@@ -273,7 +286,7 @@ ORDER BY
 				<text><![CDATA[Batch]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="625" y="0" width="67" height="30" uuid="fba3b2ec-105b-4382-9790-15a3dd48f896"/>
+				<reportElement x="551" y="0" width="60" height="30" uuid="fba3b2ec-105b-4382-9790-15a3dd48f896"/>
 				<box leftPadding="2" bottomPadding="1"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true"/>
@@ -281,7 +294,7 @@ ORDER BY
 				<text><![CDATA[Expiry]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="692" y="0" width="110" height="30" uuid="f578b0f1-b4e7-4f84-8ac1-9ea575798e71"/>
+				<reportElement x="611" y="0" width="106" height="30" uuid="f578b0f1-b4e7-4f84-8ac1-9ea575798e71"/>
 				<box leftPadding="2" bottomPadding="1"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true"/>
@@ -300,7 +313,17 @@ ORDER BY
 				</graphicElement>
 			</rectangle>
 			<textField isBlankWhenNull="true">
-				<reportElement x="0" y="0" width="145" height="30" uuid="1badcf53-00f2-4cd9-a791-4cf48fe3a6ba"/>
+				<reportElement x="717" y="0" width="85" height="30" uuid="82380f13-80a0-4fc3-8761-6bec3a07271a"/>
+				<box>
+					<pen lineWidth="0.25" lineColor="#D2D2D2"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{received_date}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="142" height="30" uuid="1badcf53-00f2-4cd9-a791-4cf48fe3a6ba"/>
 				<box>
 					<pen lineWidth="0.25" lineColor="#D2D2D2"/>
 				</box>
@@ -310,7 +333,7 @@ ORDER BY
 				<textFieldExpression><![CDATA[$F{product_code}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="145" y="0" width="205" height="30" uuid="7dcb4e4d-78f0-42d3-ab0b-a89793ea2a67"/>
+				<reportElement x="142" y="0" width="165" height="30" uuid="7dcb4e4d-78f0-42d3-ab0b-a89793ea2a67"/>
 				<box>
 					<pen lineWidth="0.25" lineColor="#D2D2D2"/>
 				</box>
@@ -320,7 +343,7 @@ ORDER BY
 				<textFieldExpression><![CDATA[$F{product_name}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="350" y="0" width="180" height="30" uuid="635fc6b3-8ee0-4ac0-bf2f-23dcdee9e4e2"/>
+				<reportElement x="307" y="0" width="172" height="30" uuid="635fc6b3-8ee0-4ac0-bf2f-23dcdee9e4e2"/>
 				<box>
 					<pen lineWidth="0.25" lineColor="#D2D2D2"/>
 				</box>
@@ -330,7 +353,7 @@ ORDER BY
 				<textFieldExpression><![CDATA[$F{received_from}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="530" y="0" width="95" height="30" uuid="769d9826-0706-4ac4-8c32-c74ef2eb19b9"/>
+				<reportElement x="479" y="0" width="72" height="30" uuid="769d9826-0706-4ac4-8c32-c74ef2eb19b9"/>
 				<box>
 					<pen lineWidth="0.25" lineColor="#D2D2D2"/>
 				</box>
@@ -340,7 +363,7 @@ ORDER BY
 				<textFieldExpression><![CDATA[$F{batch}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="625" y="0" width="67" height="30" uuid="22c747ca-ce9b-42ff-883b-ba6d9bcce6c2"/>
+				<reportElement x="551" y="0" width="60" height="30" uuid="22c747ca-ce9b-42ff-883b-ba6d9bcce6c2"/>
 				<box>
 					<pen lineWidth="0.25" lineColor="#D2D2D2"/>
 				</box>
@@ -350,7 +373,7 @@ ORDER BY
 				<textFieldExpression><![CDATA[$F{expiry}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="692" y="0" width="110" height="30" uuid="18e7a1cd-a945-4fb7-803f-97fccd8c2256"/>
+				<reportElement x="611" y="0" width="106" height="30" uuid="18e7a1cd-a945-4fb7-803f-97fccd8c2256"/>
 				<box>
 					<pen lineWidth="0.25" lineColor="#D2D2D2"/>
 				</box>
