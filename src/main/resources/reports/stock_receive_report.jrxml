@@ -177,7 +177,7 @@ ORDER BY
 			<staticText>
 				<reportElement x="280" y="0" width="380" height="30" uuid="3b76cba4-49bc-44b4-8c0f-2ab189a36fde"/>
 				<textElement textAlignment="Left">
-					<font size="15" isBold="true"/>
+					<font fontName="DejaVu Sans" size="15" isBold="true" isPdfEmbedded="true"/>
 					<paragraph lineSpacing="Double" lineSpacingSize="2.0"/>
 				</textElement>
 				<text><![CDATA[Stock Receive Report]]></text>
@@ -185,42 +185,42 @@ ORDER BY
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="0" y="40" width="400" height="20" uuid="a8c0acda-1ded-4659-8283-efa7eba07f13"/>
 				<textElement>
-					<font size="10" isBold="true"/>
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Facility: " + ($F{facility} == null ? "" : $F{facility})]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="402" y="40" width="400" height="20" uuid="bd6d9218-9147-40c7-b899-ea066b798c4e"/>
 				<textElement>
-					<font size="10" isBold="true"/>
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Program: " + ($F{program} == null ? "" : $F{program})]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="0" y="60" width="400" height="20" uuid="bf775641-e796-4b8c-a341-7ca8e93a478e"/>
 				<textElement>
-					<font size="10" isBold="true"/>
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Category: " + ($F{category_filter} == null ? "All" : $F{category_filter})]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="402" y="60" width="400" height="20" uuid="a61ab42c-efde-4b89-88e9-666450619c29"/>
 				<textElement>
-					<font size="10" isBold="true"/>
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Product: " + ($F{product_filter} == null ? "All" : $F{product_filter})]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="0" y="80" width="400" height="20" uuid="a6155f2a-8439-44f3-becd-bc2109bcae3d"/>
 				<textElement>
-					<font size="10" isBold="true"/>
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Period: From " + $P{dateFromValue} + " To " + $P{dateToValue}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="402" y="80" width="400" height="20" uuid="979d1ac3-7814-4027-a9e5-a20e34dd762a"/>
 				<textElement>
-					<font size="10" isBold="true"/>
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Date:  " + (new SimpleDateFormat("yyyy-MM-dd")).format(new Date())]]></textFieldExpression>
 			</textField>
@@ -229,93 +229,94 @@ ORDER BY
 	<columnHeader>
 		<band height="30">
 			<staticText>
-				<reportElement mode="Opaque" x="0" y="0" width="146" height="30" backcolor="#A3EFD8" uuid="6ac3331f-c9b6-49df-af92-475bfa2a20aa"/>
-				<box leftPadding="2">
+				<reportElement mode="Opaque" x="0" y="0" width="94" height="30" backcolor="#A3EFD8" uuid="6ac3331f-c9b6-49df-af92-475bfa2a20aa"/>
+				<box bottomPadding="1" leftPadding="5" rightPadding="8">
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
-					<font size="10" isBold="true"/>
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
 				</textElement>
 				<text><![CDATA[Product code]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="146" y="0" width="141" height="30" backcolor="#A3EFD8" uuid="033a9a3a-b1ba-4cfa-974a-292186dd2411"/>
-				<box leftPadding="2">
+				<reportElement mode="Opaque" x="94" y="0" width="208" height="30" backcolor="#A3EFD8" uuid="033a9a3a-b1ba-4cfa-974a-292186dd2411"/>
+				<box bottomPadding="1" leftPadding="5" rightPadding="8">
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
-					<font size="10" isBold="true"/>
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
 				</textElement>
 				<text><![CDATA[Product name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="287" y="0" width="171" height="30" backcolor="#A3EFD8" uuid="1f700df2-f4ea-4683-8c49-b4cd9424e9ab"/>
-				<box leftPadding="2">
+				<reportElement mode="Opaque" x="302" y="0" width="132" height="30" backcolor="#A3EFD8" uuid="1f700df2-f4ea-4683-8c49-b4cd9424e9ab"/>
+				<box bottomPadding="1" leftPadding="5" rightPadding="8">
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
-					<font size="10" isBold="true"/>
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
 				</textElement>
-				<text><![CDATA[Received from (valid source)]]></text>
+				<text><![CDATA[Received from
+(valid source)]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="458" y="0" width="75" height="30" backcolor="#A3EFD8" uuid="c5542a41-65ee-4e6f-bd73-8a8c0bf4a8c3"/>
-				<box leftPadding="2">
+				<reportElement mode="Opaque" x="434" y="0" width="88" height="30" backcolor="#A3EFD8" uuid="c5542a41-65ee-4e6f-bd73-8a8c0bf4a8c3"/>
+				<box bottomPadding="1" leftPadding="5" rightPadding="8">
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
-					<font size="10" isBold="true"/>
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
 				</textElement>
 				<text><![CDATA[Batch]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="533" y="0" width="64" height="30" backcolor="#A3EFD8" uuid="20f0c280-1134-4244-97e1-098b01210e65"/>
-				<box leftPadding="2">
+				<reportElement mode="Opaque" x="522" y="0" width="74" height="30" backcolor="#A3EFD8" uuid="20f0c280-1134-4244-97e1-098b01210e65"/>
+				<box bottomPadding="1" leftPadding="5" rightPadding="5">
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
-					<font size="10" isBold="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
 				</textElement>
 				<text><![CDATA[Expiry]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="597" y="0" width="112" height="30" backcolor="#A3EFD8" uuid="bf7fbcdd-0a51-408d-8e30-97d526629ce5"/>
-				<box leftPadding="2">
+				<reportElement mode="Opaque" x="596" y="0" width="112" height="30" backcolor="#A3EFD8" uuid="bf7fbcdd-0a51-408d-8e30-97d526629ce5"/>
+				<box bottomPadding="1" leftPadding="5">
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
-					<font size="10" isBold="true"/>
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
 				</textElement>
 				<text><![CDATA[Quantity received]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="709" y="0" width="93" height="30" backcolor="#A3EFD8" uuid="f2199456-d814-41d3-a8ce-840590c38b0a"/>
-				<box leftPadding="2">
+				<reportElement mode="Opaque" x="708" y="0" width="94" height="30" backcolor="#A3EFD8" uuid="f2199456-d814-41d3-a8ce-840590c38b0a"/>
+				<box bottomPadding="1" leftPadding="5" rightPadding="5">
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
-					<font size="10" isBold="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
 				</textElement>
 				<text><![CDATA[Date received]]></text>
 			</staticText>
@@ -325,8 +326,8 @@ ORDER BY
 		<band height="25" splitType="Immediate">
 			<printWhenExpression><![CDATA[$F{product_code} != null]]></printWhenExpression>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="Row" stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="0" width="146" height="25" uuid="ec7e535e-fa37-44d1-8e80-52b284ed9137"/>
-				<box bottomPadding="1" leftPadding="2">
+				<reportElement style="Row" stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="0" width="94" height="25" uuid="ec7e535e-fa37-44d1-8e80-52b284ed9137"/>
+				<box topPadding="4" bottomPadding="4" leftPadding="5" rightPadding="8">
 					<pen lineColor="#A3EFD8"/>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -334,13 +335,13 @@ ORDER BY
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font size="10"/>
+					<font fontName="DejaVu Sans" size="10" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{product_code}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="Row" stretchType="RelativeToTallestObject" mode="Opaque" x="146" y="0" width="141" height="25" uuid="d992ca28-dd15-45f5-879b-4fdbce5fc1b6"/>
-				<box bottomPadding="1" leftPadding="2">
+				<reportElement style="Row" stretchType="RelativeToTallestObject" mode="Opaque" x="94" y="0" width="208" height="25" uuid="d992ca28-dd15-45f5-879b-4fdbce5fc1b6"/>
+				<box topPadding="4" bottomPadding="4" leftPadding="5" rightPadding="8">
 					<pen lineColor="#A3EFD8"/>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -348,13 +349,13 @@ ORDER BY
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font size="10"/>
+					<font fontName="DejaVu Sans" size="10" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{product_name}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="Row" stretchType="RelativeToTallestObject" mode="Opaque" x="287" y="0" width="171" height="25" uuid="27394340-daf6-4127-b86e-41381427c317"/>
-				<box bottomPadding="1" leftPadding="2">
+				<reportElement style="Row" stretchType="RelativeToTallestObject" mode="Opaque" x="302" y="0" width="132" height="25" uuid="27394340-daf6-4127-b86e-41381427c317"/>
+				<box topPadding="4" bottomPadding="4" leftPadding="5" rightPadding="8">
 					<pen lineColor="#A3EFD8"/>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -362,13 +363,13 @@ ORDER BY
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font size="10"/>
+					<font fontName="DejaVu Sans" size="10" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{received_from}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="Row" stretchType="RelativeToTallestObject" mode="Opaque" x="458" y="0" width="75" height="25" uuid="e65a668b-ec67-424c-851f-1809d195defc"/>
-				<box bottomPadding="1" leftPadding="2">
+				<reportElement style="Row" stretchType="RelativeToTallestObject" mode="Opaque" x="434" y="0" width="88" height="25" uuid="e65a668b-ec67-424c-851f-1809d195defc"/>
+				<box topPadding="4" bottomPadding="4" leftPadding="5" rightPadding="8">
 					<pen lineColor="#A3EFD8"/>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -376,27 +377,27 @@ ORDER BY
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font size="10"/>
+					<font fontName="DejaVu Sans" size="10" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{batch}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="Row" stretchType="RelativeToTallestObject" mode="Opaque" x="533" y="0" width="64" height="25" uuid="7cbfa739-4e66-4953-9b77-dcb7b8e8d2be"/>
-				<box bottomPadding="1" leftPadding="2">
+				<reportElement style="Row" stretchType="RelativeToTallestObject" mode="Opaque" x="522" y="0" width="74" height="25" uuid="7cbfa739-4e66-4953-9b77-dcb7b8e8d2be"/>
+				<box topPadding="4" bottomPadding="4" leftPadding="5" rightPadding="5">
 					<pen lineColor="#A3EFD8"/>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font size="10"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="10" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{expiry}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="Row" stretchType="RelativeToTallestObject" mode="Opaque" x="597" y="0" width="112" height="25" uuid="446e8895-b629-4fd9-b51c-01e76bcd4f23"/>
-				<box bottomPadding="1" rightPadding="5">
+				<reportElement style="Row" stretchType="RelativeToTallestObject" mode="Opaque" x="596" y="0" width="112" height="25" uuid="446e8895-b629-4fd9-b51c-01e76bcd4f23"/>
+				<box topPadding="4" bottomPadding="4" leftPadding="5" rightPadding="6">
 					<pen lineColor="#A3EFD8"/>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -404,21 +405,21 @@ ORDER BY
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font size="10"/>
+					<font fontName="DejaVu Sans" size="10" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{quantity_received}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="Row" stretchType="RelativeToTallestObject" mode="Opaque" x="709" y="0" width="93" height="25" uuid="17212842-536b-4863-83af-ffdb234a8e39"/>
-				<box bottomPadding="1" leftPadding="8">
+				<reportElement style="Row" stretchType="RelativeToTallestObject" mode="Opaque" x="708" y="0" width="94" height="25" uuid="17212842-536b-4863-83af-ffdb234a8e39"/>
+				<box topPadding="4" bottomPadding="4" leftPadding="5" rightPadding="5">
 					<pen lineColor="#A3EFD8"/>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font size="10"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="10" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{received_date}]]></textFieldExpression>
 			</textField>
@@ -439,7 +440,7 @@ ORDER BY
 			<staticText>
 				<reportElement positionType="FixRelativeToBottom" x="0" y="0" width="802" height="51" uuid="ba3bbabb-1feb-4a1a-aaac-dcde1dda0e52"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="12" isBold="true"/>
+					<font fontName="DejaVu Sans" size="12" isBold="true" isPdfEmbedded="true"/>
 				</textElement>
 				<text><![CDATA[There is no data for the indicated parameters.]]></text>
 			</staticText>
