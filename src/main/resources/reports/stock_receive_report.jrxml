@@ -59,12 +59,6 @@
 	<parameter name="dateToValue" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[$P{dateTo} == null ? null : ($P{dateTo}.matches("\\d{4}-\\d{2}-\\d{2}.*") ? $P{dateTo}.substring(0, 10) : new SimpleDateFormat("yyyy-MM-dd").format(new SimpleDateFormat("EEE MMM dd yyyy", java.util.Locale.ENGLISH).parse($P{dateTo})))]]></defaultValueExpression>
 	</parameter>
-	<parameter name="categoryFilter" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[($P{category} == null) ? (" latest_po.orderabledisplaycategoryid is not NULL") : (" latest_po.orderabledisplaycategoryid='"+$P{category}+"'::uuid")]]></defaultValueExpression>
-	</parameter>
-	<parameter name="orderableFilter" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[($P{orderable} == null) ? (" ord.id is not NULL") : (" ord.id='"+$P{orderable}+"'::uuid")]]></defaultValueExpression>
-	</parameter>
 	<queryString language="SQL">
 		<![CDATA[WITH receipts AS (
     SELECT
@@ -111,8 +105,8 @@
       AND sc.programid = $P{program}::uuid
       AND sli.occurreddate BETWEEN $P{dateFromValue}::date AND $P{dateToValue}::date
       AND latest_po.active = TRUE
-      AND $P!{orderableFilter}
-      AND $P!{categoryFilter}
+      AND ($P{orderable} IS NULL OR ord.id = $P{orderable}::uuid)
+      AND ($P{category} IS NULL OR latest_po.orderabledisplaycategoryid = $P{category}::uuid)
     GROUP BY
         ord.code,
         ord.fullproductname,
