@@ -386,7 +386,7 @@
                 </textElement>
                 <text><![CDATA[Product:]]></text>
             </staticText>
-            <textField>
+            <textField isStretchWithOverflow="true">
                 <reportElement x="1" y="92" width="208" height="12" uuid="da397384-4e9b-4ad7-b920-b1b7c404822c"/>
                 <textFieldExpression><![CDATA[$P{product} != null ? $P{product} : "All"]]></textFieldExpression>
             </textField>
@@ -595,9 +595,9 @@
                     <pen lineWidth="0.0"/>
                 </graphicElement>
             </rectangle>
-            <textField isBlankWhenNull="true">
-                <reportElement x="0" y="0" width="71" height="45" uuid="22c747ca-ce9b-42ff-883b-ba6d9bcce6c2"/>
-                <box>
+            <textField isStretchWithOverflow="true" isBlankWhenNull="true">
+                <reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="71" height="45" uuid="22c747ca-ce9b-42ff-883b-ba6d9bcce6c2"/>
+                <box topPadding="3" bottomPadding="3" leftPadding="4" rightPadding="4">
                     <pen lineWidth="0.25" lineColor="#D2D2D2"/>
                 </box>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
@@ -606,9 +606,9 @@
                 </textElement>
                 <textFieldExpression><![CDATA[$F{issueDate}]]></textFieldExpression>
             </textField>
-            <textField isBlankWhenNull="true">
-                <reportElement x="320" y="0" width="110" height="45" uuid="18e7a1cd-a945-4fb7-803f-97fccd8c2256"/>
-                <box>
+            <textField isStretchWithOverflow="true" isBlankWhenNull="true">
+                <reportElement stretchType="RelativeToTallestObject" x="320" y="0" width="110" height="45" uuid="18e7a1cd-a945-4fb7-803f-97fccd8c2256"/>
+                <box topPadding="3" bottomPadding="3" leftPadding="4" rightPadding="4">
                     <pen lineWidth="0.25" lineColor="#D2D2D2"/>
                 </box>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
@@ -617,9 +617,9 @@
                 </textElement>
                 <textFieldExpression><![CDATA[$F{manufacturer}]]></textFieldExpression>
             </textField>
-            <textField isBlankWhenNull="true">
-                <reportElement x="71" y="0" width="100" height="45" uuid="158b0d96-0c90-48a4-87de-36d2380266af"/>
-                <box>
+            <textField isStretchWithOverflow="true" isBlankWhenNull="true">
+                <reportElement stretchType="RelativeToTallestObject" x="71" y="0" width="100" height="45" uuid="158b0d96-0c90-48a4-87de-36d2380266af"/>
+                <box topPadding="3" bottomPadding="3" leftPadding="4" rightPadding="4">
                     <pen lineWidth="0.25" lineColor="#D2D2D2"/>
                 </box>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
@@ -628,9 +628,9 @@
                 </textElement>
                 <textFieldExpression><![CDATA[$F{productName}]]></textFieldExpression>
             </textField>
-            <textField isBlankWhenNull="true">
-                <reportElement x="171" y="0" width="79" height="45" uuid="fd442db8-d9e9-4693-a7b4-e1d3fc0a2773"/>
-                <box>
+            <textField isStretchWithOverflow="true" isBlankWhenNull="true">
+                <reportElement stretchType="RelativeToTallestObject" x="171" y="0" width="79" height="45" uuid="fd442db8-d9e9-4693-a7b4-e1d3fc0a2773"/>
+                <box topPadding="3" bottomPadding="3" leftPadding="4" rightPadding="4">
                     <pen lineWidth="0.25" lineColor="#D2D2D2"/>
                 </box>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
@@ -639,9 +639,9 @@
                 </textElement>
                 <textFieldExpression><![CDATA[$F{productCode}]]></textFieldExpression>
             </textField>
-            <textField isBlankWhenNull="true">
-                <reportElement x="250" y="0" width="70" height="45" uuid="ab42938c-4f7b-46c9-bf11-f7b13edd26c9"/>
-                <box>
+            <textField isStretchWithOverflow="true" isBlankWhenNull="true">
+                <reportElement stretchType="RelativeToTallestObject" x="250" y="0" width="70" height="45" uuid="ab42938c-4f7b-46c9-bf11-f7b13edd26c9"/>
+                <box topPadding="3" bottomPadding="3" leftPadding="4" rightPadding="4">
                     <pen lineWidth="0.25" lineColor="#D2D2D2"/>
                 </box>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
@@ -650,9 +650,9 @@
                 </textElement>
                 <textFieldExpression><![CDATA[$F{productLotCode}]]></textFieldExpression>
             </textField>
-            <textField isBlankWhenNull="true">
-                <reportElement x="569" y="0" width="112" height="45" uuid="78e963fe-1d67-4d4f-b70b-6005eaabf0dc"/>
-                <box>
+            <textField isStretchWithOverflow="true" isBlankWhenNull="true">
+                <reportElement stretchType="RelativeToTallestObject" x="569" y="0" width="112" height="45" uuid="78e963fe-1d67-4d4f-b70b-6005eaabf0dc"/>
+                <box topPadding="3" bottomPadding="3" leftPadding="4" rightPadding="4">
                     <pen lineWidth="0.25" lineColor="#D2D2D2"/>
                 </box>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
@@ -661,9 +661,9 @@
                 </textElement>
                 <textFieldExpression><![CDATA[$F{receivingFacilityName}]]></textFieldExpression>
             </textField>
-            <textField isBlankWhenNull="true">
-                <reportElement x="430" y="0" width="70" height="45" uuid="78e963fe-1d67-4d4f-b70b-6005eaabf0dc"/>
-                <box>
+            <textField isStretchWithOverflow="true" isBlankWhenNull="true">
+                <reportElement stretchType="RelativeToTallestObject" x="430" y="0" width="70" height="45" uuid="78e963fe-1d67-4d4f-b70b-6005eaabf0dc"/>
+                <box topPadding="3" bottomPadding="3" leftPadding="4" rightPadding="4">
                     <pen lineWidth="0.25" lineColor="#D2D2D2"/>
                 </box>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
@@ -672,9 +672,9 @@
                 </textElement>
                 <textFieldExpression><![CDATA[$F{productExpiryDate}]]></textFieldExpression>
             </textField>
-            <textField isBlankWhenNull="true">
-                <reportElement x="500" y="0" width="69" height="45" uuid="78e963fe-1d67-4d4f-b70b-6005eaabf0dc"/>
-                <box>
+            <textField isStretchWithOverflow="true" isBlankWhenNull="true">
+                <reportElement stretchType="RelativeToTallestObject" x="500" y="0" width="69" height="45" uuid="78e963fe-1d67-4d4f-b70b-6005eaabf0dc"/>
+                <box topPadding="3" bottomPadding="3" leftPadding="4" rightPadding="4">
                     <pen lineWidth="0.25" lineColor="#D2D2D2"/>
                 </box>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
@@ -683,9 +683,9 @@
                 </textElement>
                 <textFieldExpression><![CDATA[$F{vialStage}]]></textFieldExpression>
             </textField>
-            <textField isBlankWhenNull="true">
-                <reportElement x="681" y="0" width="60" height="45" uuid="5008306e-d65e-4e8f-b915-f7a3aa7d9328"/>
-                <box>
+            <textField isStretchWithOverflow="true" isBlankWhenNull="true">
+                <reportElement stretchType="RelativeToTallestObject" x="681" y="0" width="60" height="45" uuid="5008306e-d65e-4e8f-b915-f7a3aa7d9328"/>
+                <box topPadding="3" bottomPadding="3" leftPadding="4" rightPadding="4">
                     <pen lineWidth="0.25" lineColor="#D2D2D2"/>
                 </box>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
@@ -694,9 +694,9 @@
                 </textElement>
                 <textFieldExpression><![CDATA[$F{reasonName}]]></textFieldExpression>
             </textField>
-            <textField isBlankWhenNull="true">
-                <reportElement x="741" y="0" width="60" height="45" uuid="484c46c2-05e8-461f-8d10-d36048f6e909"/>
-                <box>
+            <textField isStretchWithOverflow="true" isBlankWhenNull="true">
+                <reportElement stretchType="RelativeToTallestObject" x="741" y="0" width="60" height="45" uuid="484c46c2-05e8-461f-8d10-d36048f6e909"/>
+                <box topPadding="3" bottomPadding="3" leftPadding="4" rightPadding="4">
                     <pen lineWidth="0.25" lineColor="#D2D2D2"/>
                 </box>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
