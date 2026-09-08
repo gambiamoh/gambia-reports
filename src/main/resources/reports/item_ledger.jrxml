@@ -176,6 +176,7 @@ ORDER BY prog.name, fac.name, ord.fullproductname;]]>
 		<band height="40">
 			<staticText>
 				<reportElement mode="Opaque" x="0" y="0" width="40" height="40" backcolor="#A3EFD8" uuid="7972837a-4e14-4bc0-94ef-c9f465914ad5"/>
+				<box leftPadding="3" rightPadding="1"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 				</textElement>
@@ -183,6 +184,7 @@ ORDER BY prog.name, fac.name, ord.fullproductname;]]>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="40" y="0" width="160" height="40" backcolor="#A3EFD8" uuid="f1296dcd-3a59-4110-99af-f111c9e49196"/>
+				<box leftPadding="5" rightPadding="8"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 				</textElement>
@@ -190,6 +192,7 @@ ORDER BY prog.name, fac.name, ord.fullproductname;]]>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="200" y="0" width="120" height="40" backcolor="#A3EFD8" uuid="146fd567-4977-4816-8a08-0b0840defb8a"/>
+				<box leftPadding="5" rightPadding="8"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 				</textElement>
@@ -197,6 +200,7 @@ ORDER BY prog.name, fac.name, ord.fullproductname;]]>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="320" y="0" width="230" height="40" backcolor="#A3EFD8" uuid="ccd5ac68-c36f-477b-b2d4-390e36965d7d"/>
+				<box leftPadding="5" rightPadding="8"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 				</textElement>
@@ -204,6 +208,7 @@ ORDER BY prog.name, fac.name, ord.fullproductname;]]>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="550" y="0" width="130" height="40" backcolor="#A3EFD8" uuid="78cc39ab-0c2d-4904-8b3d-7007599a77c2"/>
+				<box leftPadding="5" rightPadding="8"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 				</textElement>
@@ -211,6 +216,7 @@ ORDER BY prog.name, fac.name, ord.fullproductname;]]>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="680" y="0" width="260" height="40" backcolor="#A3EFD8" uuid="51d4f6ca-49ce-4b4f-b05f-74bce56764a1"/>
+				<box leftPadding="5" rightPadding="8"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 				</textElement>
@@ -218,6 +224,7 @@ ORDER BY prog.name, fac.name, ord.fullproductname;]]>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="940" y="0" width="80" height="40" backcolor="#A3EFD8" uuid="4f805543-e6e1-4349-9dc0-78d1e54b399a"/>
+				<box leftPadding="5" rightPadding="8"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 				</textElement>
@@ -225,6 +232,7 @@ ORDER BY prog.name, fac.name, ord.fullproductname;]]>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="1020" y="0" width="80" height="40" backcolor="#A3EFD8" uuid="f70122c0-8d66-4a8b-ae62-05fcdc730d77"/>
+				<box leftPadding="5" rightPadding="8"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 				</textElement>
@@ -232,6 +240,7 @@ ORDER BY prog.name, fac.name, ord.fullproductname;]]>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="1100" y="0" width="80" height="40" backcolor="#A3EFD8" uuid="f1f9f3ac-ef40-472c-9b93-ca133dfe31d0"/>
+				<box leftPadding="5" rightPadding="8"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="12" isBold="true"/>
 				</textElement>
@@ -240,65 +249,74 @@ ORDER BY prog.name, fac.name, ord.fullproductname;]]>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="25" splitType="Immediate">
-			<textField>
-				<reportElement style="Row" mode="Opaque" x="0" y="0" width="40" height="25" uuid="c0fa3edb-4007-42f2-ba45-57ed0a648a44"/>
+		<band height="25" splitType="Prevent">
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToTallestObject" style="Row" mode="Opaque" x="0" y="0" width="40" height="25" uuid="c0fa3edb-4007-42f2-ba45-57ed0a648a44"/>
+				<box topPadding="4" bottomPadding="4" leftPadding="3" rightPadding="1"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement style="Row" mode="Opaque" x="40" y="0" width="160" height="25" uuid="284efbde-beed-47dc-83aa-945fa278a9a7"/>
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToTallestObject" style="Row" mode="Opaque" x="40" y="0" width="160" height="25" uuid="284efbde-beed-47dc-83aa-945fa278a9a7"/>
+				<box topPadding="4" bottomPadding="4" leftPadding="5" rightPadding="8"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{program}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement style="Row" mode="Opaque" x="200" y="0" width="120" height="25" uuid="f6086392-26ff-4192-9d56-9f623692e302"/>
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToTallestObject" style="Row" mode="Opaque" x="200" y="0" width="120" height="25" uuid="f6086392-26ff-4192-9d56-9f623692e302"/>
+				<box topPadding="4" bottomPadding="4" leftPadding="5" rightPadding="8"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{region_name}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement style="Row" mode="Opaque" x="320" y="0" width="230" height="25" uuid="9c545440-13ed-46f5-ac83-a2bb222f31db"/>
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToTallestObject" style="Row" mode="Opaque" x="320" y="0" width="230" height="25" uuid="9c545440-13ed-46f5-ac83-a2bb222f31db"/>
+				<box topPadding="4" bottomPadding="4" leftPadding="5" rightPadding="8"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{facility}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement style="Row" mode="Opaque" x="550" y="0" width="130" height="25" uuid="f755459a-f535-49c5-8414-70fef0372749"/>
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToTallestObject" style="Row" mode="Opaque" x="550" y="0" width="130" height="25" uuid="f755459a-f535-49c5-8414-70fef0372749"/>
+				<box topPadding="4" bottomPadding="4" leftPadding="5" rightPadding="8"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{product_code}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement style="Row" mode="Opaque" x="680" y="0" width="260" height="25" uuid="d38e7969-2c23-4559-bf63-e851c0b6865a"/>
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToTallestObject" style="Row" mode="Opaque" x="680" y="0" width="260" height="25" uuid="d38e7969-2c23-4559-bf63-e851c0b6865a"/>
+				<box topPadding="4" bottomPadding="4" leftPadding="5" rightPadding="8"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{product_name}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement style="Row" mode="Opaque" x="940" y="0" width="80" height="25" uuid="27a49dbe-a6e3-4082-821e-1ed5f7bdc39d"/>
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToTallestObject" style="Row" mode="Opaque" x="940" y="0" width="80" height="25" uuid="27a49dbe-a6e3-4082-821e-1ed5f7bdc39d"/>
+				<box topPadding="4" bottomPadding="4" leftPadding="2" rightPadding="8"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{received}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement style="Row" mode="Opaque" x="1020" y="0" width="80" height="25" uuid="18219d9f-765d-4135-b5ec-27460d41c49a"/>
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToTallestObject" style="Row" mode="Opaque" x="1020" y="0" width="80" height="25" uuid="18219d9f-765d-4135-b5ec-27460d41c49a"/>
+				<box topPadding="4" bottomPadding="4" leftPadding="2" rightPadding="8"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{issued}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement style="Row" mode="Opaque" x="1100" y="0" width="80" height="25" uuid="85b5c64d-ae0b-4a72-9e41-ef1f99ae2ec6"/>
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToTallestObject" style="Row" mode="Opaque" x="1100" y="0" width="80" height="25" uuid="85b5c64d-ae0b-4a72-9e41-ef1f99ae2ec6"/>
+				<box topPadding="4" bottomPadding="4" leftPadding="2" rightPadding="8"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="12"/>
 				</textElement>

@@ -1,5 +1,9 @@
 1.1.6 / WIP
 ==================
+- [OPSD-101](https://openlmis.atlassian.net/browse/OPSD-101)
+  - Item Ledger and Periodic Stock On Hand Summary no longer clip values that do not fit on
+    one line; cells grow to fit their content in every export format, so long product names
+    keep the pack size that distinguishes them
 - [OPSD-103](https://openlmis.atlassian.net/browse/OPSD-103)
   - Item Ledger report now includes movements from the first and last day of the selected range
 - [ODRC-24](https://openlmis.atlassian.net/browse/ODRC-24)
