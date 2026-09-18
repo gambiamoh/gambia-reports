@@ -1,4 +1,4 @@
-1.1.6 / WIP
+1.1.6 / 2026-09-18
 ==================
 - [OPSD-101](https://openlmis.atlassian.net/browse/OPSD-101)
   - Item Ledger and Periodic Stock On Hand Summary no longer clip values that do not fit on
@@ -29,6 +29,11 @@
   - Added new Stock Receive Report listing stock received from valid sources
     (product code, product name, received from, batch, expiry, quantity received,
     date received)
+- [OLMIS-8281](https://openlmis.atlassian.net/browse/OLMIS-8281)
+  - Added the CANCELLED status to the order status enum, so the Order report no longer fails
+    to generate for a cancelled order
+- Fixed a NullPointerException when a report parameter was sent with a different casing than
+  the one declared in the template
 
 1.1.5 / 2026-05-11
 ==================
