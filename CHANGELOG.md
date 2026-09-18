@@ -1,3 +1,6 @@
+1.1.7 / WIP
+==================
+
 1.1.6 / 2026-09-18
 ==================
 - [OPSD-101](https://openlmis.atlassian.net/browse/OPSD-101)
