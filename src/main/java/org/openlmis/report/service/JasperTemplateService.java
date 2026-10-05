@@ -32,6 +32,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InvalidClassException;
 import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -47,6 +48,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -55,7 +57,7 @@ import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.type.OrientationEnum;
-import net.sf.jasperreports.engine.util.JRLoader;
+
 import org.openlmis.report.domain.JasperTemplate;
 import org.openlmis.report.domain.JasperTemplateParameter;
 import org.openlmis.report.domain.JasperTemplateParameterDependency;
@@ -71,6 +73,7 @@ import org.openlmis.report.repository.JasperTemplateRepository;
 import org.openlmis.report.repository.ReportCategoryRepository;
 import org.openlmis.report.repository.ReportImageRepository;
 import org.openlmis.report.service.referencedata.RightReferenceDataService;
+import org.openlmis.report.utils.JasperReportDeserializer;
 import org.openlmis.report.utils.Message;
 import org.openlmis.report.utils.ReportingValidationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,8 +88,13 @@ public class JasperTemplateService {
   private static final String[] ALLOWED_FILETYPES = {"jrxml"};
   private static final String CONFIG_PATH = "/config/reports/";
 
+  private final Map<String, JasperReport> globalHeaderCache = new ConcurrentHashMap<>();
+
   @Autowired
   private ReportTranslationBundleProvider translationBundleProvider;
+
+  @Autowired
+  private JasperReportDeserializer reportDeserializer;
 
   @Autowired
   private JasperTemplateRepository jasperTemplateRepository;
@@ -101,13 +109,14 @@ public class JasperTemplateService {
   private ReportCategoryRepository reportCategoryRepository;
 
   /**
-   * Saves a template with given name. An existing template is only replaced when override is
-   * true, otherwise saving fails so an upload cannot silently overwrite another report.
+   * Saves a template with given name. If a template with that name already exists,
+   * the upload is rejected unless override=true is passed; in that case the existing
+   * template is updated in place (id preserved).
    *
    * @param file report file
    * @param name name of report
    * @param description report's description
-   * @param override replace an existing template with the same name
+   * @param override when true, replace an existing template with the same name
    * @return saved report template
    */
   public JasperTemplate saveTemplate(
@@ -119,7 +128,7 @@ public class JasperTemplateService {
     Optional<ReportCategory> reportCategory = reportCategoryRepository.findByName(category);
     if (!reportCategory.isPresent()) {
       throw new ReportingException(
-          ReportCategoryMessageKeys.ERROR_REPORT_CATEGORY_NOT_FOUND);
+        ReportCategoryMessageKeys.ERROR_REPORT_CATEGORY_NOT_FOUND);
     }
 
     if (jasperTemplate == null) {
@@ -278,17 +287,30 @@ public class JasperTemplateService {
 
     Map<String, Object> parameters = new HashMap<>();
     File headerFile = new File(CONFIG_PATH + headerName + ".jrxml");
-    if (headerFile.exists()) {
-      try (InputStream is = Files.newInputStream(headerFile.toPath())) {
-        JasperReport globalHeader = JasperCompileManager.compileReport(is);
-        parameters.put("headerTemplate", globalHeader);
-      }
-    } else {
+    if (!headerFile.exists()) {
       return Collections.emptyMap();
     }
+    parameters.put("headerTemplate", getCompiledGlobalHeader(headerName, headerFile));
 
     parameters.putAll(injectDynamicHeaderParams());
     return parameters;
+  }
+
+  /**
+   * Compiling the global header on every generation is expensive, so the compiled report is
+   * cached per header variant (landscape/portrait) for the service lifetime - /config/reports
+   * is populated from the service-configuration image at startup and cannot change at runtime.
+   */
+  private JasperReport getCompiledGlobalHeader(String headerName, File headerFile)
+      throws JRException, IOException {
+    JasperReport cached = globalHeaderCache.get(headerName);
+    if (cached == null) {
+      try (InputStream is = Files.newInputStream(headerFile.toPath())) {
+        cached = JasperCompileManager.compileReport(is);
+      }
+      globalHeaderCache.put(headerName, cached);
+    }
+    return cached;
   }
 
   /**
@@ -345,12 +367,12 @@ public class JasperTemplateService {
    * @throws ReportingException the reporting exception
    */
   public JasperReport loadReport(byte[] template) throws ReportingException {
-    if (template.length == 0) {
+    if (template == null || template.length == 0) {
       return null;
     }
-    try (InputStream is = new ByteArrayInputStream(template)) {
-      return (JasperReport) JRLoader.loadObject(is);
-    } catch (JRException ex) {
+    try {
+      return reportDeserializer.deserialize(template);
+    } catch (InvalidClassException | ClassNotFoundException | ClassCastException ex) {
       throw new ReportingException(ex, ERROR_REPORTING_FILE_INVALID);
     } catch (IOException ex) {
       throw new ReportingException(ex, ERROR_REPORTING_IO, ex.getMessage());
@@ -422,7 +444,6 @@ public class JasperTemplateService {
       throw new ReportingException(ex, ERROR_REPORTING_IO, ex.getMessage());
     }
   }
-
 
   private Map<String, JasperTemplateParameter> buildExistingParamMap(JasperTemplate template) {
     Map<String, JasperTemplateParameter> map = new HashMap<>();
@@ -532,7 +553,6 @@ public class JasperTemplateService {
 
     return jasperTemplateParameter;
   }
-
 
   // Reconcile the managed parameter collection in place: keep and update the rows still declared
   // in the file, add the newly declared ones, and let orphanRemoval delete the parameters that

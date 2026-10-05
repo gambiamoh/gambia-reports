@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -61,7 +60,7 @@ public class ReportCategoryDto implements Importer, Exporter {
    */
   public static List<ReportCategoryDto> newInstance(Iterable<ReportCategory> reportCategories) {
     return StreamSupport.stream(reportCategories.spliterator(), false)
-        .map(ReportCategoryDto::newInstance)
-        .collect(Collectors.toList());
+      .map(ReportCategoryDto::newInstance)
+      .collect(Collectors.toList());
   }
 }

@@ -114,4 +114,5 @@ public class ReportCategoryControllerIntegrationTest
     verify(reportCategoryRepository).findById(reportCategoryId);
     verify(reportCategoryRepository).save(any(ReportCategory.class));
   }
+
 }

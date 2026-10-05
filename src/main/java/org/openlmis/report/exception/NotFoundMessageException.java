@@ -21,7 +21,6 @@ import org.openlmis.report.utils.Message;
  * Exception thrown when resource was not found.
  */
 public class NotFoundMessageException extends BaseMessageException {
-
   public NotFoundMessageException(String message) {
     super(message);
   }

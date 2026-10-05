@@ -85,14 +85,14 @@ public class ReportCategoryController extends BaseController {
   /**
    * Update an existing report category.
    *
-   * @param id  UUID of a report category to update.
+   * @param id UUID of a report category to update.
    * @param dto Data transfer object containing Report Category data.
    */
   @PutMapping(value = "/{id}")
   @ResponseStatus(HttpStatus.OK)
   @ResponseBody
   public ReportCategoryDto updateReportCategory(@PathVariable("id") UUID id,
-      @Valid @RequestBody ReportCategoryDto dto) {
+                                                @Valid @RequestBody ReportCategoryDto dto) {
     return reportCategoryService.updateReportCategory(id, dto);
   }
 

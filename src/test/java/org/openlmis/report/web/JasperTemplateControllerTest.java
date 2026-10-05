@@ -18,22 +18,28 @@ package org.openlmis.report.web;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openlmis.report.domain.JasperTemplate;
 import org.openlmis.report.domain.ReportCategory;
 import org.openlmis.report.dto.JasperTemplateDto;
+import org.openlmis.report.dto.external.fulfillment.OrderDto;
 import org.openlmis.report.dto.external.referencedata.UserDto;
 import org.openlmis.report.exception.JasperReportViewException;
 import org.openlmis.report.exception.NotFoundMessageException;
@@ -41,6 +47,7 @@ import org.openlmis.report.repository.JasperTemplateRepository;
 import org.openlmis.report.service.JasperReportsViewService;
 import org.openlmis.report.service.JasperTemplateService;
 import org.openlmis.report.service.PermissionService;
+import org.openlmis.report.service.fulfillment.OrderService;
 import org.openlmis.report.utils.AuthenticationHelper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -65,6 +72,9 @@ public class JasperTemplateControllerTest {
 
   @Mock
   private AuthenticationHelper authenticationHelper;
+
+  @Mock
+  private OrderService orderService;
 
   @InjectMocks
   private JasperTemplateController jasperTemplateController;
@@ -117,9 +127,10 @@ public class JasperTemplateControllerTest {
         .thenReturn(new HashMap<>());
     when(jasperTemplateRepository.findById(jasperTemplate.getId()))
         .thenReturn(Optional.of(jasperTemplate));
-    when(jasperReportsViewService.getJasperReportsView(any(JasperTemplate.class), any()))
+    when(jasperReportsViewService.getJasperReportsView((byte[]) any(), any()))
         .thenReturn(new byte[] {0, 1, 2, 3, 4});
-    when(authenticationHelper.getCurrentUser()).thenReturn(currentUser);
+    when(authenticationHelper.getCurrentUser())
+        .thenReturn(currentUser);
 
     MockHttpServletRequest request = new MockHttpServletRequest();
     ResponseEntity<byte[]> response = jasperTemplateController.generateReport(request,
@@ -134,5 +145,57 @@ public class JasperTemplateControllerTest {
     assertTrue(response.getHeaders().toString().contains("name.xlsx"));
     assertTrue(response.getHeaders().toString().contains("Content-Type:\"application/"
         + "vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8\""));
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void shouldPassOrderAndLineItemsToOrderTemplate() throws JasperReportViewException {
+    jasperTemplate.setName("Order");
+    UUID orderId = UUID.randomUUID();
+    Map<String, Object> params = new HashMap<>();
+    params.put("order", orderId.toString());
+    OrderDto order = new OrderDto();
+    order.setOrderLineItems(new ArrayList<>());
+    UserDto currentUser = new UserDto();
+    currentUser.setId(UUID.randomUUID());
+    currentUser.setFirstName("John");
+    currentUser.setLastName("Doe");
+    mockReportGeneration(params, currentUser);
+    when(orderService.findOne(orderId)).thenReturn(order);
+
+    jasperTemplateController.generateReport(new MockHttpServletRequest(),
+        jasperTemplate.getId(), "pdf", "en");
+
+    ArgumentCaptor<Map<String, Object>> captor = ArgumentCaptor.forClass(Map.class);
+    verify(jasperReportsViewService).getJasperReportsView(any(JasperTemplate.class),
+        captor.capture());
+    assertEquals(currentUser.printName(), captor.getValue().get("user"));
+    assertEquals(order, captor.getValue().get("order"));
+    assertEquals(order.getOrderLineItems(), captor.getValue().get("datasource"));
+  }
+
+  @Test
+  public void shouldNotLoadOrderForOtherTemplates() throws JasperReportViewException {
+    UserDto currentUser = new UserDto();
+    currentUser.setId(UUID.randomUUID());
+    mockReportGeneration(new HashMap<>(), currentUser);
+
+    jasperTemplateController.generateReport(new MockHttpServletRequest(),
+        jasperTemplate.getId(), "pdf", "en");
+
+    verify(orderService, never()).findOne(any(UUID.class));
+  }
+
+  private void mockReportGeneration(Map<String, Object> params, UserDto currentUser)
+      throws JasperReportViewException {
+    doNothing().when(permissionService).canViewReports();
+    doNothing().when(permissionService).validatePermissions();
+    when(jasperTemplateService.mapReportImagesToTemplate(any())).thenReturn(new HashMap<>());
+    when(jasperTemplateService.mapRequestParametersToTemplate(any(), any())).thenReturn(params);
+    when(jasperTemplateRepository.findById(jasperTemplate.getId()))
+        .thenReturn(Optional.of(jasperTemplate));
+    when(jasperReportsViewService.getJasperReportsView(any(JasperTemplate.class), anyMap()))
+        .thenReturn(new byte[] {0, 1, 2});
+    when(authenticationHelper.getCurrentUser()).thenReturn(currentUser);
   }
 }

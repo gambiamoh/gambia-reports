@@ -17,7 +17,6 @@ package org.openlmis.report.repository;
 
 import java.util.Optional;
 import java.util.UUID;
-
 import org.openlmis.report.domain.ReportCategory;
 import org.springframework.data.repository.PagingAndSortingRepository;
 

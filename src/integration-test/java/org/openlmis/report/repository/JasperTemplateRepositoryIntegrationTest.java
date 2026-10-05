@@ -40,6 +40,9 @@ public class JasperTemplateRepositoryIntegrationTest extends
   private JasperTemplateRepository jasperTemplateRepository;
 
   @Autowired
+  private DashboardReportRepository dashboardReportRepository;
+
+  @Autowired
   private ReportCategoryRepository reportCategoryRepository;
 
   @Override
@@ -63,6 +66,7 @@ public class JasperTemplateRepositoryIntegrationTest extends
   @Before
   public void setUp() {
     jasperTemplateRepository.deleteAll();
+    dashboardReportRepository.deleteAll();
     reportCategoryRepository.deleteAll();
   }
 

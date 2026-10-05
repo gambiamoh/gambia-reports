@@ -16,7 +16,6 @@
 package org.openlmis.report.utils;
 
 import java.util.UUID;
-
 import org.apache.commons.lang.RandomStringUtils;
 import org.openlmis.report.domain.ReportCategory;
 
@@ -48,4 +47,5 @@ public class ReportCategoryDataBuilder {
   public ReportCategory buildAsNew() {
     return new ReportCategory(name);
   }
+
 }

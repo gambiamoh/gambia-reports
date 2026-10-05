@@ -37,6 +37,7 @@ import guru.nidi.ramltester.restassured.RestAssuredClient;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.PostConstruct;
+
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
@@ -106,7 +107,7 @@ public abstract class BaseWebIntegrationTest {
   }
 
   int getNextCategoryNumber() {
-    return  this.categoryNumber.incrementAndGet();
+    return this.categoryNumber.incrementAndGet();
   }
 
   protected void mockUserAuthenticated() {

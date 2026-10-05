@@ -39,6 +39,7 @@ public class DashboardReportDto implements Importer, Exporter {
   private UUID id;
   private String name;
   private String url;
+  private String embeddedUuid;
   private ReportType type;
   private boolean enabled;
   private boolean showOnHomePage;
@@ -68,7 +69,7 @@ public class DashboardReportDto implements Importer, Exporter {
    */
   public static List<DashboardReportDto> newInstance(Iterable<DashboardReport> dashboardReports) {
     return StreamSupport.stream(dashboardReports.spliterator(), false)
-        .map(DashboardReportDto::newInstance)
-        .collect(Collectors.toList());
+      .map(DashboardReportDto::newInstance)
+      .collect(Collectors.toList());
   }
 }
