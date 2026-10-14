@@ -1,5 +1,11 @@
 1.1.7 / WIP
 ==================
+- [OPSD-104](https://openlmis.atlassian.net/browse/OPSD-104)
+  - Order Fill Rate and Emergency Vs Regular Orders reports can be filtered by product category;
+    Order Fill Rate counts only the selected category's order and shipment lines
+  - Start Date and End Date of both reports are picked from a calendar
+  - Both reports use the Stock Receive Report layout: the selected filters are shown in the header,
+    and the title, filters and column headers are printed even when no data matches
 
 1.1.6 / 2026-09-18
 ==================
