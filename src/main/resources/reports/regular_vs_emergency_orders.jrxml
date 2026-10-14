@@ -47,7 +47,15 @@
 		<parameterDescription><![CDATA[datepickers]]></parameterDescription>
 	</parameter>
 	<queryString language="SQL">
-		<![CDATA[SELECT prog.name AS program_filter,
+		<![CDATA[WITH latest_po AS (
+    SELECT DISTINCT ON (po.programid, po.orderableid)
+        po.programid,
+        po.orderableid,
+        po.orderabledisplaycategoryid
+    FROM referencedata.program_orderables po
+    ORDER BY po.programid, po.orderableid, po.orderableversionnumber DESC
+)
+SELECT prog.name AS program_filter,
     fac.name AS facility_filter,
     COALESCE(
         (SELECT c.displayname
@@ -79,10 +87,11 @@ WHERE p.id = $P{program_name}::uuid
   AND ($P{category} IS NULL OR EXISTS (
       SELECT 1
       FROM fulfillment.order_line_items oli
-      JOIN referencedata.program_orderables po
+      JOIN latest_po po
         ON po.programid = o.programid
        AND po.orderableid = oli.orderableid
       WHERE oli.orderid = o.id
+        AND oli.orderedquantity > 0
         AND po.orderabledisplaycategoryid = $P{category}::uuid))
 GROUP BY 1, 2, 3, 4, 5, 6
 ) data ON TRUE
@@ -247,7 +256,7 @@ ORDER BY data.program_id, data.processing_period, data.processing_period_id]]>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="25" splitType="Immediate">
+		<band height="25" splitType="Prevent">
 			<printWhenExpression><![CDATA[$F{processing_period_id} != null]]></printWhenExpression>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="Row" stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="0" width="40" height="25" uuid="f3194e81-ba89-45a6-bbb2-bf4ba8d8bb83"/>

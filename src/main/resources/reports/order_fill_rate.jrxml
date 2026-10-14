@@ -47,7 +47,15 @@
 		<parameterDescription><![CDATA[datepickers]]></parameterDescription>
 	</parameter>
 	<queryString language="SQL">
-		<![CDATA[SELECT prog.name AS program_filter,
+		<![CDATA[WITH latest_po AS (
+    SELECT DISTINCT ON (po.programid, po.orderableid)
+        po.programid,
+        po.orderableid,
+        po.orderabledisplaycategoryid
+    FROM referencedata.program_orderables po
+    ORDER BY po.programid, po.orderableid, po.orderableversionnumber DESC
+)
+SELECT prog.name AS program_filter,
     fac.name AS facility_filter,
     COALESCE(
         (SELECT c.displayname
@@ -59,15 +67,41 @@
 FROM referencedata.programs prog
 CROSS JOIN referencedata.facilities fac
 LEFT JOIN (
-    select * from referencedata.fill_rate_2_fn($P{program_name}::uuid,$P{supplying_facility}::uuid,to_char($P{from_date}::date, 'DD-MM-YYYY'),to_char($P{to_date}::date, 'DD-MM-YYYY')) WITH ORDINALITY fr
-    where ($P{category} IS NULL OR EXISTS (
-          SELECT 1
-          FROM fulfillment.order_line_items oli
-          JOIN referencedata.program_orderables po
-            ON po.programid = fr.program_id
-           AND po.orderableid = oli.orderableid
-          WHERE oli.orderid = fr.order_id
-            AND po.orderabledisplaycategoryid = $P{category}::uuid))
+    select fr.program_name,
+        fr.program_id,
+        fr.supplying_facility,
+        fr.receving_facility,
+        fr.processing_period,
+        fr.processing_period_id,
+        fr.ordercode,
+        fr.order_id,
+        CASE WHEN $P{category} IS NULL THEN fr.items_ordered ELSE cat.items_ordered END AS items_ordered,
+        CASE WHEN $P{category} IS NULL THEN fr.items_fullfilled ELSE cat.items_fullfilled END AS items_fullfilled,
+        CASE WHEN $P{category} IS NULL THEN fr.fill_rate
+             ELSE concat(cat.items_fullfilled * 100 / cat.items_ordered, '%') END AS fill_rate,
+        fr.ordinality
+    from referencedata.fill_rate_2_fn($P{program_name}::uuid,$P{supplying_facility}::uuid,to_char($P{from_date}::date, 'DD-MM-YYYY'),to_char($P{to_date}::date, 'DD-MM-YYYY')) WITH ORDINALITY fr
+    CROSS JOIN LATERAL (
+        SELECT
+            (SELECT count(DISTINCT oli.orderableid)
+             FROM fulfillment.order_line_items oli
+             JOIN latest_po po
+               ON po.programid = fr.program_id
+              AND po.orderableid = oli.orderableid
+             WHERE oli.orderid = fr.order_id
+               AND oli.orderedquantity > 0
+               AND po.orderabledisplaycategoryid = $P{category}::uuid) AS items_ordered,
+            (SELECT count(DISTINCT sli.orderableid)
+             FROM fulfillment.shipments s
+             JOIN fulfillment.shipment_line_items sli ON sli.shipmentid = s.id
+             JOIN latest_po po
+               ON po.programid = fr.program_id
+              AND po.orderableid = sli.orderableid
+             WHERE s.orderid = fr.order_id
+               AND sli.quantityshipped > 0
+               AND po.orderabledisplaycategoryid = $P{category}::uuid) AS items_fullfilled
+    ) cat
+    where $P{category} IS NULL OR cat.items_ordered > 0
 ) data ON TRUE
 WHERE prog.id = $P{program_name}::uuid
   AND fac.id = $P{supplying_facility}::uuid
@@ -259,7 +293,7 @@ ORDER BY data.ordinality]]>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="25" splitType="Immediate">
+		<band height="25" splitType="Prevent">
 			<printWhenExpression><![CDATA[$F{order_id} != null]]></printWhenExpression>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="Row" stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="0" width="30" height="25" uuid="f3194e81-ba89-45a6-bbb2-bf4ba8d8bb83"/>
