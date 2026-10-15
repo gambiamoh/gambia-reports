@@ -17,7 +17,6 @@ package org.openlmis.report.repository;
 
 import java.util.List;
 import java.util.UUID;
-
 import org.openlmis.report.domain.DashboardReport;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +31,8 @@ public interface DashboardReportRepository
 
   boolean existsByName(String name);
 
+  boolean existsByEmbeddedUuid(String embeddedUuid);
+
   List<DashboardReport> findByShowOnHomePage(boolean showOnHomePage);
 
   boolean existsByCategory_Id(UUID categoryId);
@@ -40,8 +41,8 @@ public interface DashboardReportRepository
    * Retrieves a page of dashboard reports for which user has rights. If showOnHomePage
    * was provided and user has rights, the home page report will be returned.
    *
-   * @param pageable       Pageable parameters for pagination.
-   * @param rightNames     Names of user rights.
+   * @param pageable Pageable parameters for pagination.
+   * @param rightNames Names of user rights.
    * @param showOnHomePage Filter to only include report that is shown on the home page.
    * @return A page of dashboard reports matching the criteria.
    */

@@ -21,6 +21,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openlmis.report.domain.DashboardReport;
 import org.openlmis.report.domain.ReportCategory;
 import org.openlmis.report.dto.DashboardReportDto;
@@ -53,7 +54,7 @@ public class DashboardReportService {
   /**
    * Constructs a new {@link ReportCategoryService} with the specified dependencies.
    *
-   * @param reportCategoryRepository  The repository responsible for handling report category data.
+   * @param reportCategoryRepository The repository responsible for handling report category data.
    * @param permissionService The service responsible for checking and managing user permissions.
    * @param dashboardReportRepository The repository for managing dashboard reports.
    */
@@ -92,14 +93,14 @@ public class DashboardReportService {
   public Page<DashboardReportDto> getDashboardReports(Pageable pageable) {
     permissionService.canManageReports();
     Page<DashboardReport> dashboardReports = dashboardReportRepository.findAll(pageable);
-    return Pagination.getPage(dashboardReports.map(DashboardReportDto::newInstance), pageable);
+    return Pagination.getPage(dashboardReports.map(DashboardReportDto::newInstance),pageable);
   }
 
   /**
    * Retrieves a page of dashboard reports for which user has rights, or retrieves
    * a home page report.
    *
-   * @param pageable       Pageable parameters for pagination.
+   * @param pageable Pageable parameters for pagination.
    * @param showOnHomePage Filter to only include report that is shown on the home page.
    * @return A page of dashboard reports matching the criteria.
    */
@@ -156,6 +157,7 @@ public class DashboardReportService {
    */
   public DashboardReportDto createDashboardReport(DashboardReportDto dto) {
     permissionService.canManageReports();
+    validateUrlOrEmbeddedUuid(dto);
 
     boolean reportExists = dashboardReportRepository.existsByName(dto.getName());
     if (reportExists) {
@@ -188,16 +190,17 @@ public class DashboardReportService {
   /**
    * Updates a dashboard report in the database.
    *
-   * @param id                 The UUID of the dashboard report to update.
+   * @param id The UUID of the dashboard report to update.
    * @param dashboardReportDto The DTO containing the updated dashboard report data.
    * @return The updated DashboardReportDto.
    */
   public DashboardReportDto updateDashboardReport(UUID id, DashboardReportDto dashboardReportDto) {
     permissionService.canManageReports();
+    validateUrlOrEmbeddedUuid(dashboardReportDto);
 
     if (dashboardReportDto.getId() != null && !Objects.equals(dashboardReportDto.getId(), id)) {
       throw new ValidationMessageException(new Message(
-          DashboardReportMessageKeys.ERROR_DASHBOARD_REPORT_ID_MISMATCH));
+        DashboardReportMessageKeys.ERROR_DASHBOARD_REPORT_ID_MISMATCH));
     }
 
     DashboardReport dashboardReport = dashboardReportRepository.findById(id)
@@ -213,12 +216,20 @@ public class DashboardReportService {
   /**
    * Update a dashboard report with the data from DTO.
    *
-   * @param newReport      The DashboardReportDto containing the category ID.
+   * @param newReport The DashboardReportDto containing the category ID.
    * @param reportToUpdate Report which is being updated.
    */
   private void updateFrom(DashboardReportDto newReport, DashboardReport reportToUpdate) {
     reportToUpdate.updateFrom(newReport);
     reportToUpdate.setCategory(getCategoryOrThrow(newReport));
+  }
+
+  // A report needs either a URL or an Embedded UUID (Superset embedded dashboards use the latter).
+  private void validateUrlOrEmbeddedUuid(DashboardReportDto dto) {
+    if (StringUtils.isBlank(dto.getUrl()) && StringUtils.isBlank(dto.getEmbeddedUuid())) {
+      throw new ValidationMessageException(new Message(
+          DashboardReportMessageKeys.ERROR_URL_OR_EMBEDDED_UUID_REQUIRED));
+    }
   }
 
   /**
@@ -237,8 +248,8 @@ public class DashboardReportService {
     }
 
     return reportCategoryRepository.findById(newReport.getCategory().getId())
-        .orElseThrow(() -> new NotFoundMessageException(new Message(
-            ReportCategoryMessageKeys.ERROR_REPORT_CATEGORY_NOT_FOUND)));
+      .orElseThrow(() -> new NotFoundMessageException(new Message(
+          ReportCategoryMessageKeys.ERROR_REPORT_CATEGORY_NOT_FOUND)));
   }
 
   /**
@@ -252,7 +263,7 @@ public class DashboardReportService {
 
     if (null == transformedName) {
       throw new ValidationMessageException(new Message(
-          DashboardReportMessageKeys.ERROR_COULD_NOT_SAVE_RIGHT));
+        DashboardReportMessageKeys.ERROR_COULD_NOT_SAVE_RIGHT));
     }
 
     RightDto rightToSave = new RightDto();

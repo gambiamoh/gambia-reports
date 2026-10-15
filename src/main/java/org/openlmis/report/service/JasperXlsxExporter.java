@@ -26,7 +26,7 @@ public class JasperXlsxExporter implements JasperExporter {
 
   private final JasperPrint jasperPrint;
 
-  JasperXlsxExporter(JasperPrint jasperPrint) {
+  public JasperXlsxExporter(JasperPrint jasperPrint) {
     this.jasperPrint = jasperPrint;
   }
 

@@ -28,9 +28,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
 import javax.servlet.http.HttpServletRequest;
+
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperReport;
+
 import org.openlmis.report.domain.JasperTemplate;
 import org.openlmis.report.dto.JasperTemplateDto;
 import org.openlmis.report.dto.external.fulfillment.OrderDto;
@@ -215,11 +218,11 @@ public class JasperTemplateController extends BaseController {
       map.putAll(jasperTemplateService.getLocaleBundleParameters(lang));
       map.putAll(jasperTemplateService.getMapSubreportGlobalHeaderParameters(templateReport));
     } catch (ReportingException e) {
-      LOGGER.debug("Cannot compile template {}", template.getName());
+      LOGGER.warn("Cannot compile template {}", template.getName(), e);
     } catch (MalformedURLException e) {
-      LOGGER.debug("Cannot load translation bundle for {}", template.getName());
+      LOGGER.warn("Cannot load translation bundle for {}", template.getName(), e);
     } catch (JRException | IOException ex) {
-      LOGGER.debug("Cannot load GlobalHeaderTemplate for {}", template.getName());
+      LOGGER.warn("Cannot load GlobalHeaderTemplate for {}", template.getName(), ex);
     }
 
     map.put("format", format);

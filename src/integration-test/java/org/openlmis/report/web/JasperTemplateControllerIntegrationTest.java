@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.openlmis.report.domain.JasperTemplate;
@@ -57,6 +58,7 @@ public class JasperTemplateControllerIntegrationTest extends BaseWebIntegrationT
 
   @MockBean
   private JasperTemplateRepository jasperTemplateRepository;
+
   @MockBean
   private ReportCategoryRepository reportCategoryRepository;
 
@@ -260,7 +262,6 @@ public class JasperTemplateControllerIntegrationTest extends BaseWebIntegrationT
 
   private JasperTemplate generateExistentTemplate(UUID id) {
     JasperTemplate template = new JasperTemplate();
-
     template.setId(id);
     template.setName("name");
     template.setRequiredRights(new ArrayList<>());

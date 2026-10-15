@@ -16,7 +16,6 @@
 package org.openlmis.report.utils;
 
 import java.util.UUID;
-
 import org.apache.commons.lang.RandomStringUtils;
 import org.openlmis.report.domain.DashboardReport;
 import org.openlmis.report.domain.ReportCategory;
@@ -25,6 +24,7 @@ public class DashboardReportDataBuilder {
   private final UUID id = UUID.randomUUID();
   private String name = RandomStringUtils.random(6);
   private String url = "http://example.com";
+  private String embeddedUuid = null;
   private ReportType type = ReportType.SUPERSET;
   private boolean enabled = true;
   private boolean showOnHomePage = false;
@@ -79,13 +79,14 @@ public class DashboardReportDataBuilder {
    */
   public DashboardReport buildAsNew() {
     return new DashboardReport(
-        name,
-        url,
-        type,
-        enabled,
-        showOnHomePage,
-        reportCategory,
-        rightName
+      name,
+      url,
+      embeddedUuid,
+      type,
+      enabled,
+      showOnHomePage,
+      reportCategory,
+      rightName
     );
   }
 }

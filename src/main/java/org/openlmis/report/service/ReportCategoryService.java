@@ -17,7 +17,6 @@ package org.openlmis.report.service;
 
 import java.util.Optional;
 import java.util.UUID;
-
 import org.openlmis.report.domain.ReportCategory;
 import org.openlmis.report.dto.ReportCategoryDto;
 import org.openlmis.report.exception.NotFoundMessageException;
@@ -42,10 +41,10 @@ public class ReportCategoryService {
   /**
    * Constructs a new {@link ReportCategoryService} with the specified dependencies.
    *
-   * @param reportCategoryRepository  The repository responsible for handling report category data.
-   * @param permissionService  The service responsible for checking and managing user permissions.
+   * @param reportCategoryRepository The repository responsible for handling report category data.
+   * @param permissionService The service responsible for checking and managing user permissions.
    * @param dashboardReportRepository The repository for managing dashboard reports.
-   * @param jasperTemplateRepository  The repository for managing Jasper templates.
+   * @param jasperTemplateRepository The repository for managing Jasper templates.
    */
   @Autowired
   public ReportCategoryService(ReportCategoryRepository reportCategoryRepository,
@@ -105,7 +104,7 @@ public class ReportCategoryService {
   /**
    * Update an existing report category.
    *
-   * @param id  UUID of a report category to update.
+   * @param id UUID of a report category to update.
    * @param dto Data transfer object containing Report Category data.
    */
   public ReportCategoryDto updateReportCategory(UUID id, ReportCategoryDto dto) {
@@ -119,7 +118,7 @@ public class ReportCategoryService {
     boolean nameAlreadyExists = reportCategoryRepository.existsByIdIsNotAndName(id, dto.getName());
     if (nameAlreadyExists) {
       throw new ValidationMessageException(
-          new Message(ReportCategoryMessageKeys.ERROR_REPORT_CATEGORY_NAME_DUPLICATED));
+        new Message(ReportCategoryMessageKeys.ERROR_REPORT_CATEGORY_NAME_DUPLICATED));
     }
 
     ReportCategory existingCategory = reportCategoryRepository.findById(id)
@@ -143,7 +142,7 @@ public class ReportCategoryService {
 
     if (isAssignedToReports || isAssignedToTemplates) {
       throw new ValidationMessageException(new Message(
-          ReportCategoryMessageKeys.ERROR_CATEGORY_ALREADY_ASSIGNED, categoryId));
+        ReportCategoryMessageKeys.ERROR_CATEGORY_ALREADY_ASSIGNED, categoryId));
     }
 
     ReportCategory reportCategory = reportCategoryRepository.findById(categoryId)

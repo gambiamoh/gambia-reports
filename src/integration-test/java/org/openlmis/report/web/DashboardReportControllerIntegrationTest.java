@@ -44,7 +44,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-public class DashboardReportControllerIntegrationTest extends BaseWebIntegrationTest {
+public class DashboardReportControllerIntegrationTest
+    extends BaseWebIntegrationTest {
   private static final String RESOURCE_URL = "/api/reports/dashboardReports";
   private static final String ID_URL = RESOURCE_URL + "/{id}";
   private static final String RIGHT = "_RIGHT";
@@ -351,4 +352,5 @@ public class DashboardReportControllerIntegrationTest extends BaseWebIntegration
     verify(dashboardReportRepository).findById(reportId);
     verifyNoMoreInteractions(dashboardReportRepository);
   }
+
 }

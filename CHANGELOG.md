@@ -1,5 +1,14 @@
-1.1.7 / WIP
+1.2.0 / WIP
 ==================
+- [OPSD-123](https://openlmis.atlassian.net/browse/OPSD-123)
+  - Aligned with core openlmis-report 1.6.0 (OpenLMIS 3.20); the Gambia order printout and the
+    district/region lookup are kept on top of it
+  - Added the Superset guest token endpoint for embedded dashboards and the optional
+    `embeddedUuid` on dashboard reports
+  - Exposed Prometheus metrics at `/actuator/prometheus` and the health check used by Consul
+  - `POST /api/reports/generate` now accepts service-level tokens only
+  - Pick Pack List no longer drops trade items shipped against commodity type order lines
+    (ported OLMIS-8347)
 - [OPSD-104](https://openlmis.atlassian.net/browse/OPSD-104)
   - Order Fill Rate and Emergency Vs Regular Orders reports can be filtered by product category;
     Order Fill Rate counts only the selected category's order and shipment lines

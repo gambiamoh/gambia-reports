@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -90,8 +89,7 @@ public class PaginationTest {
   }
 
   private List<Integer> getList() {
-    return new ArrayList<Integer>() {
-      {
+    return new ArrayList<Integer>() {{
         add(0);
         add(1);
         add(2);
@@ -105,4 +103,5 @@ public class PaginationTest {
       }
     };
   }
+
 }

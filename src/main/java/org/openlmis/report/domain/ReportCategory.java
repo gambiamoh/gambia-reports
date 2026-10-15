@@ -19,7 +19,6 @@ import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -83,4 +82,5 @@ public class ReportCategory extends BaseEntity {
 
     String getName();
   }
+
 }

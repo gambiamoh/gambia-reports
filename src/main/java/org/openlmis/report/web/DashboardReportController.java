@@ -19,7 +19,6 @@ import static org.openlmis.report.web.DashboardReportController.RESOURCE_PATH;
 
 import java.util.UUID;
 import javax.validation.Valid;
-
 import org.openlmis.report.dto.DashboardReportDto;
 import org.openlmis.report.service.DashboardReportService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,7 +110,7 @@ public class DashboardReportController extends BaseController {
   /**
    * Allows updating a dashboard report.
    *
-   * @param id                 The UUID of the dashboard report to update.
+   * @param id The UUID of the dashboard report to update.
    * @param dashboardReportDto Data transfer object containing updated dashboard report data.
    * @return The updated DashboardReportDto.
    */
