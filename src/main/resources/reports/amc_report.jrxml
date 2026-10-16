@@ -1,0 +1,560 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="amc_report" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Error" uuid="b6f7b7af-cd8d-4d88-aac3-b1eea803d416">
+	<property name="net.sf.jasperreports.export.xlsx.exclude.origin.band.1" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.xlsx.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.xlsx.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.1" value="pageFooter"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.csv.exclude.origin.band.1" value="pageFooter"/>
+	<style name="Row" mode="Transparent">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT} % 2 == 0]]></conditionExpression>
+			<style backcolor="#F3F3F3"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="program" class="java.lang.String">
+		<property name="displayName" value="Program"/>
+		<property name="selectExpression" value="/api/programs"/>
+		<property name="selectProperty" value="id"/>
+		<property name="displayProperty" value="name"/>
+		<property name="required" value="true"/>
+	</parameter>
+	<parameter name="supplyingFacility" class="java.lang.String">
+		<property name="displayName" value="Supplying Facility"/>
+		<property name="selectExpression" value="/api/facilities"/>
+		<property name="selectProperty" value="id"/>
+		<property name="displayProperty" value="name"/>
+		<property name="required" value="true"/>
+	</parameter>
+	<parameter name="category" class="java.lang.String">
+		<property name="displayName" value="Category"/>
+		<property name="selectExpression" value="/api/orderableDisplayCategories"/>
+		<property name="selectProperty" value="id"/>
+		<property name="displayProperty" value="displayName"/>
+		<property name="required" value="false"/>
+	</parameter>
+	<parameter name="orderable" class="java.lang.String">
+		<property name="displayName" value="Product"/>
+		<property name="selectExpression" value="/api/orderables"/>
+		<property name="selectProperty" value="id"/>
+		<property name="displayProperty" value="fullProductName"/>
+		<property name="required" value="false"/>
+	</parameter>
+	<parameter name="dateFrom" class="java.lang.String">
+		<property name="displayName" value="Start Date"/>
+		<property name="required" value="true"/>
+		<parameterDescription><![CDATA[datepickers]]></parameterDescription>
+	</parameter>
+	<parameter name="dateTo" class="java.lang.String">
+		<property name="displayName" value="End Date"/>
+		<property name="required" value="true"/>
+		<parameterDescription><![CDATA[datepickers]]></parameterDescription>
+	</parameter>
+	<parameter name="dateFromValue" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{dateFrom} == null ? null : ($P{dateFrom}.matches("\\d{4}-\\d{2}-\\d{2}.*") ? $P{dateFrom}.substring(0, 10) : new SimpleDateFormat("yyyy-MM-dd").format(new SimpleDateFormat("EEE MMM dd yyyy", java.util.Locale.ENGLISH).parse($P{dateFrom})))]]></defaultValueExpression>
+	</parameter>
+	<parameter name="dateToValue" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{dateTo} == null ? null : ($P{dateTo}.matches("\\d{4}-\\d{2}-\\d{2}.*") ? $P{dateTo}.substring(0, 10) : new SimpleDateFormat("yyyy-MM-dd").format(new SimpleDateFormat("EEE MMM dd yyyy", java.util.Locale.ENGLISH).parse($P{dateTo})))]]></defaultValueExpression>
+	</parameter>
+	<parameter name="userId" class="java.lang.String" isForPrompting="false"/>
+	<queryString language="SQL">
+		<![CDATA[WITH RECURSIVE params AS (SELECT $P{program}::uuid AS program_id, $P{supplyingFacility}::uuid AS store_id,
+  $P{dateFromValue}::date AS date_from, $P{dateToValue}::date AS date_to, $P{category}::uuid AS category_id,
+  $P{orderable}::uuid AS product_id, $P{userId}::uuid AS user_id),
+
+-- Access gate: one row when the caller has STOCK_CARDS_VIEW at the store for the program, no row otherwise.
+-- Every step below reads the parameters from here, so without the right every step is empty and no row comes back.
+gp AS (
+  SELECT p.*
+  FROM params p
+  WHERE EXISTS (SELECT 1
+                FROM referencedata.right_assignments ra
+                WHERE ra.userid = p.user_id
+                  AND ra.rightname = 'STOCK_CARDS_VIEW'
+                  AND ra.facilityid = p.store_id
+                  AND ra.programid = p.program_id)
+),
+
+-- Candidate products: the latest program_orderables row for the program is active,
+-- and the category / product filters match on that row.
+po_latest AS (
+  SELECT DISTINCT ON (po.programid, po.orderableid)
+         po.orderableid, po.active, po.orderabledisplaycategoryid
+  FROM referencedata.program_orderables po
+  JOIN gp p ON po.programid = p.program_id
+  -- An inactive and an active row can share the latest version (the unique index is partial, WHERE active);
+  -- the active one wins, as in referencedata.
+  ORDER BY po.programid, po.orderableid, po.orderableversionnumber DESC, po.active DESC, po.id
+),
+prods AS (
+  SELECT pl.orderableid, pl.orderabledisplaycategoryid AS category_id
+  FROM po_latest pl
+  CROSS JOIN gp p
+  WHERE pl.active
+    AND (p.category_id IS NULL OR pl.orderabledisplaycategoryid = p.category_id)
+    AND (p.product_id IS NULL OR pl.orderableid = p.product_id)
+),
+
+-- Facilities supplied by the store (option a), resolved the way requisition approval does.
+-- Walk up from each requisition group's supervisory node until the first node with a supply line for the program.
+prog_groups AS (
+  SELECT DISTINCT g.id AS group_id, g.supervisorynodeid AS start_node
+  FROM referencedata.requisition_groups g
+  JOIN referencedata.requisition_group_program_schedules s ON s.requisitiongroupid = g.id
+  JOIN gp p ON s.programid = p.program_id
+),
+sl_nodes AS (          -- nodes that have at least one supply line for the program
+  SELECT DISTINCT sl.supervisorynodeid AS node_id
+  FROM referencedata.supply_lines sl
+  JOIN gp p ON sl.programid = p.program_id
+),
+walk (start_node, node_id, path) AS (
+  SELECT DISTINCT pg.start_node, pg.start_node, ARRAY[pg.start_node]
+  FROM prog_groups pg
+  UNION ALL
+  SELECT w.start_node, sn.parentid, w.path || sn.parentid
+  FROM walk w
+  JOIN referencedata.supervisory_nodes sn ON sn.id = w.node_id
+  LEFT JOIN sl_nodes stop ON stop.node_id = w.node_id
+  WHERE stop.node_id IS NULL             -- this node has no supply line for the program: pass it up
+    AND sn.parentid IS NOT NULL          -- no parent: unresolved
+    AND sn.parentid <> ALL (w.path)      -- cycle guard
+),
+store_nodes AS (       -- nodes where ANY supply line for the program comes from the store
+  SELECT DISTINCT sl.supervisorynodeid AS node_id
+  FROM referencedata.supply_lines sl
+  JOIN gp p ON sl.programid = p.program_id AND sl.supplyingfacilityid = p.store_id
+),
+scope_facilities AS (  -- a walk row on a supply-line node is that walk's first such node (the walk stops there)
+  SELECT DISTINCT m.facilityid
+  FROM walk w
+  JOIN store_nodes st ON st.node_id = w.node_id
+  JOIN prog_groups pg ON pg.start_node = w.start_node
+  JOIN referencedata.requisition_group_members m ON m.requisitiongroupid = pg.group_id
+),
+
+-- Monthly reports in scope, filtered before touching line items.
+-- The processing period must lie wholly inside [date_from, date_to]; a period only partly inside does not count.
+reqs AS MATERIALIZED (   -- PG12+: guarantees requisitions are filtered before line items are read
+  SELECT r.id, r.facilityid
+  FROM requisition.requisitions r
+  JOIN referencedata.processing_periods pp ON pp.id = r.processingperiodid
+  CROSS JOIN gp p
+  WHERE r.programid = p.program_id
+    AND NOT r.emergency
+    AND r.status IN ('AUTHORIZED', 'IN_APPROVAL', 'APPROVED', 'RELEASED', 'RELEASED_WITHOUT_ORDER')
+    AND pp.startdate >= p.date_from
+    AND pp.enddate <= p.date_to
+    AND r.facilityid IN (SELECT sf.facilityid FROM scope_facilities sf)
+),
+-- Counting lines of the candidate products (any orderable version).
+lines AS (
+  SELECT q.facilityid, li.orderableid,
+         li.totalconsumedquantity AS consumed,
+         li.totalstockoutdays     AS stockout,
+         li.adjustedconsumption   AS adjusted
+  FROM reqs q
+  JOIN requisition.requisition_line_items li ON li.requisitionid = q.id
+  JOIN prods pr ON pr.orderableid = li.orderableid
+  WHERE coalesce(li.skipped, false) = false
+    AND coalesce(li.nonfullsupply, false) = false
+),
+-- Per facility and product. avg() skips NULL adjusted consumption and is NULL when every value is NULL.
+-- The ceil per facility is the requisition form's Average consumption (ceil of the mean of the non-NULL
+-- adjusted consumptions), here over the facility's reports in the range.
+fac AS (
+  SELECT l.facilityid, l.orderableid,
+         sum(l.consumed)        AS dist,
+         sum(l.stockout)        AS stockout_days,
+         ceil(avg(l.adjusted))  AS amc
+  FROM lines l
+  GROUP BY l.facilityid, l.orderableid
+),
+-- prod_agg, prod_soh and orderable_latest are MATERIALIZED so each runs once. The planner estimates prods at 1 row
+-- (its filters compare against the gp CTE) and joins the final SELECT with nested loops; an inlined aggregate there is
+-- recomputed per product (2.9 s instead of 0.12 s on the Gambia-size test data).
+prod_agg AS MATERIALIZED (   -- one row per product with a counting line; sum() skips NULLs
+  SELECT f.orderableid,
+         sum(f.dist)          AS dist,
+         sum(f.stockout_days) AS stockout_days,
+         sum(f.amc)           AS amc
+  FROM fac f
+  GROUP BY f.orderableid
+),
+
+-- Store SOH on date_to: per card, the row with the greatest occurreddate <= date_to
+-- (ties: greatest processeddate, then greatest id), summed per product over every lot.
+store_cards AS (
+  SELECT sc.id AS card_id, sc.orderableid
+  FROM stockmanagement.stock_cards sc
+  JOIN gp p ON sc.facilityid = p.store_id AND sc.programid = p.program_id
+),
+card_soh AS (
+  SELECT DISTINCT ON (c.stockcardid) c.stockcardid, c.stockonhand
+  FROM stockmanagement.calculated_stocks_on_hand c
+  JOIN store_cards s ON s.card_id = c.stockcardid
+  CROSS JOIN gp p
+  WHERE c.occurreddate <= p.date_to
+  ORDER BY c.stockcardid, c.occurreddate DESC, c.processeddate DESC, c.id DESC
+),
+prod_soh AS MATERIALIZED (
+  SELECT s.orderableid, sum(cs.stockonhand) AS soh
+  FROM store_cards s
+  JOIN card_soh cs ON cs.stockcardid = s.card_id
+  GROUP BY s.orderableid
+),
+
+orderable_latest AS MATERIALIZED (   -- code and name of the highest orderable version
+  SELECT DISTINCT ON (o.id) o.id, o.code, o.fullproductname
+  FROM referencedata.orderables o
+  JOIN prods pr ON pr.orderableid = o.id
+  ORDER BY o.id, o.versionnumber DESC
+),
+
+-- Row set: a candidate product with a counting line in the range from an in-scope facility,
+-- or with a stock card at the store for the program. All numeric columns are non-NULL.
+report_rows AS (
+  SELECT
+    pr.orderableid                       AS orderable_id,
+    ol.code                              AS product_code,
+    ol.fullproductname                   AS product_name,
+    cat.displayname                      AS category,
+    coalesce(a.dist, 0)::bigint          AS total_distribution,
+    coalesce(a.stockout_days, 0)::bigint AS total_days_out_of_stock,
+    coalesce(s.soh, 0)::bigint           AS soh,
+    coalesce(a.amc, 0)::bigint           AS amc
+  FROM prods pr
+  LEFT JOIN prod_agg a          ON a.orderableid = pr.orderableid
+  LEFT JOIN prod_soh s          ON s.orderableid = pr.orderableid
+  LEFT JOIN orderable_latest ol ON ol.id = pr.orderableid
+  LEFT JOIN referencedata.orderable_display_categories cat ON cat.id = pr.category_id
+  WHERE a.orderableid IS NOT NULL
+     OR EXISTS (SELECT 1 FROM store_cards sc WHERE sc.orderableid = pr.orderableid)
+)
+
+-- The selected filter values for the page header, joined to the report rows. When there are no rows (nothing in the
+-- range, or no STOCK_CARDS_VIEW right) the LEFT JOIN keeps one row with NULL report columns, so the header and the
+-- "no data" message still print. Rows are ordered by category, then product code, then orderable id.
+SELECT
+  prog.name                            AS program_filter,
+  fac.name                             AS facility_filter,
+  COALESCE((SELECT c.displayname
+            FROM referencedata.orderable_display_categories c
+            WHERE c.id = p.category_id), 'All') AS category_filter,
+  COALESCE((SELECT o.fullproductname
+            FROM referencedata.orderables o
+            WHERE o.id = p.product_id
+            ORDER BY o.versionnumber DESC
+            LIMIT 1), 'All')            AS product_filter,
+  rr.orderable_id,
+  rr.product_code,
+  rr.product_name,
+  rr.category,
+  rr.total_distribution,
+  rr.total_days_out_of_stock,
+  rr.soh,
+  rr.amc
+FROM params p
+JOIN referencedata.programs prog   ON prog.id = p.program_id
+JOIN referencedata.facilities fac  ON fac.id = p.store_id
+LEFT JOIN report_rows rr ON TRUE
+ORDER BY rr.category, rr.product_code, rr.orderable_id]]>
+	</queryString>
+	<field name="program_filter" class="java.lang.String"/>
+	<field name="facility_filter" class="java.lang.String"/>
+	<field name="category_filter" class="java.lang.String"/>
+	<field name="product_filter" class="java.lang.String"/>
+	<field name="orderable_id" class="java.util.UUID"/>
+	<field name="product_code" class="java.lang.String"/>
+	<field name="product_name" class="java.lang.String"/>
+	<field name="category" class="java.lang.String"/>
+	<field name="total_distribution" class="java.lang.Long"/>
+	<field name="total_days_out_of_stock" class="java.lang.Long"/>
+	<field name="soh" class="java.lang.Long"/>
+	<field name="amc" class="java.lang.Long"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="120" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="802" height="30" uuid="bc8e35c7-dac5-46f7-8288-52509c8ca10e"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="15" isBold="true" isPdfEmbedded="true"/>
+					<paragraph lineSpacing="Double" lineSpacingSize="2.0"/>
+				</textElement>
+				<text><![CDATA[AMC Report]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="40" width="362" height="20" uuid="093f9441-828e-4c87-aaaf-d83fb6f7b936"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Program: " + ($F{program_filter} == null ? "" : $F{program_filter})]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="362" y="40" width="440" height="20" uuid="817dcd6d-a676-4c3c-82b8-5c061c20e7ed"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Supplying Facility: " + ($F{facility_filter} == null ? "" : $F{facility_filter})]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="60" width="362" height="20" uuid="f1705846-59e0-40d7-b1ee-49fb138b62c8"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Category: " + ($F{category_filter} == null ? "All" : $F{category_filter})]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="362" y="60" width="440" height="20" uuid="abefa5e1-bc08-4863-8c82-8c29c8085b9d"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Product: " + ($F{product_filter} == null ? "All" : $F{product_filter})]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="80" width="362" height="20" uuid="65956e47-64ba-4a3c-ab6c-3e7020eb0717"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Start Date: " + ($P{dateFromValue} == null ? "" : $P{dateFromValue})]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="362" y="80" width="440" height="20" uuid="80e5f564-ca38-4959-9dd0-8f33e534bee4"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["End Date: " + ($P{dateToValue} == null ? "" : $P{dateToValue})]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="100" width="362" height="20" uuid="9eaf2de8-e0ab-485a-9664-f81ad14faef3"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Date:  " + (new SimpleDateFormat("yyyy-MM-dd")).format(new Date())]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="30">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="94" height="30" backcolor="#A3EFD8" uuid="22e2fa95-0757-4080-a776-4782574f6a7a"/>
+				<box bottomPadding="1" leftPadding="5" rightPadding="8">
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Product Code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="94" y="0" width="268" height="30" backcolor="#A3EFD8" uuid="f2a58a03-0e1a-4040-9d5b-454b66669fd8"/>
+				<box bottomPadding="1" leftPadding="5" rightPadding="8">
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Product Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="362" y="0" width="160" height="30" backcolor="#A3EFD8" uuid="b0381fd0-3e49-4f7f-9135-6c6a0e0e0ea6"/>
+				<box bottomPadding="1" leftPadding="5" rightPadding="8">
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Category]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="522" y="0" width="84" height="30" backcolor="#A3EFD8" uuid="badec845-e98d-4eb2-aa03-5c9cdef7e6e6"/>
+				<box bottomPadding="1" leftPadding="5" rightPadding="3">
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Total Distribution]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="606" y="0" width="84" height="30" backcolor="#A3EFD8" uuid="b16fb099-bac7-4e92-8ae8-bddabe5f71d0"/>
+				<box bottomPadding="1" leftPadding="5" rightPadding="3">
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Total Days Out Of Stock]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="690" y="0" width="56" height="30" backcolor="#A3EFD8" uuid="3053fc22-cc7b-4491-8052-f60fde73a212"/>
+				<box bottomPadding="1" leftPadding="5" rightPadding="3">
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[SOH]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="746" y="0" width="56" height="30" backcolor="#A3EFD8" uuid="b1c2e75b-17c8-48b2-9ad8-f00c06ec0adf"/>
+				<box bottomPadding="1" leftPadding="5" rightPadding="3">
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
+					<font fontName="DejaVu Sans" size="10" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[AMC]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="25" splitType="Prevent">
+			<printWhenExpression><![CDATA[$F{orderable_id} != null]]></printWhenExpression>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="Row" stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="0" width="94" height="25" uuid="92316aaa-edc4-4349-ad34-53143ea243de"/>
+				<box topPadding="4" bottomPadding="4" leftPadding="5" rightPadding="8">
+					<pen lineColor="#A3EFD8"/>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="10" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{product_code}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="Row" stretchType="RelativeToTallestObject" mode="Opaque" x="94" y="0" width="268" height="25" uuid="397b94b6-2263-44f9-b52d-388307af430c"/>
+				<box topPadding="4" bottomPadding="4" leftPadding="5" rightPadding="8">
+					<pen lineColor="#A3EFD8"/>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="10" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{product_name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="Row" stretchType="RelativeToTallestObject" mode="Opaque" x="362" y="0" width="160" height="25" uuid="5693eb4b-6822-4f0a-9927-6e7ed9e1ff7b"/>
+				<box topPadding="4" bottomPadding="4" leftPadding="5" rightPadding="8">
+					<pen lineColor="#A3EFD8"/>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="10" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{category}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="Row" stretchType="RelativeToTallestObject" mode="Opaque" x="522" y="0" width="84" height="25" uuid="442c91f9-81e5-4d18-b99a-4eabd120112f"/>
+				<box topPadding="4" bottomPadding="4" leftPadding="3" rightPadding="6">
+					<pen lineColor="#A3EFD8"/>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="10" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_distribution}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="Row" stretchType="RelativeToTallestObject" mode="Opaque" x="606" y="0" width="84" height="25" uuid="893831a5-50b6-4c8e-a2bb-b77e1c4aec55"/>
+				<box topPadding="4" bottomPadding="4" leftPadding="3" rightPadding="6">
+					<pen lineColor="#A3EFD8"/>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="10" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_days_out_of_stock}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="Row" stretchType="RelativeToTallestObject" mode="Opaque" x="690" y="0" width="56" height="25" uuid="649df6c7-6d7a-47ee-86fd-38fc2a0435cd"/>
+				<box topPadding="4" bottomPadding="4" leftPadding="3" rightPadding="6">
+					<pen lineColor="#A3EFD8"/>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="10" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{soh}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="Row" stretchType="RelativeToTallestObject" mode="Opaque" x="746" y="0" width="56" height="25" uuid="cd0a841f-b64a-471a-b4a9-efb22bb2eddb"/>
+				<box topPadding="4" bottomPadding="4" leftPadding="3" rightPadding="6">
+					<pen lineColor="#A3EFD8"/>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A3EFD8"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="10" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{amc}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="30">
+			<textField>
+				<reportElement x="702" y="17" width="100" height="13" uuid="72e68074-4274-4e45-968b-038e3f4402cb"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="52">
+			<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()==0) || (new Boolean($V{REPORT_COUNT}.intValue()==1) && $F{orderable_id} == null)]]></printWhenExpression>
+			<staticText>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="0" width="802" height="51" uuid="917405aa-47cf-41a3-a6c4-6f09918b8b1f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="12" isBold="true" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[There is no data for the indicated parameters.]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

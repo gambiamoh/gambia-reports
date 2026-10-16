@@ -15,6 +15,8 @@
   - Start Date and End Date of both reports are picked from a calendar
   - Both reports use the Stock Receive Report layout: the selected filters are shown in the header,
     and the title, filters and column headers are printed even when no data matches
+- [OPSD-106](https://openlmis.atlassian.net/browse/OPSD-106)
+  - Added new AMC Report showing total distribution, days out of stock, SOH and AMC per product
 
 1.1.6 / 2026-09-18
 ==================
