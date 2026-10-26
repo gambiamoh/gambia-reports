@@ -88,23 +88,33 @@ FROM (
     ) soh ON sc.id = soh.stockcardid
     LEFT JOIN (
         SELECT
-            stockcardid,
-            SUM(quantity) AS quantity
-        FROM stockmanagement.stock_card_line_items
-        WHERE destinationid IS NOT NULL
-          AND occurreddate BETWEEN $P{dateFrom}::date
-                               AND $P{dateTo}::date
-        GROUP BY stockcardid
+            sli.stockcardid,
+            SUM(sli.quantity) AS quantity
+        FROM stockmanagement.stock_card_line_items sli
+        WHERE sli.destinationid IS NOT NULL
+          AND sli.occurreddate BETWEEN $P{dateFrom}::date
+                                   AND $P{dateTo}::date
+          AND NOT EXISTS (
+              SELECT 1
+              FROM stockmanagement.stock_event_line_items reversal
+              WHERE reversal.reverseseventlineitemid = sli.origineventlineitemid
+          )
+        GROUP BY sli.stockcardid
     ) issued ON issued.stockcardid = sc.id
     LEFT JOIN (
         SELECT
-            stockcardid,
-            SUM(quantity) AS quantity
-        FROM stockmanagement.stock_card_line_items
-        WHERE sourceid IS NOT NULL
-          AND occurreddate BETWEEN $P{dateFrom}::date
-                               AND $P{dateTo}::date
-        GROUP BY stockcardid
+            sli.stockcardid,
+            SUM(sli.quantity) AS quantity
+        FROM stockmanagement.stock_card_line_items sli
+        WHERE sli.sourceid IS NOT NULL
+          AND sli.occurreddate BETWEEN $P{dateFrom}::date
+                                   AND $P{dateTo}::date
+          AND NOT EXISTS (
+              SELECT 1
+              FROM stockmanagement.stock_event_line_items reversal
+              WHERE reversal.reverseseventlineitemid = sli.origineventlineitemid
+          )
+        GROUP BY sli.stockcardid
     ) received ON received.stockcardid = sc.id
     GROUP BY sc.programid, sc.facilityid, sc.orderableid
 ) r

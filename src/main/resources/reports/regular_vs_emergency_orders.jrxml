@@ -82,6 +82,7 @@ JOIN referencedata.facilities rf ON rf.id = o.facilityid
 JOIN referencedata.processing_periods pp ON pp.id = o.processingperiodid
 WHERE p.id = $P{program_name}::uuid
   AND f.id = $P{supplying_facility}::uuid
+  AND o.status <> 'CANCELLED'
   AND pp.startdate <= $P{to_date}::date
   AND pp.enddate >= $P{from_date}::date
   AND ($P{category} IS NULL OR EXISTS (

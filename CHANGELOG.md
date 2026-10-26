@@ -9,6 +9,11 @@
   - `POST /api/reports/generate` now accepts service-level tokens only
   - Pick Pack List no longer drops trade items shipped against commodity type order lines
     (ported OLMIS-8347)
+  - Item Ledger no longer counts cancelled issues and receipts (stock event reversals) in the
+    Issued and Received totals
+  - Stock Receive Report no longer lists receipts that were cancelled (stock event reversals)
+  - Regular vs Emergency Orders report no longer counts cancelled orders
+  - The Issue Voucher (order printout) shows the order status in its header
 - [OPSD-104](https://openlmis.atlassian.net/browse/OPSD-104)
   - Order Fill Rate and Emergency Vs Regular Orders reports can be filtered by product category;
     Order Fill Rate counts only the selected category's order and shipment lines

@@ -108,6 +108,16 @@ Tel: +2204466302/ 303]]></text>
                 <text><![CDATA[Facility Code: ]]></text>
             </staticText>
             <staticText>
+                <reportElement x="321" y="70" width="80" height="15" uuid="3c1e7a52-9d4b-4f0e-8a6b-5e2f1c9d7b10"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"/>
+                <text><![CDATA[Status: ]]></text>
+            </staticText>
+            <textField isBlankWhenNull="true">
+                <reportElement key="" x="411" y="70" width="145" height="15" uuid="8f6d2b41-7c3a-4e95-b2d8-0a1c4e6f9b23"/>
+                <textElement textAlignment="Left" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$P{order}.getStatus() == null ? null : $P{order}.getStatus().name()]]></textFieldExpression>
+            </textField>
+            <staticText>
                 <reportElement x="321" y="85" width="80" height="15" uuid="4f9ec696-9521-48b0-86da-e67131811da6"/>
                 <textElement textAlignment="Right" verticalAlignment="Middle"/>
                 <text><![CDATA[Address: ]]></text>
