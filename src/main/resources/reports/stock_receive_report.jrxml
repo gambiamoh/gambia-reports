@@ -104,6 +104,11 @@
     WHERE sc.facilityid = $P{facility}::uuid
       AND sc.programid = $P{program}::uuid
       AND sli.occurreddate BETWEEN $P{dateFromValue}::date AND $P{dateToValue}::date
+      AND NOT EXISTS (
+          SELECT 1
+          FROM stockmanagement.stock_event_line_items reversal
+          WHERE reversal.reverseseventlineitemid = sli.origineventlineitemid
+      )
       AND latest_po.active = TRUE
       AND ($P{orderable} IS NULL OR ord.id = $P{orderable}::uuid)
       AND ($P{category} IS NULL OR latest_po.orderabledisplaycategoryid = $P{category}::uuid)
