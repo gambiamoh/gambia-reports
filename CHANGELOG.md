@@ -1,4 +1,4 @@
-1.2.0 / WIP
+1.2.0 / 2026-10-29
 ==================
 - [OPSD-123](https://openlmis.atlassian.net/browse/OPSD-123)
   - Aligned with core openlmis-report 1.6.0 (OpenLMIS 3.20); the Gambia order printout and the
