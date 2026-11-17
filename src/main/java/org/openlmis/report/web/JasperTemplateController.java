@@ -25,6 +25,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -37,6 +38,7 @@ import net.sf.jasperreports.engine.JasperReport;
 import org.openlmis.report.domain.JasperTemplate;
 import org.openlmis.report.dto.JasperTemplateDto;
 import org.openlmis.report.dto.external.fulfillment.OrderDto;
+import org.openlmis.report.dto.external.fulfillment.StatusChangeDto;
 import org.openlmis.report.dto.external.referencedata.UserDto;
 import org.openlmis.report.exception.JasperReportViewException;
 import org.openlmis.report.exception.NotFoundMessageException;
@@ -46,6 +48,7 @@ import org.openlmis.report.service.JasperReportsViewService;
 import org.openlmis.report.service.JasperTemplateService;
 import org.openlmis.report.service.PermissionService;
 import org.openlmis.report.service.fulfillment.OrderService;
+import org.openlmis.report.service.referencedata.UserReferenceDataService;
 import org.openlmis.report.utils.AuthenticationHelper;
 import org.openlmis.report.utils.Message;
 import org.slf4j.Logger;
@@ -89,6 +92,9 @@ public class JasperTemplateController extends BaseController {
 
   @Autowired
   private OrderService orderService;
+
+  @Autowired
+  private UserReferenceDataService userReferenceDataService;
 
   @Value("${dateTimeFormat}")
   private String dateTimeFormat;
@@ -242,6 +248,7 @@ public class JasperTemplateController extends BaseController {
       map.put("user", currentUser.printName());
 
       OrderDto order = orderService.findOne(UUID.fromString(map.get("order").toString()));
+      fillStatusChangeAuthors(order);
       map.put("order", order);
       map.put("datasource", order.getOrderLineItems());
     }
@@ -266,5 +273,34 @@ public class JasperTemplateController extends BaseController {
         .contentType(mediaType)
         .header("Content-Disposition", "inline; filename=" + fileName + "." + format)
         .body(bytes);
+  }
+
+  /**
+   * Fulfillment sends only the author id of each status change, so the users of the status changes
+   * the Issue Voucher prints (authorized, approved, released) are looked up in referencedata.
+   * A user that cannot be found leaves the author empty.
+   */
+  private void fillStatusChangeAuthors(OrderDto order) {
+    if (order.getStatusChanges() == null) {
+      return;
+    }
+
+    List<StatusChangeDto> printedStatusChanges = Arrays.asList(
+        order.getAuthorizedStatusChange(),
+        order.getApprovedStatusChange(),
+        order.getReleasedStatusChange());
+
+    Map<UUID, UserDto> authors = new HashMap<>();
+    for (StatusChangeDto statusChange : printedStatusChanges) {
+      UUID authorId = statusChange.getAuthorId();
+      if (authorId == null) {
+        continue;
+      }
+      // not computeIfAbsent: it does not store null, so a missing user would be looked up again
+      if (!authors.containsKey(authorId)) {
+        authors.put(authorId, userReferenceDataService.findOne(authorId));
+      }
+      statusChange.setAuthor(authors.get(authorId));
+    }
   }
 }
