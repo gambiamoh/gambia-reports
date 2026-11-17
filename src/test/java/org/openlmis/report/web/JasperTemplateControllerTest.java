@@ -237,6 +237,25 @@ public class JasperTemplateControllerTest {
   }
 
   @Test
+  public void shouldNotLookUpAuthorsOfStatusChangesTheVoucherDoesNotPrint()
+      throws JasperReportViewException {
+    UserDto authorizer = user("Dan", "Green");
+    UUID submitterId = UUID.randomUUID();
+    UUID inApprovalId = UUID.randomUUID();
+    when(userReferenceDataService.findOne(authorizer.getId())).thenReturn(authorizer);
+    OrderDto order = orderWithStatusChanges(
+        statusChange(RequisitionStatusDto.SUBMITTED, submitterId),
+        statusChange(RequisitionStatusDto.AUTHORIZED, authorizer.getId()),
+        statusChange(RequisitionStatusDto.IN_APPROVAL, inApprovalId));
+
+    OrderDto printed = printOrder(order);
+
+    verify(userReferenceDataService, never()).findOne(submitterId);
+    verify(userReferenceDataService, never()).findOne(inApprovalId);
+    assertEquals("Dan Green", printed.getAuthorizedStatusChange().getAuthor().printName());
+  }
+
+  @Test
   public void shouldSkipStatusChangesWithoutAuthorId() throws JasperReportViewException {
     OrderDto order = orderWithStatusChanges(
         statusChange(RequisitionStatusDto.AUTHORIZED, null));

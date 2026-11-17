@@ -276,16 +276,22 @@ public class JasperTemplateController extends BaseController {
   }
 
   /**
-   * Fulfillment sends only the author id of each status change, so the users are looked up in
-   * referencedata. A user that cannot be found leaves the author empty.
+   * Fulfillment sends only the author id of each status change, so the users of the status changes
+   * the Issue Voucher prints (authorized, approved, released) are looked up in referencedata.
+   * A user that cannot be found leaves the author empty.
    */
   private void fillStatusChangeAuthors(OrderDto order) {
     if (order.getStatusChanges() == null) {
       return;
     }
 
+    List<StatusChangeDto> printedStatusChanges = Arrays.asList(
+        order.getAuthorizedStatusChange(),
+        order.getApprovedStatusChange(),
+        order.getReleasedStatusChange());
+
     Map<UUID, UserDto> authors = new HashMap<>();
-    for (StatusChangeDto statusChange : order.getStatusChanges()) {
+    for (StatusChangeDto statusChange : printedStatusChanges) {
       UUID authorId = statusChange.getAuthorId();
       if (authorId == null) {
         continue;
