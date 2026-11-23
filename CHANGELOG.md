@@ -1,3 +1,6 @@
+1.2.2 / WIP
+==================
+
 1.2.1 / 2026-11-23
 ==================
 - [OPSD-130](https://openlmis.atlassian.net/browse/OPSD-130)
