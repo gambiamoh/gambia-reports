@@ -1,4 +1,4 @@
-1.2.1 / WIP
+1.2.1 / 2026-11-23
 ==================
 - [OPSD-130](https://openlmis.atlassian.net/browse/OPSD-130)
   - The Issue Voucher (order printout) now shows the names of the users who authorized,
